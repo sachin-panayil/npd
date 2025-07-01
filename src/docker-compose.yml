@@ -1,0 +1,37 @@
+services:
+ db:
+   image: postgres:17
+   environment:
+     POSTGRES_DB: ${NDH_DB_NAME}
+     POSTGRES_USER: ${NDH_DB_USERNAME}
+     POSTGRES_PASSWORD: ${NDH_DB_PASSWORD}
+   ports:
+     - "5432:5432"
+   volumes:
+     - postgres_data:/var/lib/postgresql/data
+   env_file:
+     - .env
+ 
+ django-web:
+   build: .
+   container_name: ndh
+   ports:
+     - "8000:8000"
+   depends_on:
+     - db
+   environment:
+     NDH_DJANGO_SECRET: ${NDH_DJANGO_SECRET}
+     DEBUG: ${DEBUG}
+     DJANGO_LOGLEVEL: ${DJANGO_LOGLEVEL}
+     DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
+     DATABASE_ENGINE: ${NDH_DB_ENGINE}
+     NDH_DB_NAME: ${NDH_DB_NAME}
+     NDH_DB_USERNAME: ${NDH_DB_USERNAME}
+ 
+     NDH_DB_PASSWORD: ${NDH_DB_PASSWORD}
+     NDH_DB_HOST: ${NDH_DB_HOST}
+     NDH_DB_PORT: ${NDH_DB_PORT}
+   env_file:
+     - .env
+volumes:
+   postgres_data:
