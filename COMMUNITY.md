@@ -11,6 +11,7 @@ NDH (soon to be renamed) is supported by a dedicated team of individuals fulfill
 | Technical Lead | Fred Trotter | DSAC |
 | Engineer | Sarah Popelka | DSAC |
 
+See [CODEOWNERS.md](.github/CODEOWNERS.md) for a list of those responsible for the code and documentation in this repository.
 
 See [Community Guidelines](#NDH-open-source-community-guidelines) on principles and guidelines for participating in this open source project.
 
@@ -42,6 +43,7 @@ The members of ndh community are responsible for guiding its development, ensuri
 | approver   | approve accepting contributions                | highly experienced and active reviewer + contributor to a sub-project             | COMMUNITY file approver entry and GitHub Triage Team      |
 | maintainer | set direction and priorities for a sub-project | demonstrated responsibility and excellent technical judgement for the sub-project | COMMUNITY file owner entry and GitHub Org Admin Team      |
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for more details on the release process.
 
 ## Contributors
 
@@ -90,6 +92,8 @@ When participating in NDH open source community conversations and spaces, we ask
 <!-- TODO: Add if your repo has a community chat - Be present when joining synchronous conversations such as our community chat. Why be here if you're not going to _be here_? -->
 - Be respectful.
 - Default to positive. Assume others' contributions are legitimate and valuable and that they are made with good intention.
+- Embrace a culture of learning, and educate each other. We are all entering this conversation from different starting points and with different backgrounds. There are no dumb questions.
+- Take space and give space. We strive to create an environment in which all are welcome and able to participate. We hope individuals feel comfortable voicing their opinions and providing contributions and will do our best to recognize and make space for individuals who may be struggling to find space here. Likewise, we expect individuals to recognize when they are taking up significant space and take a step back to allow room for others.
 
 ### Acknowledgements
 
