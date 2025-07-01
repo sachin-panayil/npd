@@ -3,4 +3,7 @@ from django.http import HttpResponse
 
 
 def index(request):
-    return HttpResponse("Hello, world")
+    return HttpResponse("Connection to ndh database: successful")
+
+def health(request):
+    return HttpResponse("healthy")
