@@ -60,6 +60,13 @@ Total number of contributors: <!--CONTRIBUTOR COUNT START--> <!--CONTRIBUTOR COU
                     <sub><b>spopelka-dsac</b></sub>
                 </a>
             </td>
+            <td align="center">
+                <a href="https://github.com/ftrotter-gov">
+                    <img src="https://avatars.githubusercontent.com/u/218619890?v=4" width="100;" alt="ftrotter-gov"/>
+                    <br />
+                    <sub><b>Fred Trotter</b></sub>
+                </a>
+            </td>
 		</tr>
 	<tbody>
 </table>
