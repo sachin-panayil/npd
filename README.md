@@ -4,7 +4,7 @@ National Provider and Payer Directory at CMS
 
 ## About the Project
 
-**{project statement}**
+The soon to be renamed NDH project at CMS will implement a new Provider and Payer Directory service that will eventually grow to encompass (and probably replace) the functionality of NPPES.
 
 <!---
 ### Project Vision
@@ -28,11 +28,8 @@ A list of core team members responsible for the code and documentation in this r
 
 ## Repository Structure
 
-<!-- TODO: Including the repository structure helps viewers quickly understand the project layout. Using the "tree -d" command can be a helpful way to generate this information, but, be sure to update it as the project evolves and changes over time. -->
-
-```plaintext
-.
-```
+This is a mega-repository that will contain multiple different sub-projects. Look in the [src](src) for a list of projects. You will find more information about each project in a ReadMe.md file within the respective directories. 
+We may eventually setup seperate repos for our project, but until we do a central merged github repo is a simpler way to coordinate our work. 
 
 
 **{list directories and descriptions}**
