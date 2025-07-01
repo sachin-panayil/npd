@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +21,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.get('NDH_DJANGO_SECRET')
+SECRET_KEY = config('NDH_DJANGO_SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(config('DEBUG'))
 
-ALLOWED_HOSTS = []
+if DEBUG:
+        ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+else:
+    ALLOWED_HOSTS = config("DJANGO_ALLOWED_HOSTS").split(',')
 
 
 # Application definition
@@ -49,7 +53,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'api.urls'
+ROOT_URLCONF = 'app.urls'
 
 TEMPLATES = [
     {
@@ -66,7 +70,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'api.wsgi.application'
+WSGI_APPLICATION = 'app.wsgi.application'
 
 
 # Database
@@ -74,11 +78,12 @@ WSGI_APPLICATION = 'api.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'USER': os.get('NDH_DB_USER'),
-        'PASSWORD': os.get('NDH_DB_PASSWORD'),
-        'HOST': os.get('NDH_DB_HOST'),
-        'NAME': 'ndh',
+        'ENGINE': config('NDH_DB_ENGINE'),
+        'USER': config('NDH_DB_USER'),
+        'PASSWORD': config('NDH_DB_PASSWORD'),
+        'HOST': config('NDH_DB_HOST'),
+        'NAME': config('NDH_DB_NAME'),
+        'PORT': config('NDH_DB_PORT')
     }
 }
 
