@@ -1,0 +1,2 @@
+# Keep this to ignore a secret that is in the commit history
+subproject/plan_scrape/scrape_results/
