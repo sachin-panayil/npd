@@ -49,6 +49,10 @@ These can be configured using standard SQLFluff rules:
 [.sqlfluff](.sqlfluff) Configuration
 ----
 
+This is a starting point and will change over time.
+I suggest for now that people use the [VS Code sqlfluff linter to help using this for now](https://marketplace.visualstudio.com/items?itemName=dorzey.vscode-sqlfluff).
+Further automations might happen with github actions later on.
+
 ```conf
 [sqlfluff]
 dialect = postgres
