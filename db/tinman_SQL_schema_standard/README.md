@@ -22,16 +22,16 @@ These require either a custom rule, external linter, or manual review:
 * Don’t use data types as names
 * Use singular nouns for table names
 * Primary key should be named id
-* Foreign keys should follow the pattern <table>_id
-  * Two foreign keys in the table requires a prefix on the foreign key column, to differentiate the two links. Like <helpfulname>_<table>_id etc.
-  * Foreign keys can and will be created dynamically based on this naming convention. 
+* Foreign keys should follow the pattern `<table>_id`
+  * Two foreign keys in the table requires a prefix on the foreign key column, to differentiate the two links. Like `<helpfulname>_<table>_id` etc.
+  * Foreign keys can and will be created dynamically based on this naming convention.
 * Name indexes explicitly with table and column
 * Name constraints clearly
-* The varchar or text field in the table is assumed to be the "auto-suggest search" field for the table. If this is not true, then the table needs an explicit select_name field or postfixed field. 
+* The varchar or text field in the table is assumed to be the "auto-suggest search" field for the table. If this is not true, then the table needs an explicit select_name field or postfixed field.
 * DURC Reserved names:
-  * a column named select_name or that ends in _select_name is reserved for the field that will power an auto-suggest lookup on the table.
+  * a column named select_name or that ends in \_select_name is reserved for the field that will power an auto-suggest lookup on the table.
   * column names with a postfix of _markdown are used to invoke a front-end markdown editor
-  * column names with a postfix of _code will invoke a code-editor on the front end. 
+  * column names with a postfix of _code will invoke a code-editor on the front end.
 
 ⸻
 
@@ -50,7 +50,7 @@ These can be configured using standard SQLFluff rules:
 
 ⸻
 
-.sqlfluff Configuration
+[.sqlfluff](.sqlfluff) Configuration
 ----
 
 ```conf
@@ -74,4 +74,3 @@ ignore_words = ''  # Do not allow any exceptions
 capitalisation_policy = lower
 naming_convention = snake_case
 ```
-
