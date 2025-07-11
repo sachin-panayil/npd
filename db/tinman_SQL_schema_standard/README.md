@@ -66,7 +66,12 @@ ignore_words = ''  # Do not allow any exceptions
 [sqlfluff:rules:L036]
 # No config needed — enabled by default
 
+
+[sqlfluff:rules:capitalisation.keywords]
+# Keywords
+capitalisation_policy = upper
+
 [sqlfluff:rules:L040]
-capitalisation_policy = lower
+capitalisation_policy = upper
 naming_convention = snake_case
 ```
