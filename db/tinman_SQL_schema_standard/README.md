@@ -18,16 +18,16 @@ Rules Not Currently Enforceable by SQLFluff
 
 These require either a custom rule, external linter, or manual review:
 
-* Use full English words, not abbreviations
-* Don’t use data types as names
-* Use singular nouns for table names
-* Primary key should be named id
-* Foreign keys should follow the pattern `<table>_id`
-  * Two foreign keys in the table requires a prefix on the foreign key column, to differentiate the two links. Like `<helpfulname>_<table>_id` etc.
-  * Foreign keys can and will be created dynamically based on this naming convention.
+* Use full English words, not abbreviations (so international_business_machines and not ibm)
+* Don’t use data types as names (so sales_count and not sales_count_int. Let the INT data type say it is an integer)
+* Use singular nouns for table names (person and not persons or people)
+* Primary key should be named simply id
+* Foreign keys should follow the pattern `<table_name_here>_id`
+  * Two foreign keys in the table requires a prefix on the foreign key column, to differentiate the two links. Like `<helpful_name>_<table_name_here>_id` etc.
+  * Foreign keys can and should be created dynamically based on this naming convention.
 * Name indexes explicitly with table and column
 * Name constraints clearly
-* The varchar or text field in the table is assumed to be the "auto-suggest search" field for the table. If this is not true, then the table needs an explicit select_name field or postfixed field.
+* The varchar or text field listed first in the table is assumed to be the "auto-suggest search" field for the table. If this is not correct, then the table needs an explicit select_name field or postfixed field.
 * DURC Reserved names:
   * a column named select_name or that ends in \_select_name is reserved for the field that will power an auto-suggest lookup on the table.
   * column names with a postfix of _markdown are used to invoke a front-end markdown editor
@@ -39,14 +39,10 @@ Rules Enforceable by SQLFluff
 ------
 
 These can be configured using standard SQLFluff rules:
-* Avoid quoted identifiers
-	→ L014: Discourages use of quoted identifiers.
-* Use all lowercase for identifiers
-	→ L010: Enforces case on keywords and identifiers.
-* Use underscores to separate words (snake_case)
-	→ L040: Enforces naming convention patterns.
-* Avoid reserved words as identifiers
-	→ L036: Detects use of reserved keywords as identifiers.
+* Avoid quoted identifiers → L014: Discourages use of quoted identifiers.
+* Use all lowercase for identifiers → L010: Enforces case on keywords and identifiers.
+* Use underscores to separate words (snake_case) → L040: Enforces naming convention patterns.
+* Avoid reserved words as identifiers → L036: Detects use of reserved keywords as identifiers.
 
 ⸻
 
