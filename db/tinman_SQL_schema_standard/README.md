@@ -25,8 +25,8 @@ These require either a custom rule, external linter, or manual review:
 * Foreign keys should follow the pattern `<table_name_here>_id`
   * Two foreign keys in the table requires a prefix on the foreign key column, to differentiate the two links. Like `<helpful_name>_<table_name_here>_id` etc.
   * Foreign keys can and should be created dynamically based on this naming convention.
-* Name indexes explicitly with table and column
-* Name constraints clearly
+* Name indexes explicitly with table and column ( fk_npiidentifier_npi_id and not fk_identifiers_need_keys)
+* Name constraints clearly (uq_interop_endpoint_url and not uq_intendu)
 * The varchar or text field listed first in the table is assumed to be the "auto-suggest search" field for the table. If this is not correct, then the table needs an explicit select_name field or postfixed field.
 * DURC Reserved names:
   * a column named select_name or that ends in \_select_name is reserved for the field that will power an auto-suggest lookup on the table.
