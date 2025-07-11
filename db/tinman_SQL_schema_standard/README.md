@@ -1,11 +1,11 @@
 TinMan SQL Naming Conventions
 =========
 
-Gives structure to databases with heart. 
+Gives structure to databases with heart.
 
-This document outlines which naming conventions from the style guide can or cannot currently be enforced using SQLFluff, and provides configuration settings for enforceable rules. This ruleset is a extension and merger of three different rulesets for SQL tables: 
+This document outlines which naming conventions from the style guide can or cannot currently be enforced using SQLFluff, and provides configuration settings for enforceable rules. This ruleset is a extension and merger of three different rulesets for SQL tables:
 
-* [https://x.com/sehrope](https://x.com/sehrope) wrote [How I Write SQL, Part 1: Naming Conventions](https://launchbylunch.com/posts/2014/Feb/16/sql-naming-conventions/)
+* [https://x.com/sehrope](https://x.com/sehrope) wrote [How I Write SQL, Part 1: Naming Conventions](https://launchbylunch.com/posts/2014/Feb/16/sql-naming-conventions/). When clarity is needed on how to use these, start here.
 * [DURC](https://github.com/ftrotter/durc_is_crud) naming conventions
 * [SQLFluff default rules](https://docs.sqlfluff.com/en/stable/configuration/default_configuration.html)
 
