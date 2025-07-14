@@ -143,11 +143,11 @@ CREATE TABLE ndh.fips_state (
 CREATE TABLE ndh.fips_county (
     county_code VARCHAR(5) primary key,
     county_name VARCHAR(200),
-    state_code VARCHAR(2) --references fips_state.state_code,
-    CONSTRAINT uc_fips_county_state_name UNIQUE (
+    state_code VARCHAR(2), --references fips_state.state_code,
+    CONSTRAINT uc_fips_county UNIQUE (
         county_name
     )
-)
+);
 
 
 CREATE TABLE ndh.organization_to_address (
@@ -179,17 +179,17 @@ CREATE TABLE ndh.organization_to_tax_identifier (
     organization_tin VARCHAR(10),
     organization_vtin VARCHAR(50) DEFAULT NULL,
     organization_glief VARCHAR(300)  DEFAULT NULL,
-    CONSTRAINT uc_organization_tax_identifier_organization_vtin UNIQUE (
+    CONSTRAINT uc_organization_tax_identifier_organization_tin UNIQUE (
         organization_tin
     ),
     CONSTRAINT uc_organization_tax_identifier_organization_vtin UNIQUE (
         organization_vtin
     ),
-    CONSTRAINT uc_organization_tax_identifier_organization_vtin UNIQUE (
+    CONSTRAINT uc_organization_tax_identifier_organization_glief UNIQUE (
         organization_glief
     ),
     primary key (organization_id, organization_tin)
-)
+);
 
 
 CREATE TABLE ndh.organization_hierarchy (
@@ -219,13 +219,13 @@ CREATE TABLE ndh.individual_to_organization (
     organization_id INT, --references clinical_organization.id
     individual_id INT, --references individual.id
     relationship_type_id int, --references relationship_type.id
-    primary key (clinical_organization_id, individual_id, relationship_type_id)
+    primary key (organization_id, individual_id, relationship_type_id)
 );
 
 CREATE TABLE ndh.relationship_type (
     relationship_type_id SERIAL PRIMARY KEY,
     relationship_type_value varchar(200) --assigning, sole proprietor, etc.
-)
+);
 
 
 CREATE TABLE ndh.organization_to_ehr_instance (
@@ -267,7 +267,7 @@ CREATE TABLE ndh.other_identifier_type (
 
 
 CREATE TABLE ndh.individual_to_other_identifier (
-    individual_id  NOT NULL, --references npi.npi
+    individual_id  int NOT NULL, --references individual.id
     identifier VARCHAR(21)   NOT NULL,
     identifier_type_id INTEGER   NOT NULL, --references identifier_type.id
     state_code char(2), --references fips_state.state_code
@@ -293,13 +293,13 @@ CREATE TABLE ndh.certification_credential (
 CREATE TABLE ndh.language_spoken (
     language_abbreviation char(2) primary key,
     language_description varchar(200)
-)
+);
 
 CREATE TABLE ndh.individual_to_language_spoken (
     individual_id int, --references individual.id
     language_abbreviation char(2),
     primary key (individual_id, language_abbreviation)
-)
+);
 
 CREATE TABLE ndh.individual_to_schedule (
     individual_id int, --references individual_to_address
@@ -308,7 +308,7 @@ CREATE TABLE ndh.individual_to_schedule (
     start_time int, --24 hour clock
     end_time int, --24 hour clock
     primary key (individual_id, day_of_week, start_time, end_time)
-)
+);
 
 CREATE TABLE ndh.clinical_school (
     id SERIAL PRIMARY KEY,
@@ -327,7 +327,7 @@ CREATE TABLE ndh.individual_to_certification_credential (
 
 CREATE TABLE ndh.individual (
     id SERIAL PRIMARY KEY,
-    ssn VARCHAR(10)   DEFAULT NULL.
+    ssn VARCHAR(10)   DEFAULT NULL,
     sex_code CHAR(1)  DEFAULT NULL,
     birth_date DATE,
     npi bigint
@@ -343,19 +343,19 @@ CREATE TABLE ndh.individual_to_name (
     name_type_id int, --references name_type.id
     effective_date date NOT null,
     end_date date,
-    primary key (individual_id, last_name, first_name, middle_name, name_prefix, name_suffix, name_type, effective_date)
-)
+    primary key (individual_id, last_name, first_name, middle_name, name_prefix, name_suffix, name_type_id, effective_date)
+);
 
 CREATE TABLE ndh.name_type (
     id serial primary key,
     name_type varchar(50)
-)
+);
 
 CREATE TABLE ndh.individual_to_email_address (
     individual_id int, --references individual.id
     email_address varchar(300),
     primary key (individual_id, email_address)
-)
+);
 
 
 CREATE TABLE ndh.interop_endpoint_type (
