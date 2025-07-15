@@ -175,13 +175,13 @@ CREATE TABLE ndh.other_identifier_type (
 
 CREATE TABLE ndh.individual_to_other_identifier (
     individual_id  int NOT NULL, --references individual.id
-    description VARCHAR(21)   NOT NULL,
+    value VARCHAR(21)   NOT NULL,
     other_identifier_type_id INTEGER   NOT NULL, --references identifier_type.id
     state_id char(2), --references fips_state.id
     issuer_name VARCHAR(81),
     issue_date date,
     expiry_date date,
-    primary key (individual_id, identifier, state_code)
+    primary key (individual_id, value, state_id)
 );
 
 
@@ -203,7 +203,7 @@ CREATE TABLE ndh.language_spoken (
 CREATE TABLE ndh.individual_to_language_spoken (
     individual_id int, --references individual.id
     language_spoken_id char(2), --language_spoken_id
-    primary key (individual_id, language_abbreviation)
+    primary key (individual_id, llanguage_spoken_id)
 );
 
 CREATE TABLE ndh.clinical_school (
@@ -241,7 +241,7 @@ CREATE TABLE ndh.individual_to_name (
     fhir_name_type_id int NOT NULL, --references fhir_name_type.id
     effective_date date NOT null,
     end_date date,
-    primary key (individual_id, last_name, first_name, middle_name, name_prefix, name_suffix, name_type_id, effective_date)
+    primary key (individual_id, last_name, first_name, middle_name, name_prefix, name_suffix, fhir_name_type_id, effective_date)
 );
 
 CREATE TABLE ndh.fhir_name_type (
@@ -316,7 +316,7 @@ CREATE TABLE ndh.individual_to_nucc_taxonomy_code (
     state_id char(2), --references fips_state.id
     license_number VARCHAR(20),
     is_primary BOOLEAN,
-    primary key (individual_id, nucc_taxonomy_code_id, state_code),
+    primary key (individual_id, nucc_taxonomy_code_id, state_id)
 );
 
 
