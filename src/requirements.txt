@@ -8,6 +8,7 @@ charset-normalizer==3.4.2
 click==8.2.1
 cookiecutter==2.6.0
 Django==5.2.3
+djangorestframework==3.16.0
 gunicorn==23.0.0
 idna==3.10
 Jinja2==3.1.6
