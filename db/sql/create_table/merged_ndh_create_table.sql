@@ -227,9 +227,14 @@ CREATE TABLE ndh.individual (
     id SERIAL PRIMARY KEY,
     ssn VARCHAR(10)   DEFAULT NULL,
     sex_code CHAR(1)  DEFAULT NULL,
-    birth_date DATE,
-    npi bigint
+    gender_code CHAR(1),
+    birth_date DATE
 );
+
+CREATE TABLE ndh.provider (
+    npi BIGINT PRIMARY KEY, --references npi.npi
+    individual_id int --references individual.id
+)
 
 CREATE TABLE ndh.individual_to_name (
     individual_id int, --references individual.id
@@ -316,7 +321,7 @@ CREATE TABLE ndh.individual_to_nucc_taxonomy_code (
     state_id char(2), --references fips_state.id
     license_number VARCHAR(20),
     is_primary BOOLEAN,
-    primary key (individual_id, nucc_taxonomy_code_id, state_id)
+    primary key (individual_id, nucc_taxonomy_code_id, state_code)
 );
 
 

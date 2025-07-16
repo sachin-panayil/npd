@@ -1,3 +1,0 @@
-Diagrams Directory
-===================
-
