@@ -382,3 +382,12 @@ class PhoneType(models.Model):
     class Meta:
         managed = False
         db_table = 'phone_type'
+
+
+class Provider(models.Model):
+    npi = models.OneToOneField(Npi, models.DO_NOTHING, db_column='npi', primary_key=True)
+    individual = models.ForeignKey(Individual, models.DO_NOTHING, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'provider'

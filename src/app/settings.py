@@ -35,6 +35,7 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
+      'ndhfhir.apps.NDHFHIRConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
