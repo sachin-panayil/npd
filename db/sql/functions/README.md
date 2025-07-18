@@ -6,7 +6,7 @@ This function is a quick and dirty way to create a fake practitioner record. Not
 ### How to Run It
 1. Ensure that you've executed the create function statement in insert_practitioner.sql
 2. Ensure that the language_spoken and nucc_taxonomy_code that you'd like to use exist in their respective tables
-2. Execute the following command, replacing the `<p_>` variables with values of your choosing: 
+3. Execute the following command, replacing the `<p_>` variables with values of your choosing: 
 ```SELECT ndh.insert_practitioner(
 	<p_npi bigint>,
 	<p_ssn character varying>,
@@ -23,3 +23,5 @@ This function is a quick and dirty way to create a fake practitioner record. Not
 	<p_state_id character>,
 	<p_phone_number character varying>
 )```
+### Sample Execution
+`select insert_practitioner(9999999999, '999999999', 'F','1950-01-01','Testy','Test','Practitioner','','','en','test@test.com','207Q00000X','06','555-555-5555')`
