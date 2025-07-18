@@ -22,6 +22,7 @@ This function is a quick and dirty way to create a fake practitioner record. Not
 	<p_nucc_taxonomy_code_id character varying>,
 	<p_state_id character>,
 	<p_phone_number character varying>
-)```
+)
+```
 ### Sample Execution
 `select insert_practitioner(9999999999, '999999999', 'F','1950-01-01','Testy','Test','Practitioner','','','en','test@test.com','207Q00000X','06','555-555-5555')`
