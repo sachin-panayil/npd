@@ -2,20 +2,21 @@ from fhir.resources.practitioner import Practitioner as FHIRPractitioner
 from fhir.resources.humanname import HumanName
 from fhir.resources.identifier import Identifier
 from fhir.resources.contactpoint import ContactPoint
-from utils import FhirAddressResourceFromSmartyStreets
+from .utils import SmartyStreetstoFHIR
 from fhir.resources.codeableconcept import CodeableConcept
 from fhir.resources.coding import Coding
 from fhir.resources.period import Period
 from fhir.resources.meta import Meta
 
-def create_fhir_practitioner(individual):
+def create_fhir_practitioner(provider):
     """Convert an Individual model to a FHIR Practitioner resource"""
-    
+
+    individual=provider.individual
     # Create FHIR Practitioner
     fhir_practitioner = FHIRPractitioner()
     
     # Set ID
-    fhir_practitioner.id = str(individual.id)
+    fhir_practitioner.id = str(provider.npi.npi)
     
     # Set meta
     fhir_practitioner.meta = Meta(
@@ -28,7 +29,7 @@ def create_fhir_practitioner(individual):
     # Doctor ID identifier
     doctor_identifier = Identifier(
         system="http://terminology.hl7.org/NamingSystem/npi",
-        value=str(individual.npi.npi),
+        value=str(provider.npi.npi),
         type=CodeableConcept(
                 coding=[Coding(
                     system="http://terminology.hl7.org/CodeSystem/v2-0203",
@@ -38,8 +39,8 @@ def create_fhir_practitioner(individual):
             ),
         use='official',
         period=Period(
-            start=individual.npi.enumeration_date,
-            end=individual.npi.deactivation_date
+            start=provider.npi.enumeration_date,
+            end=provider.npi.deactivation_date
     )
     )
     identifiers.append(doctor_identifier)

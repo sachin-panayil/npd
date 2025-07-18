@@ -1,6 +1,6 @@
 from fhir.resources.address import Address
 
-def fhirAddressResourceFromSmartyStreets(address):
+def SmartyStreetstoFHIR(address):
     addressLine1=f"{address.address_us.primary_number} {address.address_us.street_predirection} {address.address_us.street_name} {address.address_us.postdirection} {address.address_us.street_suffix}"
     addressLine2=f"{address.address_us.secondary_designator} {address.address_us.secondary_number}"
     addressLine3=f"{address.address_us.extra_secondary_designator} {address.address_us.extra_secondary_number}"
