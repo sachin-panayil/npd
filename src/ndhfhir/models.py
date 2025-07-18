@@ -196,7 +196,7 @@ class FipsState(models.Model):
 
 class Individual(models.Model):
     ssn = models.CharField(max_length=10, blank=True, null=True)
-    sex_code = models.CharField(max_length=1, blank=True, null=True)
+    gender_code = models.CharField(max_length=1, blank=True, null=True)
     birth_date = models.DateField(blank=True, null=True)
 
     class Meta:
@@ -248,13 +248,13 @@ class IndividualToLanguageSpoken(models.Model):
 
 
 class IndividualToName(models.Model):
-    pk = models.CompositePrimaryKey('individual_id', 'last_name', 'first_name', 'middle_name', 'name_prefix', 'name_suffix', 'fhir_name_type_id', 'effective_date')
+    pk = models.CompositePrimaryKey('individual_id', 'last_name', 'first_name', 'middle_name', 'prefix', 'suffix', 'fhir_name_type_id', 'effective_date')
     individual = models.ForeignKey(Individual, models.DO_NOTHING)
     last_name = models.CharField(max_length=100)
     first_name = models.CharField(max_length=100)
     middle_name = models.CharField(max_length=21)
-    name_prefix = models.CharField(max_length=6)
-    name_suffix = models.CharField(max_length=6)
+    prefix = models.CharField(max_length=6)
+    suffix = models.CharField(max_length=6)
     fhir_name_type = models.ForeignKey(FhirNameType, models.DO_NOTHING)
     effective_date = models.DateField()
     end_date = models.DateField(blank=True, null=True)

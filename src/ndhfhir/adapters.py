@@ -72,16 +72,19 @@ def create_fhir_practitioner(provider):
         human_name = HumanName(
             family=name.last_name,
             given=[name.first_name, name.middle_name],
-            prefix=name.prefix,
-            suffix=name.suffix,
-            use=name.use,
+            use=name.fhir_name_type.value,
             period=Period(
                 start=name.effective_date,
                 end=name.end_date
             )
         )
+        if name.prefix!='':
+            human_name.prefix = [name.prefix]
+        if name.suffix!='':
+            human_name.suffix = [name.suffix]
         names.append(human_name)
     fhir_practitioner.name = names
+    fhir_practitioner.gender=individual.gender_code
     
     # Set contact (email and phone)
     contacts = []
@@ -93,7 +96,7 @@ def create_fhir_practitioner(provider):
         )
         contacts.append(email_contact)
     
-    for phone in individual.individualtophone_set.all():
+    for phone in individual.individualtophonenumber_set.all():
         phone_contact = ContactPoint(
             system=phone.phone_type.value,
             value=f"{phone.phone_number.value} ext. {phone.extension}",
@@ -106,20 +109,20 @@ def create_fhir_practitioner(provider):
     
     # Set address
     for address in individual.individualtoaddress_set.all():
-        practitioner_address=FhirAddressResourceFromSmartyStreets(address)
+        practitioner_address=SmartyStreetstoFHIR(address)
         fhir_practitioner.address = [practitioner_address]
     
     # Set qualification (specialty, education)
     qualifications = []
     
     # Add specialty as qualification
-    for taxonomy in individual.individualtonucctaxonomy_set.all():
+    for taxonomy in individual.individualtonucctaxonomycode_set.all():
         specialty_qualification = dict(
             code=CodeableConcept(
                 coding=[Coding(
                     system="http://nucc.org/provider-taxonomy",
-                    code=taxonomy.id,
-                    display=taxonomy.display_name
+                    code=taxonomy.nucc_taxonomy_code_id,
+                    display=taxonomy.nucc_taxonomy_code.display_name
                 )]
             )
         )
@@ -128,7 +131,6 @@ def create_fhir_practitioner(provider):
     if qualifications:
         fhir_practitioner.qualification = qualifications
     
-    # Set active status
-    fhir_practitioner.active = individual.npi.status=='Active'
+    
     
     return fhir_practitioner
