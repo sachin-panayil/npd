@@ -12,8 +12,8 @@ class Address(models.Model):
     barcode_delivery_code = models.CharField(max_length=12, blank=True, null=True)
     smarty_key = models.CharField(max_length=10, blank=True, null=True)
     address_us_id = models.IntegerField(blank=True, null=True)
-    address_international_id = models.IntegerField(blank=True, null=True)
-    address_nonstandard_id = models.IntegerField(blank=True, null=True)
+    address_international = models.ForeignKey('AddressInternational', models.DO_NOTHING, blank=True, null=True)
+    address_nonstandard = models.ForeignKey('AddressNonstandard', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -100,14 +100,14 @@ class AddressUs(models.Model):
     pmb_number = models.CharField(max_length=16, blank=True, null=True)
     city_name = models.CharField(max_length=64, blank=True, null=True)
     default_city_name = models.CharField(max_length=64, blank=True, null=True)
-    state_code = models.CharField(max_length=2, blank=True, null=True)
+    state_code = models.ForeignKey('FipsState', models.DO_NOTHING, db_column='state_code', blank=True, null=True)
     zipcode = models.CharField(max_length=5, blank=True, null=True)
     plus4_code = models.CharField(max_length=4, blank=True, null=True)
     delivery_point = models.CharField(max_length=2, blank=True, null=True)
     delivery_point_check_digit = models.CharField(max_length=1, blank=True, null=True)
     record_type = models.CharField(max_length=1, blank=True, null=True)
     zip_type = models.CharField(max_length=32, blank=True, null=True)
-    county_code = models.CharField(max_length=5, blank=True, null=True)
+    county_code = models.ForeignKey('FipsCounty', models.DO_NOTHING, db_column='county_code', blank=True, null=True)
     ews_match = models.CharField(max_length=5, blank=True, null=True)
     carrier_route = models.CharField(max_length=4, blank=True, null=True)
     congressional_district = models.CharField(max_length=2, blank=True, null=True)
@@ -177,7 +177,7 @@ class FhirNameType(models.Model):
 class FipsCounty(models.Model):
     id = models.CharField(primary_key=True, max_length=5)
     name = models.CharField(unique=True, max_length=200)
-    fips_state_id = models.CharField(max_length=2)
+    fips_state = models.ForeignKey('FipsState', models.DO_NOTHING)
 
     class Meta:
         managed = False
@@ -198,7 +198,6 @@ class Individual(models.Model):
     ssn = models.CharField(max_length=10, blank=True, null=True)
     sex_code = models.CharField(max_length=1, blank=True, null=True)
     birth_date = models.DateField(blank=True, null=True)
-    npi = models.ForeignKey('Npi', models.DO_NOTHING, db_column='npi', blank=True, null=True)
 
     class Meta:
         managed = False
@@ -207,8 +206,8 @@ class Individual(models.Model):
 
 class IndividualToAddress(models.Model):
     pk = models.CompositePrimaryKey('individual_id', 'address_id')
-    individual_id = models.IntegerField()
-    address_type_id = models.IntegerField()
+    individual = models.ForeignKey(Individual, models.DO_NOTHING)
+    address_type = models.ForeignKey(FhirAddressType, models.DO_NOTHING)
     address = models.ForeignKey(Address, models.DO_NOTHING)
 
     class Meta:
@@ -219,7 +218,7 @@ class IndividualToAddress(models.Model):
 class IndividualToClinicalCredential(models.Model):
     pk = models.CompositePrimaryKey('individual_id', 'clinical_credential_id')
     individual_id = models.IntegerField()
-    clinical_credential_id = models.IntegerField()
+    clinical_credential = models.ForeignKey(ClinicalCredential, models.DO_NOTHING)
     receipt_date = models.DateField(blank=True, null=True)
     clinical_school_id = models.IntegerField(blank=True, null=True)
 
@@ -230,7 +229,7 @@ class IndividualToClinicalCredential(models.Model):
 
 class IndividualToEmailAddress(models.Model):
     pk = models.CompositePrimaryKey('individual_id', 'email_address')
-    individual_id = models.IntegerField()
+    individual = models.ForeignKey(Individual, models.DO_NOTHING)
     email_address = models.CharField(max_length=300)
 
     class Meta:
@@ -240,8 +239,8 @@ class IndividualToEmailAddress(models.Model):
 
 class IndividualToLanguageSpoken(models.Model):
     pk = models.CompositePrimaryKey('individual_id', 'language_spoken_id')
-    individual_id = models.IntegerField()
-    language_spoken_id = models.CharField(max_length=2)
+    individual = models.ForeignKey(Individual, models.DO_NOTHING)
+    language_spoken = models.ForeignKey('LanguageSpoken', models.DO_NOTHING)
 
     class Meta:
         managed = False
@@ -256,7 +255,7 @@ class IndividualToName(models.Model):
     middle_name = models.CharField(max_length=21)
     name_prefix = models.CharField(max_length=6)
     name_suffix = models.CharField(max_length=6)
-    fhir_name_type_id = models.IntegerField()
+    fhir_name_type = models.ForeignKey(FhirNameType, models.DO_NOTHING)
     effective_date = models.DateField()
     end_date = models.DateField(blank=True, null=True)
 
@@ -267,8 +266,8 @@ class IndividualToName(models.Model):
 
 class IndividualToNuccTaxonomyCode(models.Model):
     pk = models.CompositePrimaryKey('individual_id', 'nucc_taxonomy_code_id', 'state_id')
-    individual_id = models.IntegerField()
-    nucc_taxonomy_code_id = models.IntegerField()
+    individual = models.ForeignKey(Individual, models.DO_NOTHING)
+    nucc_taxonomy_code = models.ForeignKey('NuccTaxonomyCode', models.DO_NOTHING)
     state_id = models.CharField(max_length=2)
     license_number = models.CharField(max_length=20, blank=True, null=True)
     is_primary = models.BooleanField(blank=True, null=True)
@@ -280,10 +279,10 @@ class IndividualToNuccTaxonomyCode(models.Model):
 
 class IndividualToOtherIdentifier(models.Model):
     pk = models.CompositePrimaryKey('individual_id', 'value', 'state_id')
-    individual_id = models.IntegerField()
+    individual = models.ForeignKey(Individual, models.DO_NOTHING)
     value = models.CharField(max_length=21)
-    other_identifier_type_id = models.IntegerField()
-    state_id = models.CharField(max_length=2)
+    other_identifier_type = models.ForeignKey('OtherIdentifierType', models.DO_NOTHING)
+    state = models.ForeignKey(FipsState, models.DO_NOTHING)
     issuer_name = models.CharField(max_length=81, blank=True, null=True)
     issue_date = models.DateField(blank=True, null=True)
     expiry_date = models.DateField(blank=True, null=True)
@@ -295,9 +294,9 @@ class IndividualToOtherIdentifier(models.Model):
 
 class IndividualToPhoneNumber(models.Model):
     pk = models.CompositePrimaryKey('individual_id', 'phone_number_id', 'phone_type_id')
-    individual_id = models.IntegerField()
-    phone_type_id = models.IntegerField()
-    phone_number_id = models.IntegerField()
+    individual = models.ForeignKey(Individual, models.DO_NOTHING)
+    phone_type = models.ForeignKey('PhoneType', models.DO_NOTHING)
+    phone_number = models.ForeignKey('PhoneNumber', models.DO_NOTHING)
     extension = models.CharField(max_length=10, blank=True, null=True)
 
     class Meta:
@@ -341,7 +340,7 @@ class Npi(models.Model):
 class NuccTaxonomyCode(models.Model):
     id = models.CharField(primary_key=True, max_length=10)
     display_name = models.TextField()
-    parent_id = models.CharField(max_length=10, blank=True, null=True)
+    parent = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True)
     definition = models.TextField(blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     certifying_board_name = models.TextField(blank=True, null=True)
