@@ -226,7 +226,6 @@ CREATE TABLE ndh.individual_to_clinical_credential (
 CREATE TABLE ndh.individual (
     id SERIAL PRIMARY KEY,
     ssn VARCHAR(10)   DEFAULT NULL,
-    sex_code CHAR(1)  DEFAULT NULL,
     gender_code CHAR(1),
     birth_date DATE
 );
