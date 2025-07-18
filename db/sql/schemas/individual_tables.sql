@@ -311,7 +311,7 @@ CREATE TABLE ndh.nucc_taxonomy_code (
 
 
 CREATE TABLE ndh.individual_to_nucc_taxonomy_code (
-    individual_id int, --references individual.id
+    individual_id VARCHAR(10), --references individual.id
     nucc_taxonomy_code_id INT, --references nucc_taxonomy_code.id
     state_id char(2), --references fips_state.id
     license_number VARCHAR(20),
@@ -330,8 +330,8 @@ CREATE TABLE ndh.medicare_provider_type (
 
 --FRED: Is this part of the hydration or something we'll be storing like this long term?
 CREATE TABLE ndh.nucc_taxonomy_code_to_medicare_provider_type (
-    id SERIAL PRIMARY KEY,
     medicare_provider_type_id INT   NOT NULL, --references medicare_provider_type.name
-    nucc_taxonomy_code_id INT   NOT NULL
+    nucc_taxonomy_code_id INT   NOT NULL,
+    PRIMARY KEY (medicare_provider_type_id, nucc_taxonomy_code_id)
 );
 
