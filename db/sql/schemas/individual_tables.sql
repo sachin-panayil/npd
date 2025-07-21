@@ -203,7 +203,7 @@ CREATE TABLE ndh.language_spoken (
 CREATE TABLE ndh.individual_to_language_spoken (
     individual_id int, --references individual.id
     language_spoken_id char(2), --language_spoken_id
-    primary key (individual_id, llanguage_spoken_id)
+    primary key (individual_id, language_spoken_id)
 );
 
 CREATE TABLE ndh.clinical_school (
@@ -311,8 +311,8 @@ CREATE TABLE ndh.nucc_taxonomy_code (
 
 
 CREATE TABLE ndh.individual_to_nucc_taxonomy_code (
-    individual_id VARCHAR(10), --references individual.id
-    nucc_taxonomy_code_id INT, --references nucc_taxonomy_code.id
+    individual_id INT, --references individual.id
+    nucc_taxonomy_code_id VARCHAR(10), --references nucc_taxonomy_code.id
     state_id char(2), --references fips_state.id
     license_number VARCHAR(20),
     is_primary BOOLEAN,
