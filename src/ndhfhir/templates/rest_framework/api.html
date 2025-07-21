@@ -1,0 +1,15 @@
+{% extends "rest_framework/base.html" %}
+{% load static %}
+{% block style %}
+    {{ block.super }}
+        <link rel="stylesheet" href="https://design.cms.gov/cdn/design-system/7.0.0/css/index.css" />
+        <link rel="stylesheet" href="https://design.cms.gov/cdn/design-system/7.0.0/css/core-theme.css" />
+        <link rel="stylesheet" href="{% static 'ndhfhir/style.css' %}" />
+{% endblock %}
+{% block script %}
+    {{ block.super }}
+        <script src="https://design.cms.gov/cdn/design-system/7.0.0/web-components/bundle/web-components.js"></script>
+{% endblock %}
+{% block branding %}
+    <a class="navbar-brand" rel="nofollow" href="/fhir/">NDH FHIR API<span class="version">1</span></a>
+{% endblock %}
