@@ -1,0 +1,18 @@
+body { /* (Example class, inspect DRF HTML for actual classes) */
+    background-color: #ffffff; /* White */
+    background: none
+}
+
+.navbar {
+    background-color: white;
+    border-top:#0071bc;
+    box-shadow: 0 6px 2px -2px lightgray;
+}
+
+button {
+    color: #0071bc
+}
+
+.navbar-brand .navbar-inverse {
+    color: #ffffff;
+}
