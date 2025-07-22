@@ -11,7 +11,7 @@ from django.db import models
 class Address(models.Model):
     barcode_delivery_code = models.CharField(max_length=12, blank=True, null=True)
     smarty_key = models.CharField(max_length=10, blank=True, null=True)
-    address_us_id = models.IntegerField(blank=True, null=True)
+    address_us_id = models.ForeignKey('AddressUs', models.DO_NOTHING, blank=True, null=True)
     address_international = models.ForeignKey('AddressInternational', models.DO_NOTHING, blank=True, null=True)
     address_nonstandard = models.ForeignKey('AddressNonstandard', models.DO_NOTHING, blank=True, null=True)
 
