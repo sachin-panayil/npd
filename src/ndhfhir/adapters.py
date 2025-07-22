@@ -2,11 +2,12 @@ from fhir.resources.practitioner import Practitioner as FHIRPractitioner
 from fhir.resources.humanname import HumanName
 from fhir.resources.identifier import Identifier
 from fhir.resources.contactpoint import ContactPoint
-from .utils import SmartyStreetstoFHIR
 from fhir.resources.codeableconcept import CodeableConcept
 from fhir.resources.coding import Coding
 from fhir.resources.period import Period
 from fhir.resources.meta import Meta
+from .utils import SmartyStreetstoFHIR
+from .mappings import genderMapping
 
 def create_fhir_practitioner(provider):
     """Convert an Individual model to a FHIR Practitioner resource"""
@@ -84,7 +85,7 @@ def create_fhir_practitioner(provider):
             human_name.suffix = [name.suffix]
         names.append(human_name)
     fhir_practitioner.name = names
-    fhir_practitioner.gender=individual.gender_code
+    fhir_practitioner.gender=genderMapping.toFHIR(individual.gender_code)
     
     # Set contact (email and phone)
     contacts = []
