@@ -4,6 +4,7 @@ from django.contrib.postgres.search import SearchVector
 #from djangp.db.models import FilteredRelation, Q
 from rest_framework import viewsets, generics
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 from .models import Provider
 from .adapters import create_fhir_practitioner
 from .serializers import PractitionerFHIRSerializer, BundleSerializer, create_bundle
@@ -15,9 +16,6 @@ def index(request):
 def health(request):
     return HttpResponse("healthy")
 
-class PractitionerList(generics.ListAPIView):
-    queryset = Provider.objects.all()
-    serializer_class = BundleSerializer
 
 class FHIRPractitionerViewSet(viewsets.ViewSet):
     """
@@ -39,9 +37,11 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
               type: string
               paramType: query
         """
+        page_size = 10
+
         all_params = request.query_params
 
-        providers = Provider.objects
+        providers = Provider.objects.all()
 
         for param, value in all_params.items():
             if param == 'name':
@@ -53,13 +53,17 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
                 providers = providers.filter(individual__gender_code = gender)
             if param == 'practitioner_type':
                 providers = providers.annotate(
-                    search = SearchVector('individual__individualtonucctaxonomycode__nucctaxonomycode__display_name','individual__individualtonucctaxonomycode__nucctaxonomycode__nuccspecialization__nuccclassification__nuccgrouping_display_name','individual__individualtonucctaxonomycode__nucctaxonomycode__nuccclassification__nuccgrouping_display_name')
+                    search = SearchVector('individual__individualtonucctaxonomycode__nucc_taxonomy_code__display_name')
                 ).filter(search = value)
-            if param == 'address-state':
-                providers = providers.filter(individual__individualtoaddress__address__addressus__fipsstate__abbreviation = value) #fipsstate__abbreviation
+            #if param == 'address-state':
+            #    providers = providers.filter(individual__individualtoaddress__address__addressus__fipsstate__abbreviation = value) #fipsstate__abbreviation
         
+        paginator = PageNumberPagination()
+        paginator.page_size = page_size
+        queryset = paginator.paginate_queryset(providers, request)
+
         # Convert each provider to a FHIR Practitioner
-        fhir_practitioners = [create_fhir_practitioner(provider) for provider in providers.all()]
+        fhir_practitioners = [create_fhir_practitioner(provider) for provider in queryset]
         
         # Create a Bundle containing all practitioners
         bundle = create_bundle(fhir_practitioners)
@@ -68,7 +72,7 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
         serializer = BundleSerializer(bundle)
         
         # Set appropriate content type for FHIR responses
-        response = Response(serializer.data)
+        response = paginator.get_paginated_response(serializer.data)
         response["Content-Type"] = "application/fhir+json"
         
         return response

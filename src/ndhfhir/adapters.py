@@ -53,8 +53,8 @@ def create_fhir_practitioner(provider):
             type=CodeableConcept(
                 coding=[Coding(
                     system="http://terminology.hl7.org/CodeSystem/v2-0203",
-                    code=id.otherIdentifierType.id,
-                    display=id.otherIdentifierType.value
+                    code=str(id.other_identifier_type.id),
+                    display=id.other_identifier_type.value
                 )]
             ),
             #use="" TODO: Add use for other identifier
@@ -73,7 +73,7 @@ def create_fhir_practitioner(provider):
         human_name = HumanName(
             family=name.last_name,
             given=[name.first_name, name.middle_name],
-            use=name.fhir_name_type.value,
+            use=name.fhir_name_use.value,
             period=Period(
                 start=name.effective_date,
                 end=name.end_date
@@ -99,7 +99,8 @@ def create_fhir_practitioner(provider):
     
     for phone in individual.individualtophonenumber_set.all():
         phone_contact = ContactPoint(
-            system=phone.phone_type.value,
+            system=phone.fhir_phone_system.value,
+            use=phone.fhir_phone_use.value,
             value=f"{phone.phone_number.value} ext. {phone.extension}",
             #use="work" TODO: add phone use
         )
