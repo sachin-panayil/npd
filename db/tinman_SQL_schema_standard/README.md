@@ -21,10 +21,12 @@ These require either a custom rule, external linter, or manual review:
 * Use full English words, not abbreviations (so international_business_machines and not ibm)
 * Don’t use data types as names (so sales_count and not sales_count_int. Let the INT data type say it is an integer)
 * Use singular nouns for table names (person and not persons or people)
-* Primary key should be named simply id
+* Primary key fields that are simple identifiers should be named simply id
+* Refrain from repeating the table name in the field name, if possible (e.g. if the table is called `person`, a phone number field within that table can be `phone` and shouldn't be `person_phone`)
 * Foreign keys should follow the pattern `<table_name_here>_id`
   * Two foreign keys in the table requires a prefix on the foreign key column, to differentiate the two links. Like `<helpful_name>_<table_name_here>_id` etc.
   * Foreign keys can and should be created dynamically based on this naming convention.
+* When there is a junction table, use the pattern `<table1_name>_to_<table2_name>`
 * Name indexes explicitly with table and column ( fk_npiidentifier_npi_id and not fk_identifiers_need_keys)
 * Name constraints clearly (uq_interop_endpoint_url and not uq_intendu)
 * The varchar or text field listed first in the table is assumed to be the "auto-suggest search" field for the table. If this is not correct, then the table needs an explicit select_name field or postfixed field.
