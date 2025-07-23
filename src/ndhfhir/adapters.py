@@ -134,5 +134,4 @@ def create_fhir_practitioner(provider):
         fhir_practitioner.qualification = qualifications
     
     
-    
     return fhir_practitioner

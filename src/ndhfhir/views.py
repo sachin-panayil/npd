@@ -23,6 +23,8 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
     """
     #permission_classes = [permissions.IsAuthenticated]
     def list(self, request):
+
+        print("User IP Address: ", request.META['REMOTE_ADDR'])
         """
         Return a list of all providers as FHIR Practitioner resources
         parameters:
