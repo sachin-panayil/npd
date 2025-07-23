@@ -51,6 +51,10 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
             if param == 'gender':
                 gender = genderMapping.toNDH(value)
                 providers = providers.filter(individual__gender_code = gender)
+            if param == 'practitioner_type':
+                providers = providers.annotate(
+                    search = SearchVector('individual__individualtonucctaxonomycode__nucctaxonomycode__display_name','individual__individualtonucctaxonomycode__nucctaxonomycode__nuccspecialization__nuccclassification__nuccgrouping_display_name','individual__individualtonucctaxonomycode__nucctaxonomycode__nuccclassification__nuccgrouping_display_name')
+                ).filter(search = value)
             if param == 'address-state':
                 providers = providers.filter(individual__individualtoaddress__address__addressus__fipsstate__abbreviation = value) #fipsstate__abbreviation
         
