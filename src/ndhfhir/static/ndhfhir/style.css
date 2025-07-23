@@ -9,10 +9,26 @@ body { /* (Example class, inspect DRF HTML for actual classes) */
     box-shadow: 0 6px 2px -2px lightgray;
 }
 
+.btn-primary {
+    background-color: #0071bc;
+    border-color: #0071bc;
+}
+
 button {
-    color: #0071bc
+    font-family: Source Sans Pro Web, Helvetica Neue, Helvetica, Roboto, Arial, sans-serif;
 }
 
 .navbar-brand .navbar-inverse {
     color: #ffffff;
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-family: Source Sans Pro Web, Helvetica Neue, Helvetica, Roboto, Arial, sans-serif;
+    font-weight: bold;
+}
+
+p, body {
+    font-family: Source Sans Pro Web, Helvetica Neue, Helvetica, Roboto, Arial, sans-serif;
+    font-size: medium;
 }
