@@ -2,11 +2,12 @@ from fhir.resources.practitioner import Practitioner as FHIRPractitioner
 from fhir.resources.humanname import HumanName
 from fhir.resources.identifier import Identifier
 from fhir.resources.contactpoint import ContactPoint
-from .utils import SmartyStreetstoFHIR
 from fhir.resources.codeableconcept import CodeableConcept
 from fhir.resources.coding import Coding
 from fhir.resources.period import Period
 from fhir.resources.meta import Meta
+from .utils import SmartyStreetstoFHIR
+from .mappings import genderMapping
 
 def create_fhir_practitioner(provider):
     """Convert an Individual model to a FHIR Practitioner resource"""
@@ -52,8 +53,8 @@ def create_fhir_practitioner(provider):
             type=CodeableConcept(
                 coding=[Coding(
                     system="http://terminology.hl7.org/CodeSystem/v2-0203",
-                    code=id.otherIdentifierType.id,
-                    display=id.otherIdentifierType.value
+                    code=str(id.other_identifier_type.id),
+                    display=id.other_identifier_type.value
                 )]
             ),
             #use="" TODO: Add use for other identifier
@@ -72,7 +73,7 @@ def create_fhir_practitioner(provider):
         human_name = HumanName(
             family=name.last_name,
             given=[name.first_name, name.middle_name],
-            use=name.fhir_name_type.value,
+            use=name.fhir_name_use.value,
             period=Period(
                 start=name.effective_date,
                 end=name.end_date
@@ -84,7 +85,7 @@ def create_fhir_practitioner(provider):
             human_name.suffix = [name.suffix]
         names.append(human_name)
     fhir_practitioner.name = names
-    fhir_practitioner.gender=individual.gender_code
+    fhir_practitioner.gender=genderMapping.toFHIR(individual.gender_code)
     
     # Set contact (email and phone)
     contacts = []
@@ -98,7 +99,8 @@ def create_fhir_practitioner(provider):
     
     for phone in individual.individualtophonenumber_set.all():
         phone_contact = ContactPoint(
-            system=phone.phone_type.value,
+            system=phone.fhir_phone_system.value,
+            use=phone.fhir_phone_use.value,
             value=f"{phone.phone_number.value} ext. {phone.extension}",
             #use="work" TODO: add phone use
         )
