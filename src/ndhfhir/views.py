@@ -44,6 +44,13 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
         providers = Provider.objects.all()
 
         for param, value in all_params.items():
+            if param == 'page_size':
+                try:
+                    value = int(value)
+                    if value < 1000:
+                        page_size = value
+                except:
+                    page_size = page_size
             if param == 'name':
                 providers = providers.annotate(
                     search = SearchVector('individual__individualtoname__last_name','individual__individualtoname__first_name','individual__individualtoname__middle_name')
