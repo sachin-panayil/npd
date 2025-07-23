@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from fhir.resources.practitioner import Practitioner
 from fhir.resources.bundle import Bundle
+from .adapters import create_fhir_practitioner
 
 class FHIRSerializer(serializers.Serializer):
     """
