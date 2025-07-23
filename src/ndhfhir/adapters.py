@@ -13,11 +13,13 @@ def create_fhir_practitioner(provider):
     """Convert an Individual model to a FHIR Practitioner resource"""
 
     individual=provider.individual
+    provider_npi = provider.npi
+
     # Create FHIR Practitioner
     fhir_practitioner = FHIRPractitioner()
     
     # Set ID
-    fhir_practitioner.id = str(provider.npi.npi)
+    fhir_practitioner.id = str(provider_npi.npi)
     
     # Set meta
     fhir_practitioner.meta = Meta(
@@ -30,7 +32,7 @@ def create_fhir_practitioner(provider):
     # Doctor ID identifier
     doctor_identifier = Identifier(
         system="http://terminology.hl7.org/NamingSystem/npi",
-        value=str(provider.npi.npi),
+        value=str(provider_npi.npi),
         type=CodeableConcept(
                 coding=[Coding(
                     system="http://terminology.hl7.org/CodeSystem/v2-0203",
@@ -40,21 +42,22 @@ def create_fhir_practitioner(provider):
             ),
         use='official',
         period=Period(
-            start=provider.npi.enumeration_date,
-            end=provider.npi.deactivation_date
+            start=provider_npi.enumeration_date,
+            end=provider_npi.deactivation_date
     )
     )
     identifiers.append(doctor_identifier)
 
     for id in individual.individualtootheridentifier_set.all():
+        id_other_identifier_type = id.other_identifier_type
         license_identifier = Identifier(
             #system="", TODO: Figure out how to associate a system with each identifier
             value=id.value,
             type=CodeableConcept(
                 coding=[Coding(
                     system="http://terminology.hl7.org/CodeSystem/v2-0203",
-                    code=str(id.other_identifier_type.id),
-                    display=id.other_identifier_type.value
+                    code=str(id_other_identifier_type.id),
+                    display=id_other_identifier_type.value
                 )]
             ),
             #use="" TODO: Add use for other identifier

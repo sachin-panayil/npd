@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from .models import Provider
 from .adapters import create_fhir_practitioner
-from .serializers import PractitionerFHIRSerializer, BundleSerializer, create_bundle
+from .serializers import PractitionerSerializer, PractitionerFHIRSerializer, BundleSerializer, create_bundle
 from .mappings import genderMapping
 
 def index(request):
@@ -24,7 +24,6 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
     #permission_classes = [permissions.IsAuthenticated]
     def list(self, request):
 
-        print("User IP Address: ", request.META['REMOTE_ADDR'])
         """
         Return a list of all providers as FHIR Practitioner resources
         parameters:
@@ -91,12 +90,14 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
         Return a single provider as a FHIR Practitioner resource
         """
         provider = get_object_or_404(Provider, pk=int(pk))
+
+        serializer = PractitionerSerializer(provider)
         
         # Convert provider to FHIR Practitioner
-        fhir_practitioner = create_fhir_practitioner(provider)
+        #fhir_practitioner = create_fhir_practitioner(provider)
         
         # Serialize the FHIR Practitioner
-        serializer = PractitionerFHIRSerializer(fhir_practitioner)
+        #serializer = PractitionerFHIRSerializer(fhir_practitioner)
         
         # Set appropriate content type for FHIR responses
         response = Response(serializer.data)
