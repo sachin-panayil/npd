@@ -59,7 +59,7 @@ class FIPSCountyETL:
 
             if not response:
                 print(f"Skipping state {state['abbrev']} because request failed!")
-                continue
+                continue # should this be break or continue?
             
             # hack we need to do so that the headers for each file dont get added into the raw data 
             if not raw_data:
