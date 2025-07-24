@@ -16,6 +16,14 @@ ALTER TABLE ONLY ndh.address
 
 
 --
+-- Name: address address_address_us_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+--
+
+ALTER TABLE ONLY ndh.address
+    ADD CONSTRAINT address_address_us_id_fkey FOREIGN KEY (address_us_id) REFERENCES ndh.address_us(id);
+
+
+--
 -- Name: address_us address_us_county_code_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
 --
 
@@ -60,7 +68,7 @@ ALTER TABLE ONLY ndh.individual_to_address
 --
 
 ALTER TABLE ONLY ndh.individual_to_address
-    ADD CONSTRAINT individual_to_address_address_type_id_fkey FOREIGN KEY (address_type_id) REFERENCES ndh.fhir_address_type(id) ON DELETE CASCADE;
+    ADD CONSTRAINT individual_to_address_address_type_id_fkey FOREIGN KEY (address_use_id) REFERENCES ndh.fhir_address_use(id) ON DELETE CASCADE;
 
 
 --
@@ -104,11 +112,11 @@ ALTER TABLE ONLY ndh.individual_to_language_spoken
 
 
 --
--- Name: individual_to_name individual_to_name_fhir_name_type_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: individual_to_name individual_to_name_fhir_name_use_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
 --
 
 ALTER TABLE ONLY ndh.individual_to_name
-    ADD CONSTRAINT individual_to_name_fhir_name_type_id_fkey FOREIGN KEY (fhir_name_type_id) REFERENCES ndh.fhir_name_type(id);
+    ADD CONSTRAINT individual_to_name_fhir_name_use_id_fkey FOREIGN KEY (fhir_name_type_id) REFERENCES ndh.fhir_name_use(id);
 
 
 --
@@ -160,6 +168,14 @@ ALTER TABLE ONLY ndh.individual_to_other_identifier
 
 
 --
+-- Name: individual_to_phone_number individual_to_phone_number_fhir_phone_system_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+--
+
+ALTER TABLE ONLY ndh.individual_to_phone_number
+    ADD CONSTRAINT individual_to_phone_number_fhir_phone_system_id_fkey FOREIGN KEY (fhir_phone_system_id) REFERENCES ndh.fhir_phone_system(id);
+
+
+--
 -- Name: individual_to_phone_number individual_to_phone_number_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
 --
 
@@ -180,7 +196,7 @@ ALTER TABLE ONLY ndh.individual_to_phone_number
 --
 
 ALTER TABLE ONLY ndh.individual_to_phone_number
-    ADD CONSTRAINT individual_to_phone_number_phone_type_id_fkey FOREIGN KEY (phone_type_id) REFERENCES ndh.phone_type(id);
+    ADD CONSTRAINT individual_to_phone_number_phone_type_id_fkey FOREIGN KEY (fhir_phone_use_id) REFERENCES ndh.fhir_phone_use(id);
 
 
 --
@@ -190,3 +206,18 @@ ALTER TABLE ONLY ndh.individual_to_phone_number
 ALTER TABLE ONLY ndh.nucc_taxonomy_code
     ADD CONSTRAINT nucc_taxonomy_code_parent_id_fkey FOREIGN KEY (parent_id) REFERENCES ndh.nucc_taxonomy_code(id) ON UPDATE CASCADE;
 
+
+--
+-- Name: provider provider_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+--
+
+ALTER TABLE ONLY ndh.provider
+    ADD CONSTRAINT provider_individual_id_fkey FOREIGN KEY (individual_id) REFERENCES ndh.individual(id) ON DELETE CASCADE;
+
+
+--
+-- Name: provider provider_npi_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+--
+
+ALTER TABLE ONLY ndh.provider
+    ADD CONSTRAINT provider_npi_fkey FOREIGN KEY (npi) REFERENCES ndh.npi(npi);

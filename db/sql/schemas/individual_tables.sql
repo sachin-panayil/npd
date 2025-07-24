@@ -335,3 +335,4 @@ CREATE TABLE ndh.nucc_taxonomy_code_to_medicare_provider_type (
     PRIMARY KEY (medicare_provider_type_id, nucc_taxonomy_code_id)
 );
 
+
