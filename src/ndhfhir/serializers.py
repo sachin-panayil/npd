@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from fhir.resources.practitioner import Practitioner
 from fhir.resources.bundle import Bundle
-from .models import IndividualToName, Provider, Individual
+from .models import IndividualToEmailAddress, ProviderToOtherIdentifier, IndividualToName, Provider, Individual
 from fhir.resources.practitioner import Practitioner as FHIRPractitioner
 from fhir.resources.humanname import HumanName
 from fhir.resources.identifier import Identifier
@@ -10,23 +10,57 @@ from fhir.resources.codeableconcept import CodeableConcept
 from fhir.resources.coding import Coding
 from fhir.resources.period import Period
 from fhir.resources.meta import Meta
+from .cache import other_identifier_type, fhir_name_use
 
-class NameSerializer(serializers.ModelSerializer):
-    family = serializers.CharField(source = "last_name")
-    first_name = serializers.CharField()
-    middle_name = serializers.CharField()
-    effective_date = serializers.DateField()
-    end_date = serializers.DateField()
-    prefix = serializers.CharField()
-    suffix = serializers.CharField()
+class EmailSerializer(serializers.Serializer):
+    email_address = serializers.CharField(read_only = True)
+
     class Meta:
-        model = IndividualToName
-        fields = ['family', 'first_name', 'middle_name', 'effective_date', 'end_date','prefix', 'suffix']
-    """def to_representation(self, name):
+        fields = ['email_address']
+
+
+class OtherIdentifierSerializer(serializers.Serializer):
+    value = serializers.CharField(read_only = True)
+    issue_date = serializers.DateField(read_only = True)
+    expiry_date = serializers.DateField(read_only = True)
+
+    class Meta:
+        fields = ['value', 'issue_date', 'expiry_date','other_identifier_type', 'other_identifier_type_id', 'other_identifier_type_value']
+    def to_representation(self, id):
+        other_identifier_type_id = id.other_identifier_type_id
+        license_identifier = Identifier(
+            #system="", TODO: Figure out how to associate a system with each identifier
+            value=id.value,
+            type=CodeableConcept(
+                coding=[Coding(
+                    system="http://terminology.hl7.org/CodeSystem/v2-0203",
+                    code=str(other_identifier_type_id),
+                    display=other_identifier_type[other_identifier_type_id]
+                )]
+            ),
+            #use="" TODO: Add use for other identifier
+            period=Period(
+                start=id.issue_date,
+                end=id.expiry_date
+        )
+        )
+        return license_identifier.model_dump()
+
+class NameSerializer(serializers.Serializer):
+    last_name = serializers.CharField(read_only = True)
+    first_name = serializers.CharField(read_only = True)
+    middle_name = serializers.CharField(read_only = True)
+    effective_date = serializers.DateField(read_only = True)
+    end_date = serializers.DateField(read_only = True)
+    prefix = serializers.CharField(read_only = True)
+    suffix = serializers.CharField(read_only = True)
+    class Meta:
+        fields = ['last_name', 'first_name', 'middle_name', 'effective_date', 'end_date','prefix', 'suffix']
+    def to_representation(self, name):
         human_name = HumanName(
             family=name.last_name,
             given=[name.first_name, name.middle_name],
-            use=name.fhir_name_use.value,
+            use=fhir_name_use[name.fhir_name_use_id],
             period=Period(
                 start=name.effective_date,
                 end=name.end_date
@@ -36,21 +70,17 @@ class NameSerializer(serializers.ModelSerializer):
             human_name.prefix = [name.prefix]
         if name.suffix!='':
             human_name.suffix = [name.suffix]
-        return human_name.model_dump()"""
-
-class IndividualSerializer(serializers.ModelSerializer):
-    individual_to_name = NameSerializer(many=True)
-    class Meta:
-        model = Individual
-        fields = ['individual_to_name']
+        return human_name.model_dump()
 
 class PractitionerSerializer(serializers.ModelSerializer):
-    npi = serializers.CharField(read_only=True)
-    individual = IndividualSerializer()
-
+    npi = serializers.CharField(source="npi__npi", read_only=True)
+    name = NameSerializer(source = 'individual__individualtoname', read_only = True, many = True)
+    email = EmailSerializer(source = 'individual__individualtoemail', read_only = True, many = True)
+    identifier = OtherIdentifierSerializer(source='providertootheridentifier_set', many = True, read_only = True)
+   
     class Meta:
         model = Provider
-        fields = ['npi', 'individual']#'family','given','use', 'period', 'prefix','suffix']
+        fields = ['npi', 'name', 'email', 'identifier']
 
 class FHIRSerializer(serializers.Serializer):
     """

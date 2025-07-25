@@ -147,3 +147,10 @@ REST_FRAMEWORK = {
 DEBUG_TOOLBAR_CONFIG = {
       'SHOW_TOOLBAR_CALLBACK': lambda request: DEBUG
 }
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": config('CACHE_LOCATION'),
+    }
+}

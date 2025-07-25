@@ -48,7 +48,7 @@ def create_fhir_practitioner(provider):
     )
     identifiers.append(doctor_identifier)
 
-    for id in individual.individualtootheridentifier_set.all():
+    for id in provider.providertootheridentifier_set.all().prefetch_related('other_identifier_type'):
         id_other_identifier_type = id.other_identifier_type
         license_identifier = Identifier(
             #system="", TODO: Figure out how to associate a system with each identifier
@@ -121,7 +121,7 @@ def create_fhir_practitioner(provider):
     qualifications = []
     
     # Add specialty as qualification
-    for taxonomy in individual.individualtonucctaxonomycode_set.all():
+    for taxonomy in provider.providertonucctaxonomycode_set.all().prefetch_related('nucc_taxonomy_code'):
         specialty_qualification = dict(
             code=CodeableConcept(
                 coding=[Coding(
