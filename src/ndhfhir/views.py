@@ -1,14 +1,18 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.postgres.search import SearchVector
+from django.db.models import Prefetch
 #from djangp.db.models import FilteredRelation, Q
 from rest_framework import viewsets, generics
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+from django.core.cache import cache
 from .models import Provider
 from .adapters import create_fhir_practitioner
 from .serializers import PractitionerSerializer, PractitionerFHIRSerializer, BundleSerializer, create_bundle
 from .mappings import genderMapping
+
+
 
 def index(request):
     return HttpResponse("Connection to ndh database: successful")
@@ -42,7 +46,7 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
 
         all_params = request.query_params
 
-        providers = Provider.objects.all()
+        providers = Provider.objects.all().prefetch_related('providertootheridentifier_set')#.prefetch_related('individual', 'providertonucctaxonomycode_set', 'providertootheridentifier_set').all() #, 'providertootheridentifier__otheridentifiertype_set'
 
         for param, value in all_params.items():
             if param == 'page_size':
@@ -61,23 +65,25 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
                 providers = providers.filter(individual__gender_code = gender)
             if param == 'practitioner_type':
                 providers = providers.annotate(
-                    search = SearchVector('individual__individualtonucctaxonomycode__nucc_taxonomy_code__display_name')
+                    search = SearchVector('individual__providertonucctaxonomycode__nucc_taxonomy_code__display_name')
                 ).filter(search = value)
             #if param == 'address-state':
             #    providers = providers.filter(individual__individualtoaddress__address__addressus__fipsstate__abbreviation = value) #fipsstate__abbreviation
         
+
         paginator = PageNumberPagination()
         paginator.page_size = page_size
         queryset = paginator.paginate_queryset(providers, request)
 
         # Convert each provider to a FHIR Practitioner
-        fhir_practitioners = [create_fhir_practitioner(provider) for provider in queryset]
+        #fhir_practitioners = [create_fhir_practitioner(provider) for provider in queryset]
         
         # Create a Bundle containing all practitioners
-        bundle = create_bundle(fhir_practitioners)
+        #bundle = create_bundle(fhir_practitioners)
         
         # Serialize the bundle
-        serializer = BundleSerializer(bundle)
+        #serializer = BundleSerializer(bundle)
+        serializer = PractitionerSerializer(queryset, many=True)
         
         # Set appropriate content type for FHIR responses
         response = paginator.get_paginated_response(serializer.data)
@@ -91,13 +97,13 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
         """
         provider = get_object_or_404(Provider, pk=int(pk))
 
-        serializer = PractitionerSerializer(provider)
+        #serializer = PractitionerSerializer(provider)
         
         # Convert provider to FHIR Practitioner
-        #fhir_practitioner = create_fhir_practitioner(provider)
+        fhir_practitioner = create_fhir_practitioner(provider)
         
         # Serialize the FHIR Practitioner
-        #serializer = PractitionerFHIRSerializer(fhir_practitioner)
+        serializer = PractitionerFHIRSerializer(fhir_practitioner)
         
         # Set appropriate content type for FHIR responses
         response = Response(serializer.data)
