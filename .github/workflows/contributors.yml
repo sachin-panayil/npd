@@ -72,7 +72,7 @@ jobs:
         uses: CasperWA/push-protected@v2
         with:
           
-          token: ${{ secrets.CONTRIBUTOR_TOKEN }}
+          token: ${{ secrets.PUSH_TO_PROTECTED_BRANCH }}
           
 
           branch: main
