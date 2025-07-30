@@ -2,7 +2,7 @@ from rest_framework import serializers
 from fhir.resources.practitioner import Practitioner
 from fhir.resources.bundle import Bundle
 from .models import Npi, IndividualToEmailAddress, ProviderToOtherIdentifier, IndividualToName, Provider, Individual
-from fhir.resources.practitioner import Practitioner
+from fhir.resources.practitioner import Practitioner, PractitionerQualification
 from fhir.resources.humanname import HumanName
 from fhir.resources.identifier import Identifier
 from fhir.resources.contactpoint import ContactPoint
@@ -104,21 +104,20 @@ class TaxonomySerializer(serializers.Serializer):
     def to_representation(self, obj):
         code = CodeableConcept(
             coding=[Coding(
-                    system="http://nucc.org/provider-taxonomy",
-                    code=obj.nucc_taxonomy_code.id,
-                    display=obj.nucc_taxonomy_code.display_name
-                    )]
+                system="http://nucc.org/provider-taxonomy",
+                code=obj.nucc_taxonomy_code.id,
+                display=obj.nucc_taxonomy_code.display_name
+            )]
         )
-        qualification = {
-            'identifier': Identifier(
+        qualification = PractitionerQualification(
+            identifier=[Identifier(
                 value="test",
                 type=code,  # TODO: Replace
                 period=Period()
-            ).model_dump(),
-            'code': code.model_dump(),
-        }
-        print(qualification)
-        return qualification
+            )],
+            code=code
+        )
+        return qualification.model_dump()
 
 
 class OtherIdentifierSerializer(serializers.Serializer):
