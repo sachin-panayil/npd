@@ -8,7 +8,6 @@ from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django.core.cache import cache
 from .models import Provider
-from .adapters import create_fhir_practitioner
 from .serializers import PractitionerSerializer, PractitionerFHIRSerializer, BundleSerializer, create_bundle
 from .mappings import genderMapping
 

@@ -11,7 +11,7 @@ from fhir.resources.coding import Coding
 from fhir.resources.period import Period
 from fhir.resources.meta import Meta
 from fhir.resources.address import Address
-from .cache import other_identifier_type, fhir_name_use
+from .cache import other_identifier_type, fhir_name_use, nucc_taxonomy_codes
 import json
 
 
@@ -105,8 +105,8 @@ class TaxonomySerializer(serializers.Serializer):
         code = CodeableConcept(
             coding=[Coding(
                 system="http://nucc.org/provider-taxonomy",
-                code=obj.nucc_taxonomy_code.id,
-                display=obj.nucc_taxonomy_code.display_name
+                code=obj.nucc_taxonomy_code_id,
+                display=nucc_taxonomy_codes[obj.nucc_taxonomy_code_id]
             )]
         )
         qualification = PractitionerQualification(
