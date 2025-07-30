@@ -93,7 +93,7 @@ class PhoneSerializer(serializers.Serializer):
         return phone_contact.model_dump()
 
 
-"""class TaxonomySerializer(serializers.Serializer):
+class TaxonomySerializer(serializers.Serializer):
     id = serializers.CharField(source='nucctaxonomycode__id', read_only=True)
     display_name = serializers.CharField(
         source='nucctaxonomycode__display_name', read_only=True)
@@ -114,10 +114,11 @@ class PhoneSerializer(serializers.Serializer):
                 value="test",
                 type=code,  # TODO: Replace
                 period=Period()
-            ),
-            'code': code,
+            ).model_dump(),
+            'code': code.model_dump(),
         }
-        return qualification"""
+        print(qualification)
+        return qualification
 
 
 class OtherIdentifierSerializer(serializers.Serializer):
@@ -217,8 +218,8 @@ class PractitionerSerializer(serializers.Serializer):
     individual = IndividualSerializer(read_only=True)
     identifier = OtherIdentifierSerializer(
         source='providertootheridentifier_set', many=True, read_only=True)
-    # taxonomy = TaxonomySerializer(
-    #    source='providertonucctaxonomycode_set', many=True, read_only=True)
+    taxonomy = TaxonomySerializer(
+        source='providertonucctaxonomycode_set', many=True, read_only=True)
 
     class Meta:
         fields = ['npi', 'name', 'email', 'phone', 'identifier', 'taxonomy']
