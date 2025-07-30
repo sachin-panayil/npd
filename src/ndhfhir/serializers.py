@@ -46,11 +46,11 @@ class AddressSerializer(serializers.Serializer):
                   'secondary_designator', 'secondary_number', 'extra_secondary_designator', 'extra_secondary_number',
                   'city_name', 'state_abbreviation', 'zipcode']
 
-    def to_representation(self, obj):
-        addressLine1 = f"{obj.primary_number} {obj.street_predirection} {obj.street_name} {obj.postdirection} {obj.street_suffix}"
-        addressLine2 = f"{obj.secondary_designator} {obj.secondary_number}"
-        addressLine3 = f"{obj.extra_secondary_designator} {obj.extra_secondary_number}"
-        cityStateZip = f"f{obj.city_name}, {obj.state_abbreviation} {obj.zipcode}"
+    def to_representation(self, instance):
+        addressLine1 = f"{instance.primary_number} {instance.street_predirection} {instance.street_name} {instance.postdirection} {instance.street_suffix}"
+        addressLine2 = f"{instance.secondary_designator} {instance.secondary_number}"
+        addressLine3 = f"{instance.extra_secondary_designator} {instance.extra_secondary_number}"
+        cityStateZip = f"f{instance.city_name}, {instance.state_abbreviation} {instance.zipcode}"
         address = Address(
             line=[addressLine1, addressLine2, addressLine3, cityStateZip],
             use=address.address_type.value
@@ -64,10 +64,10 @@ class EmailSerializer(serializers.Serializer):
     class Meta:
         fields = ['email_address']
 
-    def to_representation(self, obj):
+    def to_representation(self, instance):
         email_contact = ContactPoint(
             system="email",
-            value=obj.email_address,
+            value=instance.email_address,
             # use="work" TODO: add email use
         )
         return email_contact.model_dump()
@@ -84,11 +84,11 @@ class PhoneSerializer(serializers.Serializer):
     class Meta:
         fields = ['phone_number', 'system', 'use', 'extension']
 
-    def to_representation(self, obj):
+    def to_representation(self, instance):
         phone_contact = ContactPoint(
-            system=obj.system,
-            use=obj.use,
-            value=f"{obj.phone_number} ext. {obj.extension}"
+            system=instance.system,
+            use=instance.use,
+            value=f"{instance.phone_number} ext. {instance.extension}"
         )
         return phone_contact.model_dump()
 
@@ -101,12 +101,12 @@ class TaxonomySerializer(serializers.Serializer):
     class Meta:
         fields = ['id', 'display_name']
 
-    def to_representation(self, obj):
+    def to_representation(self, instance):
         code = CodeableConcept(
             coding=[Coding(
                 system="http://nucc.org/provider-taxonomy",
-                code=obj.nucc_taxonomy_code_id,
-                display=nucc_taxonomy_codes[obj.nucc_taxonomy_code_id]
+                code=instance.nucc_taxonomy_code_id,
+                display=nucc_taxonomy_codes[instance.nucc_taxonomy_code_id]
             )]
         )
         qualification = PractitionerQualification(
@@ -198,8 +198,8 @@ class IndividualSerializer(serializers.Serializer):
     class Meta:
         fields = ['name', 'email', 'phone']
 
-    def to_representation(self, obj):
-        representation = super().to_representation(obj)
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
         individual = {
             'name': representation['name']
         }
@@ -223,17 +223,17 @@ class PractitionerSerializer(serializers.Serializer):
     class Meta:
         fields = ['npi', 'name', 'email', 'phone', 'identifier', 'taxonomy']
 
-    def to_representation(self, obj):
-        representation = super().to_representation(obj)
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
         practitioner = Practitioner()
-        practitioner.id = str(obj.npi.npi)
+        practitioner.id = str(instance.npi.npi)
         practitioner.meta = Meta(
             profile=[
                 "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"]
         )
         npi_identifier = Identifier(
             system="http://terminology.hl7.org/NamingSystem/npi",
-            value=str(obj.npi.npi),
+            value=str(instance.npi.npi),
             type=CodeableConcept(
                 coding=[Coding(
                     system="http://terminology.hl7.org/CodeSystem/v2-0203",
@@ -243,8 +243,8 @@ class PractitionerSerializer(serializers.Serializer):
             ),
             use='official',
             period=Period(
-                start=obj.npi.enumeration_date,
-                end=obj.npi.deactivation_date
+                start=instance.npi.enumeration_date,
+                end=instance.npi.deactivation_date
             )
         )
         practitioner.telecom = representation['individual']['telecom']
@@ -254,7 +254,7 @@ class PractitionerSerializer(serializers.Serializer):
         practitioner.name = representation['individual']['name']
         if 'taxonomy' in representation.keys():
             practitioner.qualification = representation['taxonomy']
-        return practitioner.model_dump()
+        return practitioner
 
 
 class FHIRSerializer(serializers.Serializer):
@@ -266,18 +266,7 @@ class FHIRSerializer(serializers.Serializer):
         """
         Convert FHIR resource to JSON
         """
-        # Use the resource's as_json() method to convert to JSON
-        if hasattr(instance, 'dict'):
-            return instance.dict()
-        return super().to_representation(instance)
-
-
-class PractitionerFHIRSerializer(FHIRSerializer):
-    """
-    Serializer for FHIR Practitioner resource
-    """
-    class Meta:
-        model = Practitioner
+        return instance.model_dump()
 
 
 class BundleSerializer(FHIRSerializer):
@@ -287,37 +276,26 @@ class BundleSerializer(FHIRSerializer):
     class Meta:
         model = Bundle
 
+    def to_representation(self, instance):
+        entries = []
 
-def create_bundle(resources, bundle_type="searchset"):
-    """
-    Create a FHIR Bundle containing multiple resources
+        for resource in instance.data:
+            # Get the resource type (Patient, Practitioner, etc.)
+            resource_type = resource.get_resource_type()
 
-    Args:
-        resources: List of FHIR resources to include in the bundle
-        bundle_type: Type of bundle (e.g. 'searchset', 'collection')
+            # Create an entry for this resource
+            entry = {
+                "fullUrl": f"{resource_type}/{resource.id}",
+                "resource": resource,
+            }
 
-    Returns:
-        A FHIR Bundle resource
-    """
-    entries = []
+            entries.append(entry)
 
-    for resource in resources:
-        # Get the resource type (Patient, Practitioner, etc.)
-        resource_type = resource.get_resource_type()
+        # Create the bundle
+        bundle = Bundle(
+            type="searchset",
+            entry=entries,
+            total=len(entries)
+        )
 
-        # Create an entry for this resource
-        entry = {
-            "fullUrl": f"{resource_type}/{resource.id}",
-            "resource": resource,
-        }
-
-        entries.append(entry)
-
-    # Create the bundle
-    bundle = Bundle(
-        type=bundle_type,
-        entry=entries,
-        total=len(entries)
-    )
-
-    return bundle
+        return bundle.model_dump()

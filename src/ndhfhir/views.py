@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django.core.cache import cache
 from .models import Provider
-from .serializers import PractitionerSerializer, PractitionerFHIRSerializer, BundleSerializer, create_bundle
+from .serializers import PractitionerSerializer, BundleSerializer, FHIRSerializer
 from .mappings import genderMapping
 
 
@@ -53,7 +53,7 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
             if param == 'page_size':
                 try:
                     value = int(value)
-                    if value < 1000:
+                    if value <= 1000:
                         page_size = value
                 except:
                     page_size = page_size
@@ -77,18 +77,12 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
         paginator.page_size = page_size
         queryset = paginator.paginate_queryset(providers, request)
 
-        # Convert each provider to a FHIR Practitioner
-        # fhir_practitioners = [create_fhir_practitioner(provider) for provider in queryset]
-
-        # Create a Bundle containing all practitioners
-        # bundle = create_bundle(fhir_practitioners)
-
         # Serialize the bundle
-        # serializer = BundleSerializer(bundle)
         serializer = PractitionerSerializer(queryset, many=True)
+        bundle = BundleSerializer(serializer)
 
         # Set appropriate content type for FHIR responses
-        response = paginator.get_paginated_response(serializer.data)
+        response = paginator.get_paginated_response(bundle.data)
         response["Content-Type"] = "application/fhir+json"
 
         return response
@@ -99,13 +93,8 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
         """
         provider = get_object_or_404(Provider, pk=int(pk))
 
-        # serializer = PractitionerSerializer(provider)
-
-        # Convert provider to FHIR Practitioner
-        fhir_practitioner = create_fhir_practitioner(provider)
-
-        # Serialize the FHIR Practitioner
-        serializer = PractitionerFHIRSerializer(fhir_practitioner)
+        practitioner = PractitionerSerializer(provider)
+        serializer = FHIRSerializer(practitioner)
 
         # Set appropriate content type for FHIR responses
         response = Response(serializer.data)
