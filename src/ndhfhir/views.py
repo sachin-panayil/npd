@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django.core.cache import cache
 from .models import Provider
-from .serializers import PractitionerSerializer, BundleSerializer, FHIRSerializer
+from .serializers import PractitionerSerializer, BundleSerializer
 from .mappings import genderMapping
 
 
@@ -94,10 +94,9 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
         provider = get_object_or_404(Provider, pk=int(pk))
 
         practitioner = PractitionerSerializer(provider)
-        serializer = FHIRSerializer(practitioner)
 
         # Set appropriate content type for FHIR responses
-        response = Response(serializer.data)
+        response = Response(practitioner.data)
         response["Content-Type"] = "application/fhir+json"
 
         return response
