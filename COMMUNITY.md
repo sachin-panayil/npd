@@ -9,7 +9,9 @@ NDH (soon to be renamed) is supported by a dedicated team of individuals fulfill
 | :----- | :------ | :------------- |
 | Product Manager | Julie Sossamon | DSAC |
 | Technical Lead | Fred Trotter | DSAC |
-| Engineer | Sarah Popelka | DSAC |
+| Senior Software Engineer | Sarah Popelka | DSAC |
+| Designer | Heather Myers | DSAC |
+| Software Engineer | Sachin Panayil | DSAC |
 
 See [CODEOWNERS.md](.github/CODEOWNERS.md) for a list of those responsible for the code and documentation in this repository.
 
