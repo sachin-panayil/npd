@@ -68,7 +68,7 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
             if param == 'practitioner_type':
                 providers = providers.annotate(
                     search=SearchVector(
-                        'individual__providertonucctaxonomycode__nucc_taxonomy_code__display_name')
+                        'providertonucctaxonomycode__nucc_taxonomy_code__display_name')
                 ).filter(search=value)
             # if param == 'address-state':
             #    providers = providers.filter(individual__individualtoaddress__address__addressus__fipsstate__abbreviation = value) #fipsstate__abbreviation
