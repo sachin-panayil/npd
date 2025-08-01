@@ -12,7 +12,6 @@ from fhir.resources.period import Period
 from fhir.resources.meta import Meta
 from fhir.resources.address import Address
 from .cache import other_identifier_type, fhir_name_use, nucc_taxonomy_codes
-import json
 
 
 class AddressSerializer(serializers.Serializer):
@@ -225,6 +224,7 @@ class PractitionerSerializer(serializers.Serializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
+        # print(type(instance))
         practitioner = Practitioner()
         practitioner.id = str(instance.npi.npi)
         practitioner.meta = Meta(
@@ -254,22 +254,10 @@ class PractitionerSerializer(serializers.Serializer):
         practitioner.name = representation['individual']['name']
         if 'taxonomy' in representation.keys():
             practitioner.qualification = representation['taxonomy']
-        return practitioner
+        return practitioner.model_dump()
 
 
-class FHIRSerializer(serializers.Serializer):
-    """
-    Base serializer for FHIR resources
-    """
-
-    def to_representation(self, instance):
-        """
-        Convert FHIR resource to JSON
-        """
-        return instance.model_dump()
-
-
-class BundleSerializer(FHIRSerializer):
+class BundleSerializer(serializers.Serializer):
     """
     Serializer for FHIR Bundle resource
     """
@@ -280,12 +268,14 @@ class BundleSerializer(FHIRSerializer):
         entries = []
 
         for resource in instance.data:
+            print(resource)
             # Get the resource type (Patient, Practitioner, etc.)
-            resource_type = resource.get_resource_type()
+            resource_type = resource['resourceType']
+            id = resource['id']
 
             # Create an entry for this resource
             entry = {
-                "fullUrl": f"{resource_type}/{resource.id}",
+                "fullUrl": f"{resource_type}/{id}",
                 "resource": resource,
             }
 
