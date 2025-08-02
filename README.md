@@ -1,10 +1,10 @@
-# NDH
+# NPD
 
-National Provider and Payer Directory at CMS
+National Provider Directory at CMS
 
 ## About the Project
 
-The soon to be renamed NDH project at CMS will implement a new Provider and Payer Directory service that will eventually grow to encompass (and probably replace) the functionality of NPPES.
+The soon to be renamed NPD project at CMS will implement a new Provider and Payer Directory service that will eventually grow to encompass (and probably replace) the functionality of NPPES.
 
 ### Project Vision
 Enable patient data to work for patients, by supporting interoperability by providing clean enumeration of U.S. healthcare entities, and a reliable map of how those entities connect. 
