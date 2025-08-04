@@ -224,7 +224,6 @@ class PractitionerSerializer(serializers.Serializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        # print(type(instance))
         practitioner = Practitioner()
         practitioner.id = str(instance.npi.npi)
         practitioner.meta = Meta(
@@ -268,7 +267,6 @@ class BundleSerializer(serializers.Serializer):
         entries = []
 
         for resource in instance.data:
-            print(resource)
             # Get the resource type (Patient, Practitioner, etc.)
             resource_type = resource['resourceType']
             id = resource['id']
