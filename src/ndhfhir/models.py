@@ -192,7 +192,7 @@ class FhirPhoneUse(models.Model):
 
 class FipsCounty(models.Model):
     id = models.CharField(primary_key=True, max_length=5)
-    name = models.CharField(unique=True, max_length=200)
+    name = models.CharField(max_length=200)
     fips_state = models.ForeignKey('FipsState', models.DO_NOTHING)
 
     class Meta:
@@ -338,7 +338,7 @@ class Npi(models.Model):
 
 
 class NuccClassification(models.Model):
-    nucc_taxonomy_code_id = models.CharField(max_length=10, blank=True, null=True)
+    nucc_taxonomy_code = models.ForeignKey('NuccTaxonomyCode', models.DO_NOTHING, blank=True, null=True)
     display_name = models.CharField(max_length=100, blank=True, null=True)
     nucc_grouping = models.ForeignKey('NuccGrouping', models.DO_NOTHING, blank=True, null=True)
 
@@ -356,7 +356,7 @@ class NuccGrouping(models.Model):
 
 
 class NuccSpecialization(models.Model):
-    nucc_taxonomy_code_id = models.CharField(max_length=10, blank=True, null=True)
+    nucc_taxonomy_code = models.ForeignKey('NuccTaxonomyCode', models.DO_NOTHING, blank=True, null=True)
     display_name = models.CharField(max_length=100, blank=True, null=True)
     nucc_classification = models.ForeignKey(NuccClassification, models.DO_NOTHING, blank=True, null=True)
 
