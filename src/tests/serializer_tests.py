@@ -4,7 +4,7 @@ from django.urls import reverse
 from rest_framework import status
 from pathlib import Path
 
-class UserJSONFieldTests(TestCase):
+class GenericFHIRJSONTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         """Load test data once for all tests"""
@@ -18,12 +18,21 @@ class UserJSONFieldTests(TestCase):
         self.assertIsInstance(self.test_data, (dict, list), 
                              "JSON should be an object or array")
 
+
+
+
+class ProviderFHIRJSONTests(GenericFHIRJSONTests):
     def test_required_top_level_fields(self):
         """Test for required top-level fields in FHIR JSON"""
         required_fields = {
-            'entry': list,
             'resourceType': str,
-            'type': str
+            'id': str,
+            'meta': dict,
+            'name': str,
+            'mode': str,
+            'address': dict,
+            'physicalType': str,
+            'managingOrganization': str
         }
         
         if isinstance(self.test_data, dict):
@@ -36,17 +45,21 @@ class UserJSONFieldTests(TestCase):
 
     def test_fhir_object_structure(self):
         """Test structure of individual FHIR objects"""
-        if isinstance(self.test_data, dict) and 'entry' in self.test_data:
-            for entry in self.test_data['entry']:
-                with self.subTest(user_id=entry.get('fullUrl', 'unknown')):
-                    required_fhir_fields = {
-                        'fullUrl': str,
-                        'resource': str,
-                        'request': str
-                    }
-                    
-                    for field, field_type in required_fhir_fields.items():
-                        self.assertIn(field, entry, 
-                                    f"User missing required field: {field}")
-                        self.assertIsInstance(field[field], field_type,
-                                            f"User field {field} has wrong type")
+        if isinstance(self.test_data, dict) and 'meta' in self.test_data:
+            self.assertIn('profile',self.test_data['meta'])
+
+        if isinstance(self.test_data,dict) and 'address' in self.test_data:
+            required_fhir_fields = {
+                'line': list,
+                'city': str,
+                'state': str,
+                'postalCode': str
+            }
+
+            for field, field_type in required_fhir_fields.items():
+                with self.subTest(address_field=field):
+
+                    self.assertIn(field, self.test_data['address'], 
+                                f"Provider missing required field: {field}")
+                    self.assertIsInstance(self.test_data['address'][field], field_type,
+                                        f"Provider field {field} has wrong type")
