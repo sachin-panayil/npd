@@ -14,7 +14,6 @@ Django backend that provides a FHIR API for accessing data from the NDH database
 - a postgres database with the ndh schema
 
 #### Local dev
-0. TEMP: Disable ZScaler (until)
 1. Ensure that either colima (if using macOS) or the docker service is running
 2. Create a `.env` file in this directory, following the template of the `.env_template` file
 3. Run `docker-compose up --build` initially and following any changes

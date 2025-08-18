@@ -1,6 +1,6 @@
 # NDH
 
-National Provider and Payer Directory at CMS
+National Provider Directory at CMS
 
 ## About the Project
 
@@ -27,15 +27,17 @@ A list of core team members responsible for the code and documentation in this r
 
 ## Repository Structure
 
-This is a mega-repository that will contain multiple different sub-projects. Look in the [src](src) for a list of projects. You will find more information about each project in a ReadMe.md file within the respective directories. 
-We may eventually setup seperate repos for our project, but until we do a central merged github repo is a simpler way to coordinate our work. 
+This is a mega-repository that will contain sub-directories for each component of National Provider Directory. You will find more information about each component in a README.md file within its respective directory. 
 
+### db/
+The `db/` directory contains sql code for the National Provider Directory database. The `db/sql/schemas/` sub-directory contains the code necessary to create each schema in the db. The `db/tinman_SQL_schema_standard` directory contains the project's sql naming conventions and guidelines.
 
-**{list directories and descriptions}**
+### etls/
+The `etls/` directory contains the pipelines that extract, transform, and load (ETL) data into the database. Each sub-directory in the `etls/` directory represents a different input data source.
 
-<!-- TODO: Add a 'table of contents" for your documentation. Tier 0/1 projects with simple README.md files without many sections may or may not need this, but it is still extremely helpful to provide "bookmark" or "anchor" links to specific sections of your file to be referenced in tickets, docs, or other communication channels. -->
+### src/
+The `src/` directory contains the backend python code for the National Provider Directory APIs (built on Django). The `src/ndhfhir/` subdirectory contains the code for the FHIR API. 
 
-**{list of .md at top directory and descriptions}**
 
 # Development and Software Delivery Lifecycle
 
@@ -43,19 +45,27 @@ The following guide is for members of the project team who have access to the re
 
 ## Local Development
 
-<!--- TODO - with example below:
-This project is monorepo with several apps. Please see the [api](./api/README.md) and [frontend](./frontend/README.md) READMEs for information on spinning up those projects locally. Also see the project [documentation](./documentation) for more info.
--->
+### Database Setup
+1. Create a local postgres server
+2. Create a database called ndh
+3. Execute the sql in `db/sql/schemas/ndh.sql` to create the ndh schema and associated tables
+4. Create a `.env` file in the `src/` directory, following the template provided in `src/.env_template`, ensuring that the connection details reflect your database connection
+5. Navigate to the `src/` directory. Run `python manage.py loaddata ndh.json` to load a sample of data into the database
+
+### Django App Setup
+1. Ensure that either colima (if using macOS) or the docker service is running
+2. Run `docker-compose up --build` initially and following any changes
+3. Navigate to `http://localhost:8000` to view your changes.
+4. Happy coding!
 
 ## Coding Style and Linters
 
 <!-- TODO - Add the repo's linting and code style guidelines -->
 
-Each application has its own linting and testing guidelines. Lint and code tests are run on each commit, so linters and tests should be run locally before committing.
+Each sub-directory has its own linting and testing guidelines. Lint and code tests are run on each commit, so linters and tests should be run locally before committing.
 
 ## Branching Model
 
-<!--- TODO - with example below:
 This project follows [trunk-based development](https://trunkbaseddevelopment.com/), which means:
 
 * Make small changes in [short-lived feature branches](https://trunkbaseddevelopment.com/short-lived-feature-branches/) and merge to `main` frequently.
@@ -67,7 +77,6 @@ This project follows [trunk-based development](https://trunkbaseddevelopment.com
 This project uses **continuous deployment** using [Github Actions](https://github.com/features/actions) which is configured in the [./github/workflows](.github/workflows) directory.
 
 Pull-requests are merged to `main` and the changes are immediately deployed to the development environment. Releases are created to push changes to production.
--->
 
 ## Contributing
 
@@ -85,14 +94,14 @@ We also recognize capacity building as a key part of involving a diverse open so
 
 Principles and guidelines for participating in our open source community are can be found in [COMMUNITY.md](COMMUNITY.md). Please read them before joining or starting a conversation in this repo or one of the channels listed below. All community members and participants are expected to adhere to the community guidelines and code of conduct when participating in community spaces including: code repositories, communication channels and venues, and events.
 
-<!--
+
 ## Governance
 Information about how the NDH community is governed may be found in [GOVERNANCE.md](GOVERNANCE.md).
--->
+
 
 ## Feedback
 
-If you have ideas for how we can improve or add to our capacity building efforts and methods for welcoming people into our community, please let us know at **{contact email}**. If you would like to comment on the tool itself, please let us know by filing an **issue on our GitHub repository.**
+If you have ideas for how we can improve or add to our capacity building efforts and methods for welcoming people into our community, please let us know at **opensource@cms.hhs.gov**. If you would like to comment on the tool itself, please let us know by filing an **issue on our GitHub repository.**
 
 <!--
 ## Glossary

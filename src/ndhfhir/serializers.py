@@ -11,7 +11,9 @@ from fhir.resources.coding import Coding
 from fhir.resources.period import Period
 from fhir.resources.meta import Meta
 from fhir.resources.address import Address
-from .cache import other_identifier_type, fhir_name_use, nucc_taxonomy_codes
+import sys
+if 'runserver' in sys.argv:
+    from .cache import other_identifier_type, fhir_name_use, nucc_taxonomy_codes
 
 
 class AddressSerializer(serializers.Serializer):
