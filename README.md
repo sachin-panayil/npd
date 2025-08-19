@@ -61,7 +61,8 @@ The following guide is for members of the project team who have access to the re
 
 ### Django App Setup
 1. Ensure that either colima (if using macOS) or the docker service is running
-2. Create a `.env` file in the `src/` directory, following the template provided in `src/.env_template`, ensuring that the connection details reflect your database connection
+2. Create a `.env` file in this directory, following the template of the `.env_template` file
+    * n.b. ensure that NDH_DB_HOST is set to `host.docker.internal` if using a local postgres instance.
 3. Run `docker-compose up --build` initially and following any changes
 4. Navigate to `http://localhost:8000` to ensure that the setup worked (you should see a Docker landing page if DEBUG is set to true).
 5. Happy coding!
