@@ -5,8 +5,6 @@
 -- Dumped from database version 17.4
 -- Dumped by pg_dump version 17.0
 
--- Started on 2025-08-18 16:11:22 EDT
-
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -19,13 +17,58 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
-SET default_tablespace = '';
+--
+-- Name: ndh; Type: SCHEMA; Schema: -; Owner: -
+--
 
-SET default_table_access_method = heap;
+CREATE SCHEMA ndh;
+
 
 --
--- TOC entry 219 (class 1259 OID 17843)
--- Name: address; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: insert_practitioner(bigint, character varying, character varying, date, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character, character varying); Type: FUNCTION; Schema: ndh; Owner: -
+--
+
+CREATE FUNCTION ndh.insert_practitioner(p_npi bigint, p_ssn character varying, p_gender_code character varying, p_birth_date date, p_first_name character varying, p_middle_name character varying, p_last_name character varying, p_name_prefix character varying, p_name_suffix character varying, p_language_spoken_id character varying, p_email_address character varying, p_nucc_taxonomy_code_id character varying, p_state_id character, p_phone_number character varying) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE p_individual_id int; p_phone_number_id int;
+BEGIN
+
+	INSERT INTO npi(npi, entity_type_code, enumeration_date, last_update_date)
+	VALUES (p_npi, 1, CURRENT_DATE, CURRENT_DATE);
+
+    INSERT INTO individual (ssn, gender_code, birth_date)
+    VALUES (p_ssn, p_gender_code, p_birth_date)
+	RETURNING id into p_individual_id;
+
+	INSERT INTO provider (individual_id, npi)
+	VALUES (p_individual_id, p_npi);
+
+	INSERT INTO individual_to_name (individual_id, first_name, middle_name, last_name, prefix, suffix, fhir_name_type_id,effective_date)
+	VALUES (p_individual_id, p_first_name,p_middle_name, p_last_name,p_name_prefix, p_name_suffix,2,p_birth_date);
+
+	INSERT INTO phone_number (value)
+	VALUES (p_phone_number)
+	RETURNING id into p_phone_number_id;
+
+	INSERT INTO individual_to_phone_number (individual_id, phone_number_id, phone_type_id)
+	VALUES (p_individual_id, p_phone_number_id, 1);
+
+	INSERT INTO individual_to_email_address (individual_id, email_address)
+	VALUES (p_individual_id, p_email_address);
+
+	INSERT INTO individual_to_language_spoken (individual_id, language_spoken_id)
+	VALUES (p_individual_id, p_language_spoken_id);
+
+	INSERT INTO individual_to_nucc_taxonomy_code (individual_id, nucc_taxonomy_code_id, state_id)
+	values (p_individual_id, p_nucc_taxonomy_code_id, p_state_id);
+	
+END;
+$$;
+
+
+--
+-- Name: address; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.address (
@@ -38,11 +81,8 @@ CREATE TABLE ndh.address (
 );
 
 
-ALTER TABLE ndh.address OWNER TO ndh;
-
 --
--- TOC entry 218 (class 1259 OID 17842)
--- Name: address_id_seq; Type: SEQUENCE; Schema: ndh; Owner: ndh
+-- Name: address_id_seq; Type: SEQUENCE; Schema: ndh; Owner: -
 --
 
 CREATE SEQUENCE ndh.address_id_seq
@@ -54,20 +94,15 @@ CREATE SEQUENCE ndh.address_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE ndh.address_id_seq OWNER TO ndh;
-
 --
--- TOC entry 4555 (class 0 OID 0)
--- Dependencies: 218
--- Name: address_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: ndh
+-- Name: address_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: -
 --
 
 ALTER SEQUENCE ndh.address_id_seq OWNED BY ndh.address.id;
 
 
 --
--- TOC entry 223 (class 1259 OID 17859)
--- Name: address_international; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: address_international; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.address_international (
@@ -103,11 +138,8 @@ CREATE TABLE ndh.address_international (
 );
 
 
-ALTER TABLE ndh.address_international OWNER TO ndh;
-
 --
--- TOC entry 222 (class 1259 OID 17858)
--- Name: address_international_id_seq; Type: SEQUENCE; Schema: ndh; Owner: ndh
+-- Name: address_international_id_seq; Type: SEQUENCE; Schema: ndh; Owner: -
 --
 
 CREATE SEQUENCE ndh.address_international_id_seq
@@ -119,20 +151,15 @@ CREATE SEQUENCE ndh.address_international_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE ndh.address_international_id_seq OWNER TO ndh;
-
 --
--- TOC entry 4556 (class 0 OID 0)
--- Dependencies: 222
--- Name: address_international_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: ndh
+-- Name: address_international_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: -
 --
 
 ALTER SEQUENCE ndh.address_international_id_seq OWNED BY ndh.address_international.id;
 
 
 --
--- TOC entry 225 (class 1259 OID 17868)
--- Name: address_nonstandard; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: address_nonstandard; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.address_nonstandard (
@@ -154,11 +181,8 @@ CREATE TABLE ndh.address_nonstandard (
 );
 
 
-ALTER TABLE ndh.address_nonstandard OWNER TO ndh;
-
 --
--- TOC entry 224 (class 1259 OID 17867)
--- Name: address_nonstandard_id_seq; Type: SEQUENCE; Schema: ndh; Owner: ndh
+-- Name: address_nonstandard_id_seq; Type: SEQUENCE; Schema: ndh; Owner: -
 --
 
 CREATE SEQUENCE ndh.address_nonstandard_id_seq
@@ -170,20 +194,15 @@ CREATE SEQUENCE ndh.address_nonstandard_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE ndh.address_nonstandard_id_seq OWNER TO ndh;
-
 --
--- TOC entry 4557 (class 0 OID 0)
--- Dependencies: 224
--- Name: address_nonstandard_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: ndh
+-- Name: address_nonstandard_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: -
 --
 
 ALTER SEQUENCE ndh.address_nonstandard_id_seq OWNED BY ndh.address_nonstandard.id;
 
 
 --
--- TOC entry 221 (class 1259 OID 17850)
--- Name: address_us; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: address_us; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.address_us (
@@ -247,11 +266,8 @@ CREATE TABLE ndh.address_us (
 );
 
 
-ALTER TABLE ndh.address_us OWNER TO ndh;
-
 --
--- TOC entry 220 (class 1259 OID 17849)
--- Name: address_us_id_seq; Type: SEQUENCE; Schema: ndh; Owner: ndh
+-- Name: address_us_id_seq; Type: SEQUENCE; Schema: ndh; Owner: -
 --
 
 CREATE SEQUENCE ndh.address_us_id_seq
@@ -263,20 +279,15 @@ CREATE SEQUENCE ndh.address_us_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE ndh.address_us_id_seq OWNER TO ndh;
-
 --
--- TOC entry 4558 (class 0 OID 0)
--- Dependencies: 220
--- Name: address_us_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: ndh
+-- Name: address_us_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: -
 --
 
 ALTER SEQUENCE ndh.address_us_id_seq OWNED BY ndh.address_us.id;
 
 
 --
--- TOC entry 235 (class 1259 OID 17925)
--- Name: clinical_credential; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: clinical_credential; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.clinical_credential (
@@ -287,11 +298,8 @@ CREATE TABLE ndh.clinical_credential (
 );
 
 
-ALTER TABLE ndh.clinical_credential OWNER TO ndh;
-
 --
--- TOC entry 234 (class 1259 OID 17924)
--- Name: clinical_credential_id_seq; Type: SEQUENCE; Schema: ndh; Owner: ndh
+-- Name: clinical_credential_id_seq; Type: SEQUENCE; Schema: ndh; Owner: -
 --
 
 CREATE SEQUENCE ndh.clinical_credential_id_seq
@@ -303,20 +311,15 @@ CREATE SEQUENCE ndh.clinical_credential_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE ndh.clinical_credential_id_seq OWNER TO ndh;
-
 --
--- TOC entry 4559 (class 0 OID 0)
--- Dependencies: 234
--- Name: clinical_credential_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: ndh
+-- Name: clinical_credential_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: -
 --
 
 ALTER SEQUENCE ndh.clinical_credential_id_seq OWNED BY ndh.clinical_credential.id;
 
 
 --
--- TOC entry 239 (class 1259 OID 17942)
--- Name: clinical_school; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: clinical_school; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.clinical_school (
@@ -326,11 +329,8 @@ CREATE TABLE ndh.clinical_school (
 );
 
 
-ALTER TABLE ndh.clinical_school OWNER TO ndh;
-
 --
--- TOC entry 238 (class 1259 OID 17941)
--- Name: clinical_school_id_seq; Type: SEQUENCE; Schema: ndh; Owner: ndh
+-- Name: clinical_school_id_seq; Type: SEQUENCE; Schema: ndh; Owner: -
 --
 
 CREATE SEQUENCE ndh.clinical_school_id_seq
@@ -342,20 +342,15 @@ CREATE SEQUENCE ndh.clinical_school_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE ndh.clinical_school_id_seq OWNER TO ndh;
-
 --
--- TOC entry 4560 (class 0 OID 0)
--- Dependencies: 238
--- Name: clinical_school_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: ndh
+-- Name: clinical_school_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: -
 --
 
 ALTER SEQUENCE ndh.clinical_school_id_seq OWNED BY ndh.clinical_school.id;
 
 
 --
--- TOC entry 227 (class 1259 OID 17877)
--- Name: fhir_address_use; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: fhir_address_use; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.fhir_address_use (
@@ -364,11 +359,8 @@ CREATE TABLE ndh.fhir_address_use (
 );
 
 
-ALTER TABLE ndh.fhir_address_use OWNER TO ndh;
-
 --
--- TOC entry 226 (class 1259 OID 17876)
--- Name: fhir_address_type_id_seq; Type: SEQUENCE; Schema: ndh; Owner: ndh
+-- Name: fhir_address_type_id_seq; Type: SEQUENCE; Schema: ndh; Owner: -
 --
 
 CREATE SEQUENCE ndh.fhir_address_type_id_seq
@@ -380,20 +372,15 @@ CREATE SEQUENCE ndh.fhir_address_type_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE ndh.fhir_address_type_id_seq OWNER TO ndh;
-
 --
--- TOC entry 4561 (class 0 OID 0)
--- Dependencies: 226
--- Name: fhir_address_type_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: ndh
+-- Name: fhir_address_type_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: -
 --
 
 ALTER SEQUENCE ndh.fhir_address_type_id_seq OWNED BY ndh.fhir_address_use.id;
 
 
 --
--- TOC entry 244 (class 1259 OID 17970)
--- Name: fhir_name_use; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: fhir_name_use; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.fhir_name_use (
@@ -402,11 +389,8 @@ CREATE TABLE ndh.fhir_name_use (
 );
 
 
-ALTER TABLE ndh.fhir_name_use OWNER TO ndh;
-
 --
--- TOC entry 243 (class 1259 OID 17969)
--- Name: fhir_name_type_id_seq; Type: SEQUENCE; Schema: ndh; Owner: ndh
+-- Name: fhir_name_type_id_seq; Type: SEQUENCE; Schema: ndh; Owner: -
 --
 
 CREATE SEQUENCE ndh.fhir_name_type_id_seq
@@ -418,20 +402,15 @@ CREATE SEQUENCE ndh.fhir_name_type_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE ndh.fhir_name_type_id_seq OWNER TO ndh;
-
 --
--- TOC entry 4562 (class 0 OID 0)
--- Dependencies: 243
--- Name: fhir_name_type_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: ndh
+-- Name: fhir_name_type_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: -
 --
 
 ALTER SEQUENCE ndh.fhir_name_type_id_seq OWNED BY ndh.fhir_name_use.id;
 
 
 --
--- TOC entry 260 (class 1259 OID 18980)
--- Name: fhir_phone_system; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: fhir_phone_system; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.fhir_phone_system (
@@ -440,11 +419,8 @@ CREATE TABLE ndh.fhir_phone_system (
 );
 
 
-ALTER TABLE ndh.fhir_phone_system OWNER TO ndh;
-
 --
--- TOC entry 259 (class 1259 OID 18979)
--- Name: fhir_phone_system_id_seq; Type: SEQUENCE; Schema: ndh; Owner: ndh
+-- Name: fhir_phone_system_id_seq; Type: SEQUENCE; Schema: ndh; Owner: -
 --
 
 CREATE SEQUENCE ndh.fhir_phone_system_id_seq
@@ -456,20 +432,15 @@ CREATE SEQUENCE ndh.fhir_phone_system_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE ndh.fhir_phone_system_id_seq OWNER TO ndh;
-
 --
--- TOC entry 4563 (class 0 OID 0)
--- Dependencies: 259
--- Name: fhir_phone_system_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: ndh
+-- Name: fhir_phone_system_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: -
 --
 
 ALTER SEQUENCE ndh.fhir_phone_system_id_seq OWNED BY ndh.fhir_phone_system.id;
 
 
 --
--- TOC entry 248 (class 1259 OID 17990)
--- Name: fhir_phone_use; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: fhir_phone_use; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.fhir_phone_use (
@@ -478,11 +449,8 @@ CREATE TABLE ndh.fhir_phone_use (
 );
 
 
-ALTER TABLE ndh.fhir_phone_use OWNER TO ndh;
-
 --
--- TOC entry 229 (class 1259 OID 17896)
--- Name: fips_county; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: fips_county; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.fips_county (
@@ -492,11 +460,8 @@ CREATE TABLE ndh.fips_county (
 );
 
 
-ALTER TABLE ndh.fips_county OWNER TO ndh;
-
 --
--- TOC entry 228 (class 1259 OID 17887)
--- Name: fips_state; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: fips_state; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.fips_state (
@@ -506,11 +471,8 @@ CREATE TABLE ndh.fips_state (
 );
 
 
-ALTER TABLE ndh.fips_state OWNER TO ndh;
-
 --
--- TOC entry 241 (class 1259 OID 17956)
--- Name: individual; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: individual; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.individual (
@@ -521,11 +483,8 @@ CREATE TABLE ndh.individual (
 );
 
 
-ALTER TABLE ndh.individual OWNER TO ndh;
-
 --
--- TOC entry 269 (class 1259 OID 19719)
--- Name: individual_to_nucc_taxonomy_to_license; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: individual_to_nucc_taxonomy_to_license; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.individual_to_nucc_taxonomy_to_license (
@@ -537,11 +496,8 @@ CREATE TABLE ndh.individual_to_nucc_taxonomy_to_license (
 );
 
 
-ALTER TABLE ndh.individual_to_nucc_taxonomy_to_license OWNER TO ndh;
-
 --
--- TOC entry 268 (class 1259 OID 19718)
--- Name: individual_nucc_taxonomy_to_license_id_seq; Type: SEQUENCE; Schema: ndh; Owner: ndh
+-- Name: individual_nucc_taxonomy_to_license_id_seq; Type: SEQUENCE; Schema: ndh; Owner: -
 --
 
 CREATE SEQUENCE ndh.individual_nucc_taxonomy_to_license_id_seq
@@ -553,20 +509,15 @@ CREATE SEQUENCE ndh.individual_nucc_taxonomy_to_license_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE ndh.individual_nucc_taxonomy_to_license_id_seq OWNER TO ndh;
-
 --
--- TOC entry 4564 (class 0 OID 0)
--- Dependencies: 268
--- Name: individual_nucc_taxonomy_to_license_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: ndh
+-- Name: individual_nucc_taxonomy_to_license_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: -
 --
 
 ALTER SEQUENCE ndh.individual_nucc_taxonomy_to_license_id_seq OWNED BY ndh.individual_to_nucc_taxonomy_to_license.id;
 
 
 --
--- TOC entry 230 (class 1259 OID 17903)
--- Name: individual_to_address; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: individual_to_address; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.individual_to_address (
@@ -576,11 +527,8 @@ CREATE TABLE ndh.individual_to_address (
 );
 
 
-ALTER TABLE ndh.individual_to_address OWNER TO ndh;
-
 --
--- TOC entry 240 (class 1259 OID 17950)
--- Name: individual_to_clinical_credential; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: individual_to_clinical_credential; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.individual_to_clinical_credential (
@@ -591,11 +539,8 @@ CREATE TABLE ndh.individual_to_clinical_credential (
 );
 
 
-ALTER TABLE ndh.individual_to_clinical_credential OWNER TO ndh;
-
 --
--- TOC entry 245 (class 1259 OID 17978)
--- Name: individual_to_email_address; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: individual_to_email_address; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.individual_to_email_address (
@@ -604,11 +549,8 @@ CREATE TABLE ndh.individual_to_email_address (
 );
 
 
-ALTER TABLE ndh.individual_to_email_address OWNER TO ndh;
-
 --
--- TOC entry 237 (class 1259 OID 17936)
--- Name: individual_to_language_spoken; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: individual_to_language_spoken; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.individual_to_language_spoken (
@@ -617,11 +559,8 @@ CREATE TABLE ndh.individual_to_language_spoken (
 );
 
 
-ALTER TABLE ndh.individual_to_language_spoken OWNER TO ndh;
-
 --
--- TOC entry 242 (class 1259 OID 17964)
--- Name: individual_to_name; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: individual_to_name; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.individual_to_name (
@@ -637,11 +576,8 @@ CREATE TABLE ndh.individual_to_name (
 );
 
 
-ALTER TABLE ndh.individual_to_name OWNER TO ndh;
-
 --
--- TOC entry 249 (class 1259 OID 18000)
--- Name: individual_to_phone_number; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: individual_to_phone_number; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.individual_to_phone_number (
@@ -653,11 +589,8 @@ CREATE TABLE ndh.individual_to_phone_number (
 );
 
 
-ALTER TABLE ndh.individual_to_phone_number OWNER TO ndh;
-
 --
--- TOC entry 236 (class 1259 OID 17931)
--- Name: language_spoken; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: language_spoken; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.language_spoken (
@@ -666,11 +599,8 @@ CREATE TABLE ndh.language_spoken (
 );
 
 
-ALTER TABLE ndh.language_spoken OWNER TO ndh;
-
 --
--- TOC entry 254 (class 1259 OID 18027)
--- Name: medicare_provider_type; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: medicare_provider_type; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.medicare_provider_type (
@@ -679,11 +609,8 @@ CREATE TABLE ndh.medicare_provider_type (
 );
 
 
-ALTER TABLE ndh.medicare_provider_type OWNER TO ndh;
-
 --
--- TOC entry 253 (class 1259 OID 18026)
--- Name: medicare_provider_type_id_seq; Type: SEQUENCE; Schema: ndh; Owner: ndh
+-- Name: medicare_provider_type_id_seq; Type: SEQUENCE; Schema: ndh; Owner: -
 --
 
 CREATE SEQUENCE ndh.medicare_provider_type_id_seq
@@ -695,20 +622,15 @@ CREATE SEQUENCE ndh.medicare_provider_type_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE ndh.medicare_provider_type_id_seq OWNER TO ndh;
-
 --
--- TOC entry 4565 (class 0 OID 0)
--- Dependencies: 253
--- Name: medicare_provider_type_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: ndh
+-- Name: medicare_provider_type_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: -
 --
 
 ALTER SEQUENCE ndh.medicare_provider_type_id_seq OWNED BY ndh.medicare_provider_type.id;
 
 
 --
--- TOC entry 246 (class 1259 OID 17983)
--- Name: npi; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: npi; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.npi (
@@ -725,11 +647,8 @@ CREATE TABLE ndh.npi (
 );
 
 
-ALTER TABLE ndh.npi OWNER TO ndh;
-
 --
--- TOC entry 264 (class 1259 OID 19417)
--- Name: nucc_classification; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: nucc_classification; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.nucc_classification (
@@ -740,11 +659,8 @@ CREATE TABLE ndh.nucc_classification (
 );
 
 
-ALTER TABLE ndh.nucc_classification OWNER TO ndh;
-
 --
--- TOC entry 263 (class 1259 OID 19416)
--- Name: nucc_classification_id_seq; Type: SEQUENCE; Schema: ndh; Owner: ndh
+-- Name: nucc_classification_id_seq; Type: SEQUENCE; Schema: ndh; Owner: -
 --
 
 CREATE SEQUENCE ndh.nucc_classification_id_seq
@@ -756,20 +672,15 @@ CREATE SEQUENCE ndh.nucc_classification_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE ndh.nucc_classification_id_seq OWNER TO ndh;
-
 --
--- TOC entry 4566 (class 0 OID 0)
--- Dependencies: 263
--- Name: nucc_classification_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: ndh
+-- Name: nucc_classification_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: -
 --
 
 ALTER SEQUENCE ndh.nucc_classification_id_seq OWNED BY ndh.nucc_classification.id;
 
 
 --
--- TOC entry 262 (class 1259 OID 19410)
--- Name: nucc_grouping; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: nucc_grouping; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.nucc_grouping (
@@ -778,11 +689,8 @@ CREATE TABLE ndh.nucc_grouping (
 );
 
 
-ALTER TABLE ndh.nucc_grouping OWNER TO ndh;
-
 --
--- TOC entry 261 (class 1259 OID 19409)
--- Name: nucc_group_id_seq; Type: SEQUENCE; Schema: ndh; Owner: ndh
+-- Name: nucc_group_id_seq; Type: SEQUENCE; Schema: ndh; Owner: -
 --
 
 CREATE SEQUENCE ndh.nucc_group_id_seq
@@ -794,20 +702,15 @@ CREATE SEQUENCE ndh.nucc_group_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE ndh.nucc_group_id_seq OWNER TO ndh;
-
 --
--- TOC entry 4567 (class 0 OID 0)
--- Dependencies: 261
--- Name: nucc_group_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: ndh
+-- Name: nucc_group_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: -
 --
 
 ALTER SEQUENCE ndh.nucc_group_id_seq OWNED BY ndh.nucc_grouping.id;
 
 
 --
--- TOC entry 266 (class 1259 OID 19424)
--- Name: nucc_specialization; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: nucc_specialization; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.nucc_specialization (
@@ -818,11 +721,8 @@ CREATE TABLE ndh.nucc_specialization (
 );
 
 
-ALTER TABLE ndh.nucc_specialization OWNER TO ndh;
-
 --
--- TOC entry 267 (class 1259 OID 19454)
--- Name: nucc_hierarchy; Type: VIEW; Schema: ndh; Owner: ndh
+-- Name: nucc_hierarchy; Type: VIEW; Schema: ndh; Owner: -
 --
 
 CREATE VIEW ndh.nucc_hierarchy AS
@@ -856,11 +756,8 @@ CREATE VIEW ndh.nucc_hierarchy AS
   ORDER BY ROW("Grouping", "Classification", "Specialization");
 
 
-ALTER VIEW ndh.nucc_hierarchy OWNER TO ndh;
-
 --
--- TOC entry 265 (class 1259 OID 19423)
--- Name: nucc_specialization_id_seq; Type: SEQUENCE; Schema: ndh; Owner: ndh
+-- Name: nucc_specialization_id_seq; Type: SEQUENCE; Schema: ndh; Owner: -
 --
 
 CREATE SEQUENCE ndh.nucc_specialization_id_seq
@@ -872,20 +769,15 @@ CREATE SEQUENCE ndh.nucc_specialization_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE ndh.nucc_specialization_id_seq OWNER TO ndh;
-
 --
--- TOC entry 4568 (class 0 OID 0)
--- Dependencies: 265
--- Name: nucc_specialization_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: ndh
+-- Name: nucc_specialization_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: -
 --
 
 ALTER SEQUENCE ndh.nucc_specialization_id_seq OWNED BY ndh.nucc_specialization.id;
 
 
 --
--- TOC entry 252 (class 1259 OID 18014)
--- Name: nucc_taxonomy_code; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: nucc_taxonomy_code; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.nucc_taxonomy_code (
@@ -898,11 +790,8 @@ CREATE TABLE ndh.nucc_taxonomy_code (
 );
 
 
-ALTER TABLE ndh.nucc_taxonomy_code OWNER TO ndh;
-
 --
--- TOC entry 256 (class 1259 OID 18038)
--- Name: nucc_taxonomy_code_to_medicare_provider_type; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: nucc_taxonomy_code_to_medicare_provider_type; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.nucc_taxonomy_code_to_medicare_provider_type (
@@ -912,11 +801,8 @@ CREATE TABLE ndh.nucc_taxonomy_code_to_medicare_provider_type (
 );
 
 
-ALTER TABLE ndh.nucc_taxonomy_code_to_medicare_provider_type OWNER TO ndh;
-
 --
--- TOC entry 255 (class 1259 OID 18037)
--- Name: nucc_taxonomy_code_to_medicare_provider_type_id_seq; Type: SEQUENCE; Schema: ndh; Owner: ndh
+-- Name: nucc_taxonomy_code_to_medicare_provider_type_id_seq; Type: SEQUENCE; Schema: ndh; Owner: -
 --
 
 CREATE SEQUENCE ndh.nucc_taxonomy_code_to_medicare_provider_type_id_seq
@@ -928,20 +814,15 @@ CREATE SEQUENCE ndh.nucc_taxonomy_code_to_medicare_provider_type_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE ndh.nucc_taxonomy_code_to_medicare_provider_type_id_seq OWNER TO ndh;
-
 --
--- TOC entry 4569 (class 0 OID 0)
--- Dependencies: 255
--- Name: nucc_taxonomy_code_to_medicare_provider_type_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: ndh
+-- Name: nucc_taxonomy_code_to_medicare_provider_type_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: -
 --
 
 ALTER SEQUENCE ndh.nucc_taxonomy_code_to_medicare_provider_type_id_seq OWNED BY ndh.nucc_taxonomy_code_to_medicare_provider_type.id;
 
 
 --
--- TOC entry 232 (class 1259 OID 17909)
--- Name: other_identifier_type; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: other_identifier_type; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.other_identifier_type (
@@ -950,11 +831,8 @@ CREATE TABLE ndh.other_identifier_type (
 );
 
 
-ALTER TABLE ndh.other_identifier_type OWNER TO ndh;
-
 --
--- TOC entry 231 (class 1259 OID 17908)
--- Name: other_identifier_type_id_seq; Type: SEQUENCE; Schema: ndh; Owner: ndh
+-- Name: other_identifier_type_id_seq; Type: SEQUENCE; Schema: ndh; Owner: -
 --
 
 CREATE SEQUENCE ndh.other_identifier_type_id_seq
@@ -966,20 +844,15 @@ CREATE SEQUENCE ndh.other_identifier_type_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE ndh.other_identifier_type_id_seq OWNER TO ndh;
-
 --
--- TOC entry 4570 (class 0 OID 0)
--- Dependencies: 231
--- Name: other_identifier_type_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: ndh
+-- Name: other_identifier_type_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: -
 --
 
 ALTER SEQUENCE ndh.other_identifier_type_id_seq OWNED BY ndh.other_identifier_type.id;
 
 
 --
--- TOC entry 251 (class 1259 OID 18006)
--- Name: phone_number; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: phone_number; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.phone_number (
@@ -988,11 +861,8 @@ CREATE TABLE ndh.phone_number (
 );
 
 
-ALTER TABLE ndh.phone_number OWNER TO ndh;
-
 --
--- TOC entry 250 (class 1259 OID 18005)
--- Name: phone_number_id_seq; Type: SEQUENCE; Schema: ndh; Owner: ndh
+-- Name: phone_number_id_seq; Type: SEQUENCE; Schema: ndh; Owner: -
 --
 
 CREATE SEQUENCE ndh.phone_number_id_seq
@@ -1004,20 +874,15 @@ CREATE SEQUENCE ndh.phone_number_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE ndh.phone_number_id_seq OWNER TO ndh;
-
 --
--- TOC entry 4571 (class 0 OID 0)
--- Dependencies: 250
--- Name: phone_number_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: ndh
+-- Name: phone_number_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: -
 --
 
 ALTER SEQUENCE ndh.phone_number_id_seq OWNED BY ndh.phone_number.id;
 
 
 --
--- TOC entry 247 (class 1259 OID 17989)
--- Name: phone_type_id_seq; Type: SEQUENCE; Schema: ndh; Owner: ndh
+-- Name: phone_type_id_seq; Type: SEQUENCE; Schema: ndh; Owner: -
 --
 
 CREATE SEQUENCE ndh.phone_type_id_seq
@@ -1029,20 +894,15 @@ CREATE SEQUENCE ndh.phone_type_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE ndh.phone_type_id_seq OWNER TO ndh;
-
 --
--- TOC entry 4572 (class 0 OID 0)
--- Dependencies: 247
--- Name: phone_type_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: ndh
+-- Name: phone_type_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: -
 --
 
 ALTER SEQUENCE ndh.phone_type_id_seq OWNED BY ndh.fhir_phone_use.id;
 
 
 --
--- TOC entry 258 (class 1259 OID 18214)
--- Name: provider; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: provider; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.provider (
@@ -1051,11 +911,8 @@ CREATE TABLE ndh.provider (
 );
 
 
-ALTER TABLE ndh.provider OWNER TO ndh;
-
 --
--- TOC entry 257 (class 1259 OID 18164)
--- Name: provider_to_nucc_taxonomy_code; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: provider_to_nucc_taxonomy_code; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.provider_to_nucc_taxonomy_code (
@@ -1065,11 +922,8 @@ CREATE TABLE ndh.provider_to_nucc_taxonomy_code (
 );
 
 
-ALTER TABLE ndh.provider_to_nucc_taxonomy_code OWNER TO ndh;
-
 --
--- TOC entry 233 (class 1259 OID 17919)
--- Name: provider_to_other_identifier; Type: TABLE; Schema: ndh; Owner: ndh
+-- Name: provider_to_other_identifier; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.provider_to_other_identifier (
@@ -1083,155 +937,134 @@ CREATE TABLE ndh.provider_to_other_identifier (
 );
 
 
-ALTER TABLE ndh.provider_to_other_identifier OWNER TO ndh;
-
 --
--- TOC entry 4264 (class 2604 OID 17846)
--- Name: address id; Type: DEFAULT; Schema: ndh; Owner: ndh
+-- Name: address id; Type: DEFAULT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.address ALTER COLUMN id SET DEFAULT nextval('ndh.address_id_seq'::regclass);
 
 
 --
--- TOC entry 4266 (class 2604 OID 17862)
--- Name: address_international id; Type: DEFAULT; Schema: ndh; Owner: ndh
+-- Name: address_international id; Type: DEFAULT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.address_international ALTER COLUMN id SET DEFAULT nextval('ndh.address_international_id_seq'::regclass);
 
 
 --
--- TOC entry 4267 (class 2604 OID 17871)
--- Name: address_nonstandard id; Type: DEFAULT; Schema: ndh; Owner: ndh
+-- Name: address_nonstandard id; Type: DEFAULT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.address_nonstandard ALTER COLUMN id SET DEFAULT nextval('ndh.address_nonstandard_id_seq'::regclass);
 
 
 --
--- TOC entry 4265 (class 2604 OID 17853)
--- Name: address_us id; Type: DEFAULT; Schema: ndh; Owner: ndh
+-- Name: address_us id; Type: DEFAULT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.address_us ALTER COLUMN id SET DEFAULT nextval('ndh.address_us_id_seq'::regclass);
 
 
 --
--- TOC entry 4270 (class 2604 OID 17928)
--- Name: clinical_credential id; Type: DEFAULT; Schema: ndh; Owner: ndh
+-- Name: clinical_credential id; Type: DEFAULT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.clinical_credential ALTER COLUMN id SET DEFAULT nextval('ndh.clinical_credential_id_seq'::regclass);
 
 
 --
--- TOC entry 4271 (class 2604 OID 17945)
--- Name: clinical_school id; Type: DEFAULT; Schema: ndh; Owner: ndh
+-- Name: clinical_school id; Type: DEFAULT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.clinical_school ALTER COLUMN id SET DEFAULT nextval('ndh.clinical_school_id_seq'::regclass);
 
 
 --
--- TOC entry 4268 (class 2604 OID 17880)
--- Name: fhir_address_use id; Type: DEFAULT; Schema: ndh; Owner: ndh
+-- Name: fhir_address_use id; Type: DEFAULT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.fhir_address_use ALTER COLUMN id SET DEFAULT nextval('ndh.fhir_address_type_id_seq'::regclass);
 
 
 --
--- TOC entry 4274 (class 2604 OID 17973)
--- Name: fhir_name_use id; Type: DEFAULT; Schema: ndh; Owner: ndh
+-- Name: fhir_name_use id; Type: DEFAULT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.fhir_name_use ALTER COLUMN id SET DEFAULT nextval('ndh.fhir_name_type_id_seq'::regclass);
 
 
 --
--- TOC entry 4279 (class 2604 OID 18983)
--- Name: fhir_phone_system id; Type: DEFAULT; Schema: ndh; Owner: ndh
+-- Name: fhir_phone_system id; Type: DEFAULT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.fhir_phone_system ALTER COLUMN id SET DEFAULT nextval('ndh.fhir_phone_system_id_seq'::regclass);
 
 
 --
--- TOC entry 4275 (class 2604 OID 17993)
--- Name: fhir_phone_use id; Type: DEFAULT; Schema: ndh; Owner: ndh
+-- Name: fhir_phone_use id; Type: DEFAULT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.fhir_phone_use ALTER COLUMN id SET DEFAULT nextval('ndh.phone_type_id_seq'::regclass);
 
 
 --
--- TOC entry 4283 (class 2604 OID 19722)
--- Name: individual_to_nucc_taxonomy_to_license id; Type: DEFAULT; Schema: ndh; Owner: ndh
+-- Name: individual_to_nucc_taxonomy_to_license id; Type: DEFAULT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.individual_to_nucc_taxonomy_to_license ALTER COLUMN id SET DEFAULT nextval('ndh.individual_nucc_taxonomy_to_license_id_seq'::regclass);
 
 
 --
--- TOC entry 4277 (class 2604 OID 18030)
--- Name: medicare_provider_type id; Type: DEFAULT; Schema: ndh; Owner: ndh
+-- Name: medicare_provider_type id; Type: DEFAULT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.medicare_provider_type ALTER COLUMN id SET DEFAULT nextval('ndh.medicare_provider_type_id_seq'::regclass);
 
 
 --
--- TOC entry 4281 (class 2604 OID 19420)
--- Name: nucc_classification id; Type: DEFAULT; Schema: ndh; Owner: ndh
+-- Name: nucc_classification id; Type: DEFAULT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.nucc_classification ALTER COLUMN id SET DEFAULT nextval('ndh.nucc_classification_id_seq'::regclass);
 
 
 --
--- TOC entry 4280 (class 2604 OID 19413)
--- Name: nucc_grouping id; Type: DEFAULT; Schema: ndh; Owner: ndh
+-- Name: nucc_grouping id; Type: DEFAULT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.nucc_grouping ALTER COLUMN id SET DEFAULT nextval('ndh.nucc_group_id_seq'::regclass);
 
 
 --
--- TOC entry 4282 (class 2604 OID 19427)
--- Name: nucc_specialization id; Type: DEFAULT; Schema: ndh; Owner: ndh
+-- Name: nucc_specialization id; Type: DEFAULT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.nucc_specialization ALTER COLUMN id SET DEFAULT nextval('ndh.nucc_specialization_id_seq'::regclass);
 
 
 --
--- TOC entry 4278 (class 2604 OID 18041)
--- Name: nucc_taxonomy_code_to_medicare_provider_type id; Type: DEFAULT; Schema: ndh; Owner: ndh
+-- Name: nucc_taxonomy_code_to_medicare_provider_type id; Type: DEFAULT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.nucc_taxonomy_code_to_medicare_provider_type ALTER COLUMN id SET DEFAULT nextval('ndh.nucc_taxonomy_code_to_medicare_provider_type_id_seq'::regclass);
 
 
 --
--- TOC entry 4269 (class 2604 OID 17912)
--- Name: other_identifier_type id; Type: DEFAULT; Schema: ndh; Owner: ndh
+-- Name: other_identifier_type id; Type: DEFAULT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.other_identifier_type ALTER COLUMN id SET DEFAULT nextval('ndh.other_identifier_type_id_seq'::regclass);
 
 
 --
--- TOC entry 4276 (class 2604 OID 18009)
--- Name: phone_number id; Type: DEFAULT; Schema: ndh; Owner: ndh
+-- Name: phone_number id; Type: DEFAULT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.phone_number ALTER COLUMN id SET DEFAULT nextval('ndh.phone_number_id_seq'::regclass);
 
 
 --
--- TOC entry 4290 (class 2606 OID 17866)
--- Name: address_international address_international_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: address_international address_international_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.address_international
@@ -1239,8 +1072,7 @@ ALTER TABLE ONLY ndh.address_international
 
 
 --
--- TOC entry 4292 (class 2606 OID 17875)
--- Name: address_nonstandard address_nonstandard_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: address_nonstandard address_nonstandard_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.address_nonstandard
@@ -1248,8 +1080,7 @@ ALTER TABLE ONLY ndh.address_nonstandard
 
 
 --
--- TOC entry 4286 (class 2606 OID 17848)
--- Name: address address_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: address address_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.address
@@ -1257,8 +1088,7 @@ ALTER TABLE ONLY ndh.address
 
 
 --
--- TOC entry 4288 (class 2606 OID 17857)
--- Name: address_us address_us_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: address_us address_us_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.address_us
@@ -1266,8 +1096,7 @@ ALTER TABLE ONLY ndh.address_us
 
 
 --
--- TOC entry 4314 (class 2606 OID 17930)
--- Name: clinical_credential clinical_credential_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: clinical_credential clinical_credential_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.clinical_credential
@@ -1275,8 +1104,7 @@ ALTER TABLE ONLY ndh.clinical_credential
 
 
 --
--- TOC entry 4320 (class 2606 OID 17949)
--- Name: clinical_school clinical_school_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: clinical_school clinical_school_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.clinical_school
@@ -1284,8 +1112,7 @@ ALTER TABLE ONLY ndh.clinical_school
 
 
 --
--- TOC entry 4294 (class 2606 OID 17884)
--- Name: fhir_address_use fhir_address_use_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: fhir_address_use fhir_address_use_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.fhir_address_use
@@ -1293,8 +1120,7 @@ ALTER TABLE ONLY ndh.fhir_address_use
 
 
 --
--- TOC entry 4329 (class 2606 OID 17975)
--- Name: fhir_name_use fhir_name_use_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: fhir_name_use fhir_name_use_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.fhir_name_use
@@ -1302,8 +1128,7 @@ ALTER TABLE ONLY ndh.fhir_name_use
 
 
 --
--- TOC entry 4362 (class 2606 OID 18985)
--- Name: fhir_phone_system fhir_phone_system_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: fhir_phone_system fhir_phone_system_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.fhir_phone_system
@@ -1311,8 +1136,7 @@ ALTER TABLE ONLY ndh.fhir_phone_system
 
 
 --
--- TOC entry 4337 (class 2606 OID 17997)
--- Name: fhir_phone_use fhir_phone_use_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: fhir_phone_use fhir_phone_use_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.fhir_phone_use
@@ -1320,8 +1144,7 @@ ALTER TABLE ONLY ndh.fhir_phone_use
 
 
 --
--- TOC entry 4304 (class 2606 OID 17900)
--- Name: fips_county fips_county_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: fips_county fips_county_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.fips_county
@@ -1329,8 +1152,7 @@ ALTER TABLE ONLY ndh.fips_county
 
 
 --
--- TOC entry 4298 (class 2606 OID 17891)
--- Name: fips_state fips_state_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: fips_state fips_state_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.fips_state
@@ -1338,8 +1160,7 @@ ALTER TABLE ONLY ndh.fips_state
 
 
 --
--- TOC entry 4324 (class 2606 OID 18992)
--- Name: individual individual_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: individual individual_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.individual
@@ -1347,8 +1168,7 @@ ALTER TABLE ONLY ndh.individual
 
 
 --
--- TOC entry 4306 (class 2606 OID 19034)
--- Name: individual_to_address individual_to_address_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: individual_to_address individual_to_address_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.individual_to_address
@@ -1356,8 +1176,7 @@ ALTER TABLE ONLY ndh.individual_to_address
 
 
 --
--- TOC entry 4322 (class 2606 OID 19036)
--- Name: individual_to_clinical_credential individual_to_clinical_credential_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: individual_to_clinical_credential individual_to_clinical_credential_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.individual_to_clinical_credential
@@ -1365,8 +1184,7 @@ ALTER TABLE ONLY ndh.individual_to_clinical_credential
 
 
 --
--- TOC entry 4333 (class 2606 OID 19038)
--- Name: individual_to_email_address individual_to_email_address_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: individual_to_email_address individual_to_email_address_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.individual_to_email_address
@@ -1374,8 +1192,7 @@ ALTER TABLE ONLY ndh.individual_to_email_address
 
 
 --
--- TOC entry 4318 (class 2606 OID 19040)
--- Name: individual_to_language_spoken individual_to_language_spoken_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: individual_to_language_spoken individual_to_language_spoken_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.individual_to_language_spoken
@@ -1383,8 +1200,7 @@ ALTER TABLE ONLY ndh.individual_to_language_spoken
 
 
 --
--- TOC entry 4327 (class 2606 OID 19710)
--- Name: individual_to_name individual_to_name_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: individual_to_name individual_to_name_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.individual_to_name
@@ -1392,8 +1208,7 @@ ALTER TABLE ONLY ndh.individual_to_name
 
 
 --
--- TOC entry 4356 (class 2606 OID 19729)
--- Name: provider_to_nucc_taxonomy_code individual_to_nucc_taxonomy_code_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: provider_to_nucc_taxonomy_code individual_to_nucc_taxonomy_code_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.provider_to_nucc_taxonomy_code
@@ -1401,8 +1216,7 @@ ALTER TABLE ONLY ndh.provider_to_nucc_taxonomy_code
 
 
 --
--- TOC entry 4370 (class 2606 OID 19724)
--- Name: individual_to_nucc_taxonomy_to_license individual_to_nucc_taxonomy_to_license_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: individual_to_nucc_taxonomy_to_license individual_to_nucc_taxonomy_to_license_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.individual_to_nucc_taxonomy_to_license
@@ -1410,8 +1224,7 @@ ALTER TABLE ONLY ndh.individual_to_nucc_taxonomy_to_license
 
 
 --
--- TOC entry 4312 (class 2606 OID 19708)
--- Name: provider_to_other_identifier individual_to_other_identifier_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: provider_to_other_identifier individual_to_other_identifier_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.provider_to_other_identifier
@@ -1419,8 +1232,7 @@ ALTER TABLE ONLY ndh.provider_to_other_identifier
 
 
 --
--- TOC entry 4341 (class 2606 OID 19050)
--- Name: individual_to_phone_number individual_to_phone_number_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: individual_to_phone_number individual_to_phone_number_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.individual_to_phone_number
@@ -1428,8 +1240,7 @@ ALTER TABLE ONLY ndh.individual_to_phone_number
 
 
 --
--- TOC entry 4316 (class 2606 OID 17935)
--- Name: language_spoken language_spoken_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: language_spoken language_spoken_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.language_spoken
@@ -1437,8 +1248,7 @@ ALTER TABLE ONLY ndh.language_spoken
 
 
 --
--- TOC entry 4350 (class 2606 OID 18034)
--- Name: medicare_provider_type medicare_provider_type_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: medicare_provider_type medicare_provider_type_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.medicare_provider_type
@@ -1446,8 +1256,7 @@ ALTER TABLE ONLY ndh.medicare_provider_type
 
 
 --
--- TOC entry 4335 (class 2606 OID 17988)
--- Name: npi npi_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: npi npi_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.npi
@@ -1455,8 +1264,7 @@ ALTER TABLE ONLY ndh.npi
 
 
 --
--- TOC entry 4366 (class 2606 OID 19422)
--- Name: nucc_classification nucc_classification_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: nucc_classification nucc_classification_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.nucc_classification
@@ -1464,8 +1272,7 @@ ALTER TABLE ONLY ndh.nucc_classification
 
 
 --
--- TOC entry 4364 (class 2606 OID 19415)
--- Name: nucc_grouping nucc_grouping_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: nucc_grouping nucc_grouping_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.nucc_grouping
@@ -1473,8 +1280,7 @@ ALTER TABLE ONLY ndh.nucc_grouping
 
 
 --
--- TOC entry 4368 (class 2606 OID 19429)
--- Name: nucc_specialization nucc_specialization_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: nucc_specialization nucc_specialization_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.nucc_specialization
@@ -1482,8 +1288,7 @@ ALTER TABLE ONLY ndh.nucc_specialization
 
 
 --
--- TOC entry 4348 (class 2606 OID 18020)
--- Name: nucc_taxonomy_code nucc_taxonomy_code_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: nucc_taxonomy_code nucc_taxonomy_code_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.nucc_taxonomy_code
@@ -1491,8 +1296,7 @@ ALTER TABLE ONLY ndh.nucc_taxonomy_code
 
 
 --
--- TOC entry 4354 (class 2606 OID 18043)
--- Name: nucc_taxonomy_code_to_medicare_provider_type nucc_taxonomy_code_to_medicare_provider_type_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: nucc_taxonomy_code_to_medicare_provider_type nucc_taxonomy_code_to_medicare_provider_type_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.nucc_taxonomy_code_to_medicare_provider_type
@@ -1500,8 +1304,7 @@ ALTER TABLE ONLY ndh.nucc_taxonomy_code_to_medicare_provider_type
 
 
 --
--- TOC entry 4308 (class 2606 OID 17916)
--- Name: other_identifier_type other_identifier_type_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: other_identifier_type other_identifier_type_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.other_identifier_type
@@ -1509,8 +1312,7 @@ ALTER TABLE ONLY ndh.other_identifier_type
 
 
 --
--- TOC entry 4343 (class 2606 OID 18011)
--- Name: phone_number phone_number_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: phone_number phone_number_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.phone_number
@@ -1518,8 +1320,7 @@ ALTER TABLE ONLY ndh.phone_number
 
 
 --
--- TOC entry 4358 (class 2606 OID 18218)
--- Name: provider provider_pkey; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: provider provider_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.provider
@@ -1527,8 +1328,7 @@ ALTER TABLE ONLY ndh.provider
 
 
 --
--- TOC entry 4296 (class 2606 OID 17886)
--- Name: fhir_address_use uc_fhir_address_use_value; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: fhir_address_use uc_fhir_address_use_value; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.fhir_address_use
@@ -1536,8 +1336,7 @@ ALTER TABLE ONLY ndh.fhir_address_use
 
 
 --
--- TOC entry 4331 (class 2606 OID 17977)
--- Name: fhir_name_use uc_fhir_name_use_value; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: fhir_name_use uc_fhir_name_use_value; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.fhir_name_use
@@ -1545,8 +1344,7 @@ ALTER TABLE ONLY ndh.fhir_name_use
 
 
 --
--- TOC entry 4339 (class 2606 OID 17999)
--- Name: fhir_phone_use uc_fhir_phone_use_value; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: fhir_phone_use uc_fhir_phone_use_value; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.fhir_phone_use
@@ -1554,8 +1352,7 @@ ALTER TABLE ONLY ndh.fhir_phone_use
 
 
 --
--- TOC entry 4300 (class 2606 OID 17895)
--- Name: fips_state uc_fips_state_abbreviation; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: fips_state uc_fips_state_abbreviation; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.fips_state
@@ -1563,8 +1360,7 @@ ALTER TABLE ONLY ndh.fips_state
 
 
 --
--- TOC entry 4302 (class 2606 OID 17893)
--- Name: fips_state uc_fips_state_name; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: fips_state uc_fips_state_name; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.fips_state
@@ -1572,8 +1368,7 @@ ALTER TABLE ONLY ndh.fips_state
 
 
 --
--- TOC entry 4352 (class 2606 OID 18036)
--- Name: medicare_provider_type uc_medicare_provider_type_value; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: medicare_provider_type uc_medicare_provider_type_value; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.medicare_provider_type
@@ -1581,8 +1376,7 @@ ALTER TABLE ONLY ndh.medicare_provider_type
 
 
 --
--- TOC entry 4310 (class 2606 OID 17918)
--- Name: other_identifier_type uc_other_identifier_type_value; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: other_identifier_type uc_other_identifier_type_value; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.other_identifier_type
@@ -1590,8 +1384,7 @@ ALTER TABLE ONLY ndh.other_identifier_type
 
 
 --
--- TOC entry 4345 (class 2606 OID 18013)
--- Name: phone_number uc_phone_number_value; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: phone_number uc_phone_number_value; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.phone_number
@@ -1599,8 +1392,7 @@ ALTER TABLE ONLY ndh.phone_number
 
 
 --
--- TOC entry 4360 (class 2606 OID 19738)
--- Name: provider uc_provider_individual_id; Type: CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: provider uc_provider_individual_id; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.provider
@@ -1608,24 +1400,21 @@ ALTER TABLE ONLY ndh.provider
 
 
 --
--- TOC entry 4325 (class 1259 OID 19736)
--- Name: individual_to_name_last_name_first_name_middle_name_idx; Type: INDEX; Schema: ndh; Owner: ndh
+-- Name: individual_to_name_last_name_first_name_middle_name_idx; Type: INDEX; Schema: ndh; Owner: -
 --
 
 CREATE INDEX individual_to_name_last_name_first_name_middle_name_idx ON ndh.individual_to_name USING btree (last_name, first_name, middle_name);
 
 
 --
--- TOC entry 4346 (class 1259 OID 19735)
--- Name: nucc_taxonomy_code_display_name_idx; Type: INDEX; Schema: ndh; Owner: ndh
+-- Name: nucc_taxonomy_code_display_name_idx; Type: INDEX; Schema: ndh; Owner: -
 --
 
 CREATE INDEX nucc_taxonomy_code_display_name_idx ON ndh.nucc_taxonomy_code USING btree (display_name);
 
 
 --
--- TOC entry 4371 (class 2606 OID 18070)
--- Name: address address_address_international_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: address address_address_international_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.address
@@ -1633,8 +1422,7 @@ ALTER TABLE ONLY ndh.address
 
 
 --
--- TOC entry 4372 (class 2606 OID 18075)
--- Name: address address_address_nonstandard_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: address address_address_nonstandard_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.address
@@ -1642,8 +1430,7 @@ ALTER TABLE ONLY ndh.address
 
 
 --
--- TOC entry 4373 (class 2606 OID 18770)
--- Name: address address_address_us_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: address address_address_us_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.address
@@ -1651,8 +1438,7 @@ ALTER TABLE ONLY ndh.address
 
 
 --
--- TOC entry 4374 (class 2606 OID 18085)
--- Name: address_us address_us_county_code_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: address_us address_us_county_code_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.address_us
@@ -1660,8 +1446,7 @@ ALTER TABLE ONLY ndh.address_us
 
 
 --
--- TOC entry 4375 (class 2606 OID 18080)
--- Name: address_us address_us_state_code_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: address_us address_us_state_code_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.address_us
@@ -1669,8 +1454,7 @@ ALTER TABLE ONLY ndh.address_us
 
 
 --
--- TOC entry 4376 (class 2606 OID 18065)
--- Name: fips_county fips_county_fips_state_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: fips_county fips_county_fips_state_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.fips_county
@@ -1678,8 +1462,7 @@ ALTER TABLE ONLY ndh.fips_county
 
 
 --
--- TOC entry 4403 (class 2606 OID 19756)
--- Name: individual_to_nucc_taxonomy_to_license individual_nucc_taxonomy_to_l_individual_id_nucc_taxonomy__fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: individual_to_nucc_taxonomy_to_license individual_nucc_taxonomy_to_l_individual_id_nucc_taxonomy__fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.individual_to_nucc_taxonomy_to_license
@@ -1687,8 +1470,7 @@ ALTER TABLE ONLY ndh.individual_to_nucc_taxonomy_to_license
 
 
 --
--- TOC entry 4377 (class 2606 OID 18124)
--- Name: individual_to_address individual_to_address_address_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: individual_to_address individual_to_address_address_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.individual_to_address
@@ -1696,8 +1478,7 @@ ALTER TABLE ONLY ndh.individual_to_address
 
 
 --
--- TOC entry 4378 (class 2606 OID 18119)
--- Name: individual_to_address individual_to_address_address_type_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: individual_to_address individual_to_address_address_type_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.individual_to_address
@@ -1705,8 +1486,7 @@ ALTER TABLE ONLY ndh.individual_to_address
 
 
 --
--- TOC entry 4379 (class 2606 OID 19055)
--- Name: individual_to_address individual_to_address_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: individual_to_address individual_to_address_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.individual_to_address
@@ -1714,8 +1494,7 @@ ALTER TABLE ONLY ndh.individual_to_address
 
 
 --
--- TOC entry 4386 (class 2606 OID 18129)
--- Name: individual_to_clinical_credential individual_to_clinical_credential_clinical_credential_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: individual_to_clinical_credential individual_to_clinical_credential_clinical_credential_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.individual_to_clinical_credential
@@ -1723,8 +1502,7 @@ ALTER TABLE ONLY ndh.individual_to_clinical_credential
 
 
 --
--- TOC entry 4389 (class 2606 OID 19060)
--- Name: individual_to_email_address individual_to_email_address_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: individual_to_email_address individual_to_email_address_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.individual_to_email_address
@@ -1732,8 +1510,7 @@ ALTER TABLE ONLY ndh.individual_to_email_address
 
 
 --
--- TOC entry 4384 (class 2606 OID 19065)
--- Name: individual_to_language_spoken individual_to_language_spoken_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: individual_to_language_spoken individual_to_language_spoken_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.individual_to_language_spoken
@@ -1741,8 +1518,7 @@ ALTER TABLE ONLY ndh.individual_to_language_spoken
 
 
 --
--- TOC entry 4385 (class 2606 OID 18144)
--- Name: individual_to_language_spoken individual_to_language_spoken_language_spoken_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: individual_to_language_spoken individual_to_language_spoken_language_spoken_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.individual_to_language_spoken
@@ -1750,8 +1526,7 @@ ALTER TABLE ONLY ndh.individual_to_language_spoken
 
 
 --
--- TOC entry 4387 (class 2606 OID 18154)
--- Name: individual_to_name individual_to_name_fhir_name_use_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: individual_to_name individual_to_name_fhir_name_use_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.individual_to_name
@@ -1759,8 +1534,7 @@ ALTER TABLE ONLY ndh.individual_to_name
 
 
 --
--- TOC entry 4388 (class 2606 OID 19070)
--- Name: individual_to_name individual_to_name_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: individual_to_name individual_to_name_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.individual_to_name
@@ -1768,8 +1542,7 @@ ALTER TABLE ONLY ndh.individual_to_name
 
 
 --
--- TOC entry 4394 (class 2606 OID 19075)
--- Name: provider_to_nucc_taxonomy_code individual_to_nucc_taxonomy_code_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: provider_to_nucc_taxonomy_code individual_to_nucc_taxonomy_code_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.provider_to_nucc_taxonomy_code
@@ -1777,8 +1550,7 @@ ALTER TABLE ONLY ndh.provider_to_nucc_taxonomy_code
 
 
 --
--- TOC entry 4395 (class 2606 OID 18174)
--- Name: provider_to_nucc_taxonomy_code individual_to_nucc_taxonomy_code_nucc_taxonomy_code_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: provider_to_nucc_taxonomy_code individual_to_nucc_taxonomy_code_nucc_taxonomy_code_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.provider_to_nucc_taxonomy_code
@@ -1786,8 +1558,7 @@ ALTER TABLE ONLY ndh.provider_to_nucc_taxonomy_code
 
 
 --
--- TOC entry 4380 (class 2606 OID 19080)
--- Name: provider_to_other_identifier individual_to_other_identifier_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: provider_to_other_identifier individual_to_other_identifier_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.provider_to_other_identifier
@@ -1795,8 +1566,7 @@ ALTER TABLE ONLY ndh.provider_to_other_identifier
 
 
 --
--- TOC entry 4381 (class 2606 OID 18184)
--- Name: provider_to_other_identifier individual_to_other_identifier_other_identifier_type_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: provider_to_other_identifier individual_to_other_identifier_other_identifier_type_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.provider_to_other_identifier
@@ -1804,8 +1574,7 @@ ALTER TABLE ONLY ndh.provider_to_other_identifier
 
 
 --
--- TOC entry 4382 (class 2606 OID 18189)
--- Name: provider_to_other_identifier individual_to_other_identifier_state_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: provider_to_other_identifier individual_to_other_identifier_state_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.provider_to_other_identifier
@@ -1813,8 +1582,7 @@ ALTER TABLE ONLY ndh.provider_to_other_identifier
 
 
 --
--- TOC entry 4390 (class 2606 OID 18986)
--- Name: individual_to_phone_number individual_to_phone_number_fhir_phone_system_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: individual_to_phone_number individual_to_phone_number_fhir_phone_system_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.individual_to_phone_number
@@ -1822,8 +1590,7 @@ ALTER TABLE ONLY ndh.individual_to_phone_number
 
 
 --
--- TOC entry 4391 (class 2606 OID 19085)
--- Name: individual_to_phone_number individual_to_phone_number_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: individual_to_phone_number individual_to_phone_number_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.individual_to_phone_number
@@ -1831,8 +1598,7 @@ ALTER TABLE ONLY ndh.individual_to_phone_number
 
 
 --
--- TOC entry 4392 (class 2606 OID 18194)
--- Name: individual_to_phone_number individual_to_phone_number_phone_number_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: individual_to_phone_number individual_to_phone_number_phone_number_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.individual_to_phone_number
@@ -1840,8 +1606,7 @@ ALTER TABLE ONLY ndh.individual_to_phone_number
 
 
 --
--- TOC entry 4393 (class 2606 OID 18204)
--- Name: individual_to_phone_number individual_to_phone_number_phone_type_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: individual_to_phone_number individual_to_phone_number_phone_type_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.individual_to_phone_number
@@ -1849,8 +1614,7 @@ ALTER TABLE ONLY ndh.individual_to_phone_number
 
 
 --
--- TOC entry 4399 (class 2606 OID 19430)
--- Name: nucc_classification nucc_classification_nucc_grouping_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: nucc_classification nucc_classification_nucc_grouping_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.nucc_classification
@@ -1858,8 +1622,7 @@ ALTER TABLE ONLY ndh.nucc_classification
 
 
 --
--- TOC entry 4400 (class 2606 OID 19774)
--- Name: nucc_classification nucc_classification_nucc_taxonomy_code_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: nucc_classification nucc_classification_nucc_taxonomy_code_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.nucc_classification
@@ -1867,8 +1630,7 @@ ALTER TABLE ONLY ndh.nucc_classification
 
 
 --
--- TOC entry 4401 (class 2606 OID 19447)
--- Name: nucc_specialization nucc_specialization_nucc_classification_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: nucc_specialization nucc_specialization_nucc_classification_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.nucc_specialization
@@ -1876,8 +1638,7 @@ ALTER TABLE ONLY ndh.nucc_specialization
 
 
 --
--- TOC entry 4402 (class 2606 OID 19769)
--- Name: nucc_specialization nucc_specialization_nucc_taxonomy_code_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: nucc_specialization nucc_specialization_nucc_taxonomy_code_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.nucc_specialization
@@ -1885,8 +1646,7 @@ ALTER TABLE ONLY ndh.nucc_specialization
 
 
 --
--- TOC entry 4397 (class 2606 OID 19700)
--- Name: provider provider_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: provider provider_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.provider
@@ -1894,8 +1654,7 @@ ALTER TABLE ONLY ndh.provider
 
 
 --
--- TOC entry 4398 (class 2606 OID 19695)
--- Name: provider provider_npi_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: provider provider_npi_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.provider
@@ -1903,8 +1662,7 @@ ALTER TABLE ONLY ndh.provider
 
 
 --
--- TOC entry 4396 (class 2606 OID 19739)
--- Name: provider_to_nucc_taxonomy_code provider_to_nucc_taxonomy_code_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: provider_to_nucc_taxonomy_code provider_to_nucc_taxonomy_code_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.provider_to_nucc_taxonomy_code
@@ -1912,15 +1670,12 @@ ALTER TABLE ONLY ndh.provider_to_nucc_taxonomy_code
 
 
 --
--- TOC entry 4383 (class 2606 OID 19744)
--- Name: provider_to_other_identifier provider_to_other_identifier_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: ndh
+-- Name: provider_to_other_identifier provider_to_other_identifier_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.provider_to_other_identifier
     ADD CONSTRAINT provider_to_other_identifier_individual_id_fkey FOREIGN KEY (individual_id) REFERENCES ndh.provider(individual_id);
 
-
--- Completed on 2025-08-18 16:13:56 EDT
 
 --
 -- PostgreSQL database dump complete
