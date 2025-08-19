@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 from decouple import config
 import os
+from decouple import config
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,20 +25,28 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('NDH_DJANGO_SECRET')
+SECRET_KEY = config('NDH_DJANGO_SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = bool(config('DEBUG'))
 DEBUG = bool(config('DEBUG'))
 
 if DEBUG:
         ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 else:
     ALLOWED_HOSTS = config("DJANGO_ALLOWED_HOSTS").split(',')
+if DEBUG:
+        ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+else:
+    ALLOWED_HOSTS = config("DJANGO_ALLOWED_HOSTS").split(',')
 
+INTERNAL_APIS = config("DJANGO_ALLOWED_HOSTS").split(',')
 INTERNAL_APIS = config("DJANGO_ALLOWED_HOSTS").split(',')
 
 # Application definition
 
 INSTALLED_APPS = [
+      'ndhfhir.apps.NDHFHIRConfig',
       'ndhfhir.apps.NDHFHIRConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,6 +54,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'django_filters',
+    'debug_toolbar'
     'rest_framework',
     'django_filters',
     'debug_toolbar'
@@ -58,8 +71,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware', # This must come at the end
+    'debug_toolbar.middleware.DebugToolbarMiddleware', # This must come at the end
 ]
 
+ROOT_URLCONF = 'app.urls'
 ROOT_URLCONF = 'app.urls'
 
 TEMPLATES = [
@@ -77,6 +92,7 @@ TEMPLATES = [
     },
 ]
 
+WSGI_APPLICATION = 'app.wsgi.application'
 WSGI_APPLICATION = 'app.wsgi.application'
 
 
@@ -138,11 +154,29 @@ STATIC_URL = 'static/'
 #        os.path.join(BASE_DIR, "static"),
 #    ]
 
+#STATICFILES_DIRS = [
+#        os.path.join(BASE_DIR, "static"),
+#    ]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}
+
+DEBUG_TOOLBAR_CONFIG = {
+      'SHOW_TOOLBAR_CALLBACK': lambda request: DEBUG
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": config('CACHE_LOCATION'),
+    }
+}
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
