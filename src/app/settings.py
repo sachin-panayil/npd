@@ -90,7 +90,10 @@ DATABASES = {
         'PASSWORD': config('NDH_DB_PASSWORD'),
         'HOST': config('NDH_DB_HOST'),
         'NAME': config('NDH_DB_NAME'),
-        'PORT': config('NDH_DB_PORT')
+        'PORT': config('NDH_DB_PORT'),
+        'OPTIONS': {
+            'options': '-c search_path=ndh,public' 
+        }
     }
 }
 
