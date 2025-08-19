@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.4
+-- Dumped from database version 17.5 (Homebrew)
 -- Dumped by pg_dump version 17.0
 
 SET statement_timeout = 0;
@@ -484,57 +484,12 @@ CREATE TABLE ndh.individual (
 
 
 --
--- Name: individual_to_nucc_taxonomy_to_license; Type: TABLE; Schema: ndh; Owner: -
---
-
-CREATE TABLE ndh.individual_to_nucc_taxonomy_to_license (
-    id integer NOT NULL,
-    individual_id uuid,
-    nucc_taxonomy_code_id character varying(10),
-    state_id character(2),
-    license_number character varying(20)
-);
-
-
---
--- Name: individual_nucc_taxonomy_to_license_id_seq; Type: SEQUENCE; Schema: ndh; Owner: -
---
-
-CREATE SEQUENCE ndh.individual_nucc_taxonomy_to_license_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: individual_nucc_taxonomy_to_license_id_seq; Type: SEQUENCE OWNED BY; Schema: ndh; Owner: -
---
-
-ALTER SEQUENCE ndh.individual_nucc_taxonomy_to_license_id_seq OWNED BY ndh.individual_to_nucc_taxonomy_to_license.id;
-
-
---
 -- Name: individual_to_address; Type: TABLE; Schema: ndh; Owner: -
 --
 
 CREATE TABLE ndh.individual_to_address (
     address_use_id integer NOT NULL,
     address_id integer NOT NULL,
-    individual_id uuid NOT NULL
-);
-
-
---
--- Name: individual_to_clinical_credential; Type: TABLE; Schema: ndh; Owner: -
---
-
-CREATE TABLE ndh.individual_to_clinical_credential (
-    clinical_credential_id integer NOT NULL,
-    receipt_date date,
-    clinical_school_id integer,
     individual_id uuid NOT NULL
 );
 
@@ -912,6 +867,18 @@ CREATE TABLE ndh.provider (
 
 
 --
+-- Name: provider_to_clinical_credential; Type: TABLE; Schema: ndh; Owner: -
+--
+
+CREATE TABLE ndh.provider_to_clinical_credential (
+    clinical_credential_id integer NOT NULL,
+    receipt_date date,
+    clinical_school_id integer,
+    individual_id uuid NOT NULL
+);
+
+
+--
 -- Name: provider_to_nucc_taxonomy_code; Type: TABLE; Schema: ndh; Owner: -
 --
 
@@ -1005,13 +972,6 @@ ALTER TABLE ONLY ndh.fhir_phone_system ALTER COLUMN id SET DEFAULT nextval('ndh.
 --
 
 ALTER TABLE ONLY ndh.fhir_phone_use ALTER COLUMN id SET DEFAULT nextval('ndh.phone_type_id_seq'::regclass);
-
-
---
--- Name: individual_to_nucc_taxonomy_to_license id; Type: DEFAULT; Schema: ndh; Owner: -
---
-
-ALTER TABLE ONLY ndh.individual_to_nucc_taxonomy_to_license ALTER COLUMN id SET DEFAULT nextval('ndh.individual_nucc_taxonomy_to_license_id_seq'::regclass);
 
 
 --
@@ -1176,14 +1136,6 @@ ALTER TABLE ONLY ndh.individual_to_address
 
 
 --
--- Name: individual_to_clinical_credential individual_to_clinical_credential_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
---
-
-ALTER TABLE ONLY ndh.individual_to_clinical_credential
-    ADD CONSTRAINT individual_to_clinical_credential_pkey PRIMARY KEY (individual_id, clinical_credential_id);
-
-
---
 -- Name: individual_to_email_address individual_to_email_address_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
 --
 
@@ -1205,22 +1157,6 @@ ALTER TABLE ONLY ndh.individual_to_language_spoken
 
 ALTER TABLE ONLY ndh.individual_to_name
     ADD CONSTRAINT individual_to_name_pkey PRIMARY KEY (individual_id, fhir_name_use_id, effective_date);
-
-
---
--- Name: provider_to_nucc_taxonomy_code individual_to_nucc_taxonomy_code_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
---
-
-ALTER TABLE ONLY ndh.provider_to_nucc_taxonomy_code
-    ADD CONSTRAINT individual_to_nucc_taxonomy_code_pkey PRIMARY KEY (individual_id, nucc_taxonomy_code_id);
-
-
---
--- Name: individual_to_nucc_taxonomy_to_license individual_to_nucc_taxonomy_to_license_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
---
-
-ALTER TABLE ONLY ndh.individual_to_nucc_taxonomy_to_license
-    ADD CONSTRAINT individual_to_nucc_taxonomy_to_license_pkey PRIMARY KEY (id);
 
 
 --
@@ -1325,6 +1261,22 @@ ALTER TABLE ONLY ndh.phone_number
 
 ALTER TABLE ONLY ndh.provider
     ADD CONSTRAINT provider_pkey PRIMARY KEY (npi);
+
+
+--
+-- Name: provider_to_clinical_credential provider_to_clinical_credential_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
+--
+
+ALTER TABLE ONLY ndh.provider_to_clinical_credential
+    ADD CONSTRAINT provider_to_clinical_credential_pkey PRIMARY KEY (individual_id, clinical_credential_id);
+
+
+--
+-- Name: provider_to_nucc_taxonomy_code provider_to_nucc_taxonomy_code_pkey; Type: CONSTRAINT; Schema: ndh; Owner: -
+--
+
+ALTER TABLE ONLY ndh.provider_to_nucc_taxonomy_code
+    ADD CONSTRAINT provider_to_nucc_taxonomy_code_pkey PRIMARY KEY (individual_id, nucc_taxonomy_code_id);
 
 
 --
@@ -1462,14 +1414,6 @@ ALTER TABLE ONLY ndh.fips_county
 
 
 --
--- Name: individual_to_nucc_taxonomy_to_license individual_nucc_taxonomy_to_l_individual_id_nucc_taxonomy__fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
---
-
-ALTER TABLE ONLY ndh.individual_to_nucc_taxonomy_to_license
-    ADD CONSTRAINT individual_nucc_taxonomy_to_l_individual_id_nucc_taxonomy__fkey FOREIGN KEY (individual_id, nucc_taxonomy_code_id) REFERENCES ndh.provider_to_nucc_taxonomy_code(individual_id, nucc_taxonomy_code_id) ON DELETE CASCADE;
-
-
---
 -- Name: individual_to_address individual_to_address_address_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
@@ -1491,14 +1435,6 @@ ALTER TABLE ONLY ndh.individual_to_address
 
 ALTER TABLE ONLY ndh.individual_to_address
     ADD CONSTRAINT individual_to_address_individual_id_fkey FOREIGN KEY (individual_id) REFERENCES ndh.individual(id) ON DELETE CASCADE;
-
-
---
--- Name: individual_to_clinical_credential individual_to_clinical_credential_clinical_credential_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
---
-
-ALTER TABLE ONLY ndh.individual_to_clinical_credential
-    ADD CONSTRAINT individual_to_clinical_credential_clinical_credential_id_fkey FOREIGN KEY (clinical_credential_id) REFERENCES ndh.clinical_credential(id) ON UPDATE CASCADE;
 
 
 --
@@ -1539,22 +1475,6 @@ ALTER TABLE ONLY ndh.individual_to_name
 
 ALTER TABLE ONLY ndh.individual_to_name
     ADD CONSTRAINT individual_to_name_individual_id_fkey FOREIGN KEY (individual_id) REFERENCES ndh.individual(id) ON DELETE CASCADE;
-
-
---
--- Name: provider_to_nucc_taxonomy_code individual_to_nucc_taxonomy_code_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
---
-
-ALTER TABLE ONLY ndh.provider_to_nucc_taxonomy_code
-    ADD CONSTRAINT individual_to_nucc_taxonomy_code_individual_id_fkey FOREIGN KEY (individual_id) REFERENCES ndh.individual(id) ON DELETE CASCADE;
-
-
---
--- Name: provider_to_nucc_taxonomy_code individual_to_nucc_taxonomy_code_nucc_taxonomy_code_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
---
-
-ALTER TABLE ONLY ndh.provider_to_nucc_taxonomy_code
-    ADD CONSTRAINT individual_to_nucc_taxonomy_code_nucc_taxonomy_code_id_fkey FOREIGN KEY (nucc_taxonomy_code_id) REFERENCES ndh.nucc_taxonomy_code(id);
 
 
 --
@@ -1662,11 +1582,35 @@ ALTER TABLE ONLY ndh.provider
 
 
 --
+-- Name: provider_to_clinical_credential provider_to_clinical_credential_clinical_credential_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
+--
+
+ALTER TABLE ONLY ndh.provider_to_clinical_credential
+    ADD CONSTRAINT provider_to_clinical_credential_clinical_credential_id_fkey FOREIGN KEY (clinical_credential_id) REFERENCES ndh.clinical_credential(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: provider_to_clinical_credential provider_to_clinical_credential_npi_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
+--
+
+ALTER TABLE ONLY ndh.provider_to_clinical_credential
+    ADD CONSTRAINT provider_to_clinical_credential_npi_fkey FOREIGN KEY (individual_id) REFERENCES ndh.provider(individual_id) ON UPDATE CASCADE;
+
+
+--
 -- Name: provider_to_nucc_taxonomy_code provider_to_nucc_taxonomy_code_individual_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
 --
 
 ALTER TABLE ONLY ndh.provider_to_nucc_taxonomy_code
-    ADD CONSTRAINT provider_to_nucc_taxonomy_code_individual_id_fkey FOREIGN KEY (individual_id) REFERENCES ndh.provider(individual_id);
+    ADD CONSTRAINT provider_to_nucc_taxonomy_code_individual_id_fkey FOREIGN KEY (individual_id) REFERENCES ndh.provider(individual_id) ON DELETE CASCADE;
+
+
+--
+-- Name: provider_to_nucc_taxonomy_code provider_to_nucc_taxonomy_code_nucc_taxonomy_code_id_fkey; Type: FK CONSTRAINT; Schema: ndh; Owner: -
+--
+
+ALTER TABLE ONLY ndh.provider_to_nucc_taxonomy_code
+    ADD CONSTRAINT provider_to_nucc_taxonomy_code_nucc_taxonomy_code_id_fkey FOREIGN KEY (nucc_taxonomy_code_id) REFERENCES ndh.nucc_taxonomy_code(id);
 
 
 --
