@@ -8,8 +8,12 @@ NDH (soon to be renamed) is supported by a dedicated team of individuals fulfill
 | Role   | Name    | Affiliation    |
 | :----- | :------ | :------------- |
 | Product Manager | Julie Sossamon | DSAC |
+| Design Lead | Heather Myers | DSAC |
 | Technical Lead | Fred Trotter | DSAC |
 | Engineer | Sarah Popelka | DSAC |
+| Engineer | Blaine Price | DSAC |
+| Engineer | Sachin Panayil | USDC @ DSAC |
+| Engineer | Isaac Milarsy | USDC @ DSAC |
 
 See [CODEOWNERS.md](.github/CODEOWNERS.md) for a list of those responsible for the code and documentation in this repository.
 

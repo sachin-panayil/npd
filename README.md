@@ -1,13 +1,21 @@
-# NDH
-
-National Provider Directory at CMS
+# CMS National Provider Directory
 
 ## About the Project
 
-The soon to be renamed NDH project at CMS will implement a new Provider and Payer Directory service that will eventually grow to encompass (and probably replace) the functionality of NPPES.
+### Problem
+CMS maintains the country’s de facto provider directory because of the agency’s role in registering new doctors for a National Provider ID in the National Plan and Provider Enumeration System (NPPES), and because of the agency’s role in enrolling providers in Medicare, overseeing the State Medicaid programs, and running the Federally-facilitated marketplace.  Enrollment for Medicaid happens in the states, but for Medicare, the enrollment workflow happens  in the Provider Enrollment, Chain, and Ownership System (PECOS).  However, NPPES and PECOS data is often inaccurate and lacks key interoperability information needed by CMS and the industry. The Medicare enrollment process provides some validation of the information, but the process is done in multiple systems, partly performed by CMS and partly performed by regional Medicare Administrative Contractors (MACs). Additionally, there are several paper forms (received by fax)  involved in the process and proprietary solutions used by the MACs to validate the data before submitting it back to CMS. These  processes are duplicative, ineffective, costly, and the improved information is not shared back with the industry. The healthcare system has been begging for a single directory at CMS for decades, and the cost to the larger healthcare industry of not having one is estimated at $2.76B a year. 
+### Main Challenges
+* There is no reliable single source of truth for accurate provider information. CMS itself has at least five systems that manage provider information. The CMS NPPES system is the default directory used as a starter provider database for the industry, but due to data quality problems , it is branched and corrected over 5,000 times in the industry where updates are applied in silos.
+* Provider directories across the industry  are inaccurate, with manual validation done over the phone, or via fax or email.
+* Due to duplicative places the provider has to update and the risk of fines from health plans, plans continually badger providers to update their information. Because each provider has to update ~20 systems monthly, the exercise is futile and there is lack of motivation to keep trying. 
+* Billing information and patient-facing information are consistently conflated within the ecosystem causing patients to try to visit mailing addresses, rather than practice addresses.
+* Interoperability efforts desperately need a central repository of provider FHIR endpoints, but it does not currently exist.
+* The health plan data that indicates which providers participate in each insurance plan is stored in different formats, is difficult to access, and is updated at different intervals. This results in patients being unable to access accurate information as they seek care, which means that patients cannot find plans with the specific providers they need, nor can they easily tell  if a provider they want to see will be covered by their insurance.
+#### Planned Solution
+Create a modern version of a directory, which includes provider and payer data, to serve as a single source of truth that can be updated by health plans and providers for the benefit of all. This directory will create efficiencies for the entire national healthcare system, as it will reduce  data collection and reporting burden on both payers and providers  while improving  data accuracy and better serving the beneficiaries and consumers.  For example, this directory can be used to find information such as the provider practices and addresses, hospitals, specialty, state medical licenses, quality scores, interoperability addresses (including data sharing networks and individual endpoint addresses), the insurance plans the provider participates in, and other useful data for patients, other providers, and health plans.
 
 ### Project Vision
-Enable patient data to work for patients, by supporting interoperability by providing clean enumeration of U.S. healthcare entities, and a reliable map of how those entities connect. 
+We envision a world where the provider experience at CMS is so seamless that it is a joy and a breeze for providers to keep their information up-to-date. The CMS Provider Directory should be an authoritative and accurate source of provider information.
 
 <!--
 ### Project Mission
@@ -17,9 +25,9 @@ Enable patient data to work for patients, by supporting interoperability by prov
 ### Agency Mission
 The Centers for Medicare and Medicaid Services (CMS) provides health coverage to more than 100 million people through Medicare, Medicaid, the Children’s Health Insurance Program, and the Health Insurance Marketplace. The CMS seeks to strengthen and modernize the Nation’s health care system, to provide access to high quality care and improved health at lower costs.
 
-<!--
+
 ### Team Mission
-TODO: Good to include since this is an agency-led project -->
+We are a cross-functional team of product managers, designers, and software engineers, who are working together to improve the Provider experience at CMS.
 
 ## Core Team
 
@@ -49,20 +57,18 @@ The following guide is for members of the project team who have access to the re
 1. Create a local postgres server
 2. Create a database called ndh
 3. Execute the sql in `db/sql/schemas/ndh.sql` to create the ndh schema and associated tables
-4. Create a `.env` file in the `src/` directory, following the template provided in `src/.env_template`, ensuring that the connection details reflect your database connection
-5. Navigate to the `src/` directory. Run `python manage.py loaddata ndh.json` to load a sample of data into the database
+4. Execute the sql in `db/sql/inserts/sample_data.sql` to load sample data into the database.
 
 ### Django App Setup
 1. Ensure that either colima (if using macOS) or the docker service is running
-2. Run `docker-compose up --build` initially and following any changes
-3. Navigate to `http://localhost:8000` to view your changes.
-4. Happy coding!
+2. Create a `.env` file in the `src/` directory, following the template provided in `src/.env_template`, ensuring that the connection details reflect your database connection
+3. Run `docker-compose up --build` initially and following any changes
+4. Navigate to `http://localhost:8000` to ensure that the setup worked (you should see a Docker landing page if DEBUG is set to true).
+5. Happy coding!
 
 ## Coding Style and Linters
 
-<!-- TODO - Add the repo's linting and code style guidelines -->
-
-Each sub-directory has its own linting and testing guidelines. Lint and code tests are run on each commit, so linters and tests should be run locally before committing.
+Each sub-directory has its own linting and testing guidelines. Linting and code tests are run on each commit, so linters and tests should be run locally before committing.
 
 ## Branching Model
 

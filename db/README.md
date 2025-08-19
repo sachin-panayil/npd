@@ -6,6 +6,6 @@ Please use the .sqlfluff file in your preferred development environment, and man
 ### Local Database Setup
 1. Create a local postgres server
 2. Create a database called ndh
-3. Execute the sql in `db/sql/schemas/ndh.sql` to create the ndh schema and associated tables
-4. Create a `.env` file in the `src/` directory, following the template provided in `src/.env_template`, ensuring that the connection details reflect your database connection
-5. Navigate to the `src/` directory. Run `python manage.py loaddata ndh.json` to load a sample of data into the database
+3. Execute the sql in `schemas/ndh.sql` to create the ndh schema and associated tables
+4. Execute the sql in `inserts/sample_data.sql` to load sample data into the database.
+
