@@ -13,7 +13,7 @@ NDH (soon to be renamed) is supported by a dedicated team of individuals fulfill
 | Engineer | Sarah Popelka | DSAC |
 | Engineer | Blaine Price | DSAC |
 | Engineer | Sachin Panayil | USDC @ DSAC |
-| Engineer | Isaac Milarsy | USDC @ DSAC |
+| Engineer | Isaac Milarky | USDC @ DSAC |
 
 See [CODEOWNERS.md](.github/CODEOWNERS.md) for a list of those responsible for the code and documentation in this repository.
 
