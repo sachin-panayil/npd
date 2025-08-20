@@ -9,6 +9,8 @@ services:
      - "5432:5432"
    volumes:
      - postgres_data:/var/lib/postgresql/data
+     - ../db/sql/schemas/ndh.sql:/docker-entrypoint-initdb.d/ndh.sql
+     - ../db/sql/inserts/sample_data.sql:/docker-entrypoint-initdb.d/sample_data.sql
    env_file:
      - .env
  
@@ -26,7 +28,7 @@ services:
      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
      DATABASE_ENGINE: ${NDH_DB_ENGINE}
      NDH_DB_NAME: ${NDH_DB_NAME}
-     NDH_DB_USERNAME: ${NDH_DB_USERNAME}
+     NDH_DB_USER: ${NDH_DB_USERNAME}
  
      NDH_DB_PASSWORD: ${NDH_DB_PASSWORD}
      NDH_DB_HOST: ${NDH_DB_HOST}
