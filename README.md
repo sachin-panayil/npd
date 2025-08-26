@@ -48,7 +48,7 @@ This is the main repository for the Naitonal PRovider Directory workstream, whic
 The `db/` directory contains sql code for the National Provider Directory database. The `db/sql/schemas/` sub-directory contains the code necessary to create each schema in the db. The `db/tinman_SQL_schema_standard` directory contains the project's sql naming conventions and guidelines.
 
 ### etls/
-The `etls/` directory contains pipelines that extract, transform, and load (ETL) ancillary data into the database for the FHIR API. Each sub-directory in the `etls/` directory represents a different input data source. Note: these are helper ETLs, specific to the FHIR API. The main ETLs are found in the [Puffin Repo](https://github.com/DSACMS/npd_Puffin). Eventually this folder will store code to map the data from the core data product ddata model to the provider directory data model.
+The `etls/` directory contains pipelines that extract, transform, and load (ETL) ancillary data into the database for the FHIR API. Each sub-directory in the `etls/` directory represents a different input data source. Note: these are helper ETLs, specific to the FHIR API. The main ETLs are found in the [Puffin Repo](https://github.com/DSACMS/npd_Puffin). Eventually this folder will store code to map the data from the Core Data Product data model to the provider directory data model.
 
 ### src/
 The `src/` directory contains the backend python code for the National Provider Directory APIs (built on Django). The `src/ndhfhir/` subdirectory contains the code for the FHIR API. 
