@@ -8,10 +8,12 @@ NDH (soon to be renamed) is supported by a dedicated team of individuals fulfill
 | Role   | Name    | Affiliation    |
 | :----- | :------ | :------------- |
 | Product Manager | Julie Sossamon | DSAC |
+| Design Lead | Heather Myers | DSAC |
 | Technical Lead | Fred Trotter | DSAC |
-| Senior Software Engineer | Sarah Popelka | DSAC |
-| Designer | Heather Myers | DSAC |
-| Software Engineer | Sachin Panayil | DSAC |
+| Engineer | Sarah Popelka | DSAC |
+| Engineer | Blaine Price | DSAC |
+| Engineer | Sachin Panayil | USDC @ DSAC |
+| Engineer | Isaac Milarsky | USDC @ DSAC |
 
 See [CODEOWNERS.md](.github/CODEOWNERS.md) for a list of those responsible for the code and documentation in this repository.
 
@@ -74,6 +76,20 @@ Total number of contributors: <!--CONTRIBUTOR COUNT START--> 5 <!--CONTRIBUTOR C
                     <img src="https://avatars.githubusercontent.com/u/79382140?v=4" width="100;" alt="sachin-panayil"/>
                     <br />
                     <sub><b>Sachin Panayil</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/IsaacMilarky">
+                    <img src="https://avatars.githubusercontent.com/u/24639268?v=4" width="100;" alt="IsaacMilarky"/>
+                    <br />
+                    <sub><b>Isaac Milarsky</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/acme-cms-challenge">
+                    <img src="https://avatars.githubusercontent.com/u/70127703?v=4" width="100;" alt="acme-cms-challenge"/>
+                    <br />
+                    <sub><b>acme-cms-challenge</b></sub>
                 </a>
             </td>
             <td align="center">
