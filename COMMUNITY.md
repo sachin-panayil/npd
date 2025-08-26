@@ -58,26 +58,6 @@ Total number of contributors: <!--CONTRIBUTOR COUNT START--> <!--CONTRIBUTOR COU
 	<tbody>
 		<tr>
             <td align="center">
-                <a href="https://github.com/ftrotter-gov">
-                    <img src="https://avatars.githubusercontent.com/u/218619890?v=4" width="100;" alt="ftrotter-gov"/>
-                    <br />
-                    <sub><b>Fred Trotter</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/spopelka-dsac">
-                    <img src="https://avatars.githubusercontent.com/u/216547207?v=4" width="100;" alt="spopelka-dsac"/>
-                    <br />
-                    <sub><b>spopelka-dsac</b></sub>
-                </a>
-            </td>
-		</tr>
-	<tbody>
-</table>
-<table>
-	<tbody>
-		<tr>
-            <td align="center">
                 <a href="https://github.com/spopelka-dsac">
                     <img src="https://avatars.githubusercontent.com/u/216547207?v=4" width="100;" alt="spopelka-dsac"/>
                     <br />
@@ -103,6 +83,13 @@ Total number of contributors: <!--CONTRIBUTOR COUNT START--> <!--CONTRIBUTOR COU
                     <img src="https://avatars.githubusercontent.com/u/24639268?v=4" width="100;" alt="IsaacMilarky"/>
                     <br />
                     <sub><b>Isaac Milarsky</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/acme-cms-challenge">
+                    <img src="https://avatars.githubusercontent.com/u/70127703?v=4" width="100;" alt="acme-cms-challenge"/>
+                    <br />
+                    <sub><b>acme-cms-challenge</b></sub>
                 </a>
             </td>
             <td align="center">
