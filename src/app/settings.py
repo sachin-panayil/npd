@@ -39,7 +39,7 @@ INTERNAL_APIS = config("DJANGO_ALLOWED_HOSTS").split(',')
 # Application definition
 
 INSTALLED_APPS = [
-    'ndhfhir.apps.NDHFHIRConfig',
+    'ndhfhir',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,8 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'django_filters',
-    'debug_toolbar'
+    'django_filters'
+    #'debug_toolbar'
 ]
 
 MIDDLEWARE = [
@@ -59,7 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',  # This must come at the end
+    #'debug_toolbar.middleware.DebugToolbarMiddleware',  # This must come at the end
 ]
 
 ROOT_URLCONF = 'app.urls'
@@ -100,6 +100,7 @@ DATABASES = {
     }
 }
 
+print(f"CONFIG: {DATABASES}")
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
