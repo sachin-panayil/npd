@@ -100,7 +100,7 @@ DATABASES = {
     }
 }
 
-print(f"CONFIG: {DATABASES}")
+TEST_RUNNER = "ndhfhir.tests.SchemaTestRunner"
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

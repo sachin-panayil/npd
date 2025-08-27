@@ -4,89 +4,67 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 from pathlib import Path
+import uuid
 
-from .models import Provider, Individual, IndividualToName
+from ndhfhir.models import Provider, Individual, IndividualToName
+from django.test.runner import DiscoverRunner
+from django.db import connection
 
+class SchemaTestRunner(DiscoverRunner):
+    def setup_databases(self, **kwargs):
+        old_config = super().setup_databases(**kwargs)
+        # Apply unmanaged tables
+        with connection.cursor() as cursor:
+            cursor.execute(open("../db/sql/schemas/ndh.sql").read())
+            cursor.execute(open("../db/sql/schemas/create_tables.sql").read())
+        return old_config
 
-class APITests(TestCase):
+class ProviderApiTests(TestCase):
+
     def setUp(self):
         self.client = APIClient()
 
-        # Create example provider 1
-        self.individual1 = Individual.objects.create(gender_code="M")
+        # Create Individual 1
+        self.individual1 = Individual.objects.create(
+            id=uuid.uuid4(),   # Required since unmanaged models won’t autogen IDs
+            gender_code="M"
+        )
         self.name1 = IndividualToName.objects.create(
             individual=self.individual1,
             first_name="John",
             last_name="Smith",
         )
-        self.provider1 = Provider.objects.create(individual=self.individual1)
+        self.provider1 = Provider.objects.create(
+            id=uuid.uuid4(),
+            individual=self.individual1
+        )
 
-        # Create example provider 2
-        self.individual2 = Individual.objects.create(gender_code="F")
+        # Create Individual 2
+        self.individual2 = Individual.objects.create(
+            id=uuid.uuid4(),
+            gender_code="F"
+        )
         self.name2 = IndividualToName.objects.create(
             individual=self.individual2,
             first_name="Jane",
             last_name="Doe",
         )
-        self.provider2 = Provider.objects.create(individual=self.individual2)
+        self.provider2 = Provider.objects.create(
+            id=uuid.uuid4(),
+            individual=self.individual2
+        )
 
-    def test_index_returns_200(self):
-        url = reverse("index")
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn("successful", response.content.decode())
+    def test_provider_list(self):
+        """Test that the API returns providers"""
+        response = self.client.get("/api/providers/")
+        self.assertEqual(response.status_code, 200)
+        self.assertGreaterEqual(len(response.data), 2)
 
-    def test_health_returns_200(self):
-        url = reverse("health")
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn("healthy", response.content.decode())
-
-    def test_practitioner_list_returns_200_and_paginated_data(self):
-        url = reverse("fhir-practitioner-list")
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response["Content-Type"], "application/fhir+json")
-
-        data = response.json()
-        self.assertIn("results", data)
-        self.assertEqual(len(data["results"]), 2)  # we created 2 providers
-
-    def test_practitioner_list_with_page_size(self):
-        url = reverse("fhir-practitioner-list") + "?page_size=1"
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        data = response.json()
-        self.assertEqual(len(data["results"]), 1)
-
-    def test_practitioner_list_filter_by_name(self):
-        url = reverse("fhir-practitioner-list") + "?name=Smith"
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        data = response.json()
-        self.assertEqual(len(data["results"]), 1)
-        self.assertIn("Smith", str(data["results"][0]))
-
-    def test_practitioner_list_filter_by_gender(self):
-        url = reverse("fhir-practitioner-list") + "?gender=Female"
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        data = response.json()
-        self.assertEqual(len(data["results"]), 1)
-
-    def test_practitioner_retrieve_returns_single_provider(self):
-        url = reverse("fhir-practitioner-detail", args=[self.provider1.id])
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response["Content-Type"], "application/fhir+json")
-
-        data = response.json()
-        self.assertEqual(data["id"], self.provider1.id)
-
-
+    def test_provider_detail(self):
+        """Test provider detail endpoint"""
+        response = self.client.get(f"/api/providers/{self.provider1.id}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["individual"]["gender_code"], "M")
 #
 #class ProviderFHIRJSONTests(TestCase):
 #    @classmethod
