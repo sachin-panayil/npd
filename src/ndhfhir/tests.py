@@ -24,6 +24,7 @@ class SchemaTestRunner(DiscoverRunner):
         return old_config
 
 class BasicViewsTestCase(APITestCase):
+
     def test_index_view(self):
         url = reverse("index")  # maps to "/"
         response = self.client.get(url)
@@ -41,11 +42,8 @@ class BasicViewsTestCase(APITestCase):
 
 
 class PractitionerViewSetTestCase(APITestCase):
-
     def setUp(self):
         self.client = APIClient()
-        import sys
-        sys.argv.append("TEST")
 
 
 
