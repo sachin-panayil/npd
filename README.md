@@ -14,6 +14,12 @@ CMS maintains the countryâ€™s de facto provider directory because of the agencyâ
 #### Planned Solution
 Create a modern version of a directory, which includes provider and payer data, to serve as a single source of truth that can be updated by health plans and providers for the benefit of all. This directory will create efficiencies for the entire national healthcare system, as it will reduce  data collection and reporting burden on both payers and providers  while improving  data accuracy and better serving the beneficiaries and consumers.  For example, this directory can be used to find information such as the provider practices and addresses, hospitals, specialty, state medical licenses, quality scores, interoperability addresses (including data sharing networks and individual endpoint addresses), the insurance plans the provider participates in, and other useful data for patients, other providers, and health plans.
 
+We are breaking the initial MVP work into two work streams: Core Data Model and National Provider Directory.
+
+The Core Data Model workstream encompassess all of the incoming data pipelines from various CMS open data sources, internal-to-CMS data sources, and data provided by industry partners. The goal of the Core Data Model workstream is to layer and combine data from these sources to build as accurate of a representation of our nation's healthcare providers, healthcare providing organizations, and healthcare data networks as possible.
+
+The National Provider Direcotry workstream focuses on exposing the key elements of the Core Data Model through a FHIR API and a user-friendly search interface. Eventually, providers and organizations will be able to use the National Provider Directory to update their information, as well.
+
 ### Project Vision
 We envision a world where the provider experience at CMS is so seamless that it is a joy and a breeze for providers to keep their information up-to-date. The CMS Provider Directory should be an authoritative and accurate source of provider information.
 
@@ -36,13 +42,13 @@ A list of core team members responsible for the code and documentation in this r
 
 ## Repository Structure
 
-This is a mega-repository that will contain sub-directories for each component of National Provider Directory. You will find more information about each component in a README.md file within its respective directory. 
+This is the main repository for the Naitonal PRovider Directory workstream, which will will contain sub-directories for each component of National Provider Directory. You will find more information about each component in a README.md file within its respective directory. There are additional repositories ([Puffin](https://github.com/DSACMS/npd_Puffin), [VEINHasher](https://github.com/DSACMS/npd_VEINHasher), [CSViper](https://github.com/DSACMS/npd_csviper), [Cicadence](https://github.com/DSACMS/npd_cicadence), [PlainerFlow](https://github.com/DSACMS/npd_plainerflow), [Plan Scrape](https://github.com/DSACMS/npd_plan_scrape), [NUCC Slurp](https://github.com/DSACMS/npd_nucc_slurp), [Endpoint API Validator](https://github.com/DSACMS/npd-endpoint-api-validator), [DURC is CRUD](https://github.com/search?q=org%3ADSACMS+npd_&type=repositories#:~:text=DSACMS/npd_durc_is_crud), [VRDC Python Projects](https://github.com/DSACMS/npd_vrdc_python_projects), and [NPD EHR FHIR NPI Slurp](https://github.com/DSACMS/npd_ehr_fhir_npi_slurp)), which contain the source code for various elements of the Provider/ Organization data pipelines that make up the Core Data Product workstream.
 
 ### db/
 The `db/` directory contains sql code for the National Provider Directory database. The `db/sql/schemas/` sub-directory contains the code necessary to create each schema in the db. The `db/tinman_SQL_schema_standard` directory contains the project's sql naming conventions and guidelines.
 
 ### etls/
-The `etls/` directory contains the pipelines that extract, transform, and load (ETL) data into the database. Each sub-directory in the `etls/` directory represents a different input data source.
+The `etls/` directory contains pipelines that extract, transform, and load (ETL) ancillary data into the database for the FHIR API. Each sub-directory in the `etls/` directory represents a different input data source. Note: these are helper ETLs, specific to the FHIR API. The main ETLs are found in the [Puffin Repo](https://github.com/DSACMS/npd_Puffin). Eventually this folder will store code to map the data from the Core Data Product data model to the provider directory data model.
 
 ### src/
 The `src/` directory contains the backend python code for the National Provider Directory APIs (built on Django). The `src/ndhfhir/` subdirectory contains the code for the FHIR API. 
@@ -51,6 +57,8 @@ The `src/` directory contains the backend python code for the National Provider 
 # Development and Software Delivery Lifecycle
 
 The following guide is for members of the project team who have access to the repository as well as code contributors. The main difference between internal and external contributions is that external contributors will need to fork the project and will not be able to merge their own pull requests. For more information on contributing, see: [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+Please note: We are taking an iterative approach to the development of this project, starting first with an MVP and building additional functionality as we go.
 
 ## Local Development
 

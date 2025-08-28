@@ -57,3 +57,8 @@ terraform apply
 - This is a starting point that we will build off of
 - This is very coupled to running in the DSAC sandbox environment
 - In order to connect to the database, it is recommended that you set a connection timeout of 300 seconds.
+
+
+## Notional Infrastructure Diagram
+The below diagram is a rough hypothesis of the infrastructure components that will make up the National Provider Directory MVP.
+![Notional architecture diagram](<Notional NPD System Diagram_2025-08-26_19-37-04.png>)

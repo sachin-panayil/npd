@@ -292,7 +292,7 @@ module "rds" {
   engine_version         = "17"
   family                 = "postgres17"
   instance_class         = var.db_instance_class
-  allocated_storage      = 20
+  allocated_storage      = 100
   db_name                = var.db_name
   username               = var.db_name
   publicly_accessible    = true
