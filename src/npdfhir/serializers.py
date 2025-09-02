@@ -214,6 +214,64 @@ class IndividualSerializer(serializers.Serializer):
         return individual
 
 
+class OrganizationSerializer(serializers.Serializer):
+    class Meta:
+        model = Organization
+        fields = '__all__'
+
+
+class ClinicalOrganizationSerializer(serializers.Serializer):
+    npi = NPISerializer()
+    organization = OrganizationSerializer()
+    identifier = OtherIdentifierSerializer(
+        source='organizationtootheridentifier_set', many=True, read_only=True
+    )
+    taxonomy = TaxonomySerializer(
+        source='organizationtotaxonomy_set', many=True, read_only=True
+    )
+
+    class Meta:
+        fields = ['npi', 'name', 'identifier', 'taxonomy']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        organization = Organization()
+        organization.id = str(instance.npi.npi)
+        organization.meta = Meta(
+            profile=[
+                "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"]
+        )
+        npi_identifier = Identifier(
+            system="http://terminology.hl7.org/NamingSystem/npi",
+            value=str(instance.npi.npi),
+            type=CodeableConcept(
+                coding=[Coding(
+                    system="http://terminology.hl7.org/CodeSystem/v2-0203",
+                    code="PRN",
+                    display="Provider number"
+                )]
+            ),
+            use='official',
+            period=Period(
+                start=instance.npi.enumeration_date,
+                end=instance.npi.deactivation_date
+            )
+        )
+        organization.identifier = [npi_identifier]
+        if 'identifier' in representation.keys():
+            organization.identifier += representation['identifier']
+        name = [name for name in representation['organization']
+                ['name'] if name['is_primary']]
+        alias = [name for name in representation['organization']
+                 ['name'] if not name['is_primary']]
+        organization.name = name['name']
+        if alias != []:
+            organization.alias = [name['name'] for name in alias]
+        if 'taxonomy' in representation.keys():
+            organization.qualification = representation['taxonomy']
+        return organization.model_dump()
+
+
 class PractitionerSerializer(serializers.Serializer):
     npi = NPISerializer()
     individual = IndividualSerializer(read_only=True)
@@ -227,6 +285,7 @@ class PractitionerSerializer(serializers.Serializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
+        # print(type(instance))
         practitioner = Practitioner()
         practitioner.id = str(instance.npi.npi)
         practitioner.meta = Meta(
@@ -271,6 +330,7 @@ class BundleSerializer(serializers.Serializer):
         entries = []
 
         for resource in instance.data:
+            print(resource)
             # Get the resource type (Patient, Practitioner, etc.)
             resource_type = resource['resourceType']
             id = resource['id']
