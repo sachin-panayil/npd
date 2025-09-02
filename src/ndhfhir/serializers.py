@@ -280,7 +280,7 @@ class BundleSerializer(serializers.Serializer):
         entries = []
 
         for resource in instance.data:
-            print(resource)
+            #print(resource)
             # Get the resource type (Patient, Practitioner, etc.)
             resource_type = resource['resourceType']
             id = resource['id']

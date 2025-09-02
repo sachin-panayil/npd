@@ -12,6 +12,26 @@ from django.db import connection
 from ndhfhir.models import OtherIdentifierType, FhirNameUse, NuccTaxonomyCode
 from ndhfhir.cache import cacheData
 
+
+def get_female_npis(npi_list):
+    """
+    Given a list of NPI numbers, return the subset that are female.
+    """
+    query = """
+        SELECT p.npi, i.gender_code
+        FROM ndh.provider p
+        JOIN ndh.individual i ON p.individual_id = i.id
+        WHERE p.npi = ANY(%s)
+          AND i.gender_code = 'F'
+    """
+    with connection.cursor() as cursor:
+        cursor.execute(query, [npi_list])
+        results = cursor.fetchall() 
+
+    return results
+
+
+
 class SchemaTestRunner(DiscoverRunner):
     def setup_databases(self, **kwargs):
         old_config = super().setup_databases(**kwargs)
@@ -64,7 +84,21 @@ class PractitionerViewSetTestCase(APITestCase):
         url = reverse("fhir-practitioner-list")
         response = self.client.get(url, {"gender": "Male"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        #Assert all required fields are present to get npi id
         self.assertIn("results", response.data)
+        self.assertIn("entry",response.data['results'])
+        
+        npi_ids = []
+        for practitioner_entry in response.data['results']['entry']:
+            self.assertIn("resource",practitioner_entry)
+            self.assertIn("id",practitioner_entry['resource'])
+            npi_id = practitioner_entry['resource']['id']
+            npi_ids.append(int(npi_id))
+        
+        #Check to make sure no female practitioners were fetched by mistake
+        should_be_empty = get_female_npis(npi_ids)
+        self.assertFalse(should_be_empty)
 
     def test_list_filter_by_name(self):
         url = reverse("fhir-practitioner-list")
