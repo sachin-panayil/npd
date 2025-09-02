@@ -551,11 +551,12 @@ CREATE TABLE npd.individual_to_name (
     individual_id uuid NOT NULL,
     prefix character varying(10),
     first_name character varying(50) NOT NULL,
-    middle_name character varying(50) NOT NULL,
+    middle_name character varying(50),
     last_name character varying(200) NOT NULL,
     start_date date,
     end_date date,
-    name_use_id integer NOT NULL
+    name_use_id integer NOT NULL,
+    suffix character varying(10)
 );
 
 
@@ -791,12 +792,13 @@ CREATE TABLE npd.organization (
 
 
 --
--- Name: organization_name; Type: TABLE; Schema: npd; Owner: -
+-- Name: organization_to_name; Type: TABLE; Schema: npd; Owner: -
 --
 
-CREATE TABLE npd.organization_name (
+CREATE TABLE npd.organization_to_name (
     organization_id uuid NOT NULL,
-    name character varying(1000) NOT NULL
+    name character varying(1000) NOT NULL,
+    is_primary boolean DEFAULT false
 );
 
 
@@ -851,7 +853,7 @@ CREATE TABLE npd.organization_to_taxonomy (
 
 CREATE TABLE npd.other_id_type (
     id integer NOT NULL,
-    value character varying(20)
+    value character varying(50)
 );
 
 
@@ -873,36 +875,6 @@ CREATE SEQUENCE npd.other_id_type_id_seq
 --
 
 ALTER SEQUENCE npd.other_id_type_id_seq OWNED BY npd.other_id_type.id;
-
-
---
--- Name: other_identifier_type; Type: TABLE; Schema: npd; Owner: -
---
-
-CREATE TABLE npd.other_identifier_type (
-    id integer NOT NULL,
-    value character varying(20)
-);
-
-
---
--- Name: other_identifier_type_id_seq; Type: SEQUENCE; Schema: npd; Owner: -
---
-
-CREATE SEQUENCE npd.other_identifier_type_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: other_identifier_type_id_seq; Type: SEQUENCE OWNED BY; Schema: npd; Owner: -
---
-
-ALTER SEQUENCE npd.other_identifier_type_id_seq OWNED BY npd.other_identifier_type.id;
 
 
 --
@@ -974,7 +946,9 @@ CREATE TABLE npd.provider_to_organization (
 CREATE TABLE npd.provider_to_other_id (
     npi bigint NOT NULL,
     other_id character varying(100) NOT NULL,
-    other_id_type_id integer NOT NULL
+    other_id_type_id integer NOT NULL,
+    state_code character varying(2) NOT NULL,
+    issuer character varying(100) NOT NULL
 );
 
 
@@ -1115,13 +1089,6 @@ ALTER TABLE ONLY npd.nucc_specialization ALTER COLUMN id SET DEFAULT nextval('np
 --
 
 ALTER TABLE ONLY npd.other_id_type ALTER COLUMN id SET DEFAULT nextval('npd.other_id_type_id_seq'::regclass);
-
-
---
--- Name: other_identifier_type id; Type: DEFAULT; Schema: npd; Owner: -
---
-
-ALTER TABLE ONLY npd.other_identifier_type ALTER COLUMN id SET DEFAULT nextval('npd.other_identifier_type_id_seq'::regclass);
 
 
 --
@@ -1320,7 +1287,7 @@ ALTER TABLE ONLY npd.individual_to_language_spoken
 --
 
 ALTER TABLE ONLY npd.individual_to_name
-    ADD CONSTRAINT pk_individual_to_name PRIMARY KEY (individual_id, first_name, middle_name, last_name, name_use_id);
+    ADD CONSTRAINT pk_individual_to_name PRIMARY KEY (individual_id, first_name, last_name, name_use_id);
 
 
 --
@@ -1428,11 +1395,11 @@ ALTER TABLE ONLY npd.organization
 
 
 --
--- Name: organization_name pk_organization_name; Type: CONSTRAINT; Schema: npd; Owner: -
+-- Name: organization_to_name pk_organization_to_name; Type: CONSTRAINT; Schema: npd; Owner: -
 --
 
-ALTER TABLE ONLY npd.organization_name
-    ADD CONSTRAINT pk_organization_name PRIMARY KEY (organization_id, name);
+ALTER TABLE ONLY npd.organization_to_name
+    ADD CONSTRAINT pk_organization_to_name PRIMARY KEY (organization_id, name);
 
 
 --
@@ -1473,14 +1440,6 @@ ALTER TABLE ONLY npd.organization_to_taxonomy
 
 ALTER TABLE ONLY npd.other_id_type
     ADD CONSTRAINT pk_other_id_type PRIMARY KEY (id);
-
-
---
--- Name: other_identifier_type pk_other_identifier_type; Type: CONSTRAINT; Schema: npd; Owner: -
---
-
-ALTER TABLE ONLY npd.other_identifier_type
-    ADD CONSTRAINT pk_other_identifier_type PRIMARY KEY (id);
 
 
 --
@@ -1536,7 +1495,7 @@ ALTER TABLE ONLY npd.provider_to_organization
 --
 
 ALTER TABLE ONLY npd.provider_to_other_id
-    ADD CONSTRAINT pk_provider_to_other_id PRIMARY KEY (npi, other_id_type_id);
+    ADD CONSTRAINT pk_provider_to_other_id PRIMARY KEY (npi, other_id, other_id_type_id, issuer, state_code);
 
 
 --
@@ -1689,14 +1648,6 @@ ALTER TABLE ONLY npd.nucc_grouping
 
 ALTER TABLE ONLY npd.nucc_specialization
     ADD CONSTRAINT uc_nucc_specialization_nucc_code_nucc_classification UNIQUE (nucc_code, nucc_classification_id);
-
-
---
--- Name: other_identifier_type uc_other_identifier_type_value; Type: CONSTRAINT; Schema: npd; Owner: -
---
-
-ALTER TABLE ONLY npd.other_identifier_type
-    ADD CONSTRAINT uc_other_identifier_type_value UNIQUE (value);
 
 
 --
@@ -1972,11 +1923,11 @@ ALTER TABLE ONLY npd.organization
 
 
 --
--- Name: organization_name fk_organization_name_organization_id; Type: FK CONSTRAINT; Schema: npd; Owner: -
+-- Name: organization_to_name fk_organization_to_name_organization_id; Type: FK CONSTRAINT; Schema: npd; Owner: -
 --
 
-ALTER TABLE ONLY npd.organization_name
-    ADD CONSTRAINT fk_organization_name_organization_id FOREIGN KEY (organization_id) REFERENCES npd.organization(id) ON DELETE CASCADE;
+ALTER TABLE ONLY npd.organization_to_name
+    ADD CONSTRAINT fk_organization_to_name_organization_id FOREIGN KEY (organization_id) REFERENCES npd.organization(id) ON DELETE CASCADE;
 
 
 --
@@ -2193,6 +2144,14 @@ ALTER TABLE ONLY npd.provider_to_other_id
 
 ALTER TABLE ONLY npd.provider_to_other_id
     ADD CONSTRAINT fk_provider_to_other_id_other_id_type_id FOREIGN KEY (other_id_type_id) REFERENCES npd.other_id_type(id);
+
+
+--
+-- Name: provider_to_other_id fk_provider_to_other_id_state_code; Type: FK CONSTRAINT; Schema: npd; Owner: -
+--
+
+ALTER TABLE ONLY npd.provider_to_other_id
+    ADD CONSTRAINT fk_provider_to_other_id_state_code FOREIGN KEY (state_code) REFERENCES npd.fips_state(id);
 
 
 --
