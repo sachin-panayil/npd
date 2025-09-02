@@ -78,7 +78,7 @@ class PractitionerViewSetTestCase(APITestCase):
         url = reverse("fhir-practitioner-list")
         response = self.client.get(url, {"page_size": 2})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertLessEqual(len(response.data["results"]), 2)
+        self.assertLessEqual(len(response.data["results"]["entry"]), 2)
 
     def test_list_filter_by_gender(self):
         url = reverse("fhir-practitioner-list")
