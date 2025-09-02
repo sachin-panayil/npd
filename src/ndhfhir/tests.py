@@ -71,7 +71,7 @@ class PractitionerViewSetTestCase(APITestCase):
         url = reverse("fhir-practitioner-list")  # /Practitioner/
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response["Content-Type"], "application/json")
+        self.assertEqual(response["Content-Type"], "application/fhir+json")
         self.assertIn("results", response.data)
 
     def test_list_with_custom_page_size(self):
@@ -79,6 +79,13 @@ class PractitionerViewSetTestCase(APITestCase):
         response = self.client.get(url, {"page_size": 2})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertLessEqual(len(response.data["results"]["entry"]), 2)
+
+    def test_list_with_greater_than_max_page_size(self):
+        url = reverse("fhir-practitioner-list")
+        response = self.client.get(url, {"page_size": 1001})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertLessEqual(len(response.data["results"]["entry"]), 1000)
+
 
     def test_list_filter_by_gender(self):
         url = reverse("fhir-practitioner-list")
