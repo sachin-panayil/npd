@@ -6,8 +6,6 @@ from debug_toolbar.toolbar import debug_toolbar_urls
 router = DefaultRouter()
 router.register(r'Practitioner', views.FHIRPractitionerViewSet,
                 basename='fhir-practitioner')
-router.register(r'Organization', views.FHIROrganizationViewSet,
-                basename='fhir-organization')
 
 urlpatterns = [
     path("", views.index, name="index"),
