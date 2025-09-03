@@ -1,6 +1,6 @@
 from django.core.cache import cache
 import json
-from .models import OtherIdType, FhirNameUse, Nucc
+from .models import OtherIdType, FhirNameUse, Nucc, FhirPhoneUse
 import sys
 
 
@@ -25,3 +25,4 @@ if 'runserver' in sys.argv:
     other_identifier_type = cacheData(OtherIdType)
     fhir_name_use = cacheData(FhirNameUse)
     nucc_taxonomy_codes = cacheData(Nucc)
+    fhir_phone_use = cacheData(FhirPhoneUse)

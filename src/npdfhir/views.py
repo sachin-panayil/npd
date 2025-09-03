@@ -121,9 +121,8 @@ class FHIROrganizationViewSet(viewsets.ViewSet):
 
         all_params = request.query_params
 
-        # .prefetch_related('individual', 'providertonucctaxonomycode_set', 'providertootheridentifier_set').all() #, 'providertootheridentifier__otheridentifiertype_set'
         organizations = ClinicalOrganization.objects.all().prefetch_related(
-            'npi', 'organization', 'organization__organizationtoname_set', 'organizationtootherid_set', 'organizationtotaxonomy_set')
+            'npi', 'organization', 'organization__organizationtoname_set', 'organizationtootherid_set', 'organizationtotaxonomy_set', 'organization__authorized_official__individualtophone_set', 'organization__authorized_official__individualtoname_set', 'organization__authorized_official__individualtoemail_set')
 
         for param, value in all_params.items():
             if param == 'page_size':
