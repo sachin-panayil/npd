@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from fhir.resources.practitioner import Practitioner
 from fhir.resources.bundle import Bundle
-from .models import Npi
+from .models import Npi, OrganizationToName
 from fhir.resources.practitioner import Practitioner, PractitionerQualification
 from fhir.resources.humanname import HumanName
 from fhir.resources.identifier import Identifier
@@ -214,7 +214,19 @@ class IndividualSerializer(serializers.Serializer):
         return individual
 
 
+class OrganizationNameSerializer(serializers.Serializer):
+    name = serializers.CharField(read_only=True)
+    is_primary = serializers.BooleanField(read_only=True)
+
+    class Meta:
+        model = OrganizationToName
+        fields = ['name', 'is_primary']
+
+
 class OrganizationSerializer(serializers.Serializer):
+    name = OrganizationNameSerializer(
+        source='organizationtoname_set', many=True, read_only=True)
+
     class Meta:
         model = Organization
         fields = '__all__'
@@ -262,9 +274,9 @@ class ClinicalOrganizationSerializer(serializers.Serializer):
             organization.identifier += representation['identifier']
         print(representation)
         name = [name['name'] for name in representation['organization']
-                ['oganization_to_name'] if name['is_primary']]
+                ['name'] if name['is_primary']]
         alias = [name['name'] for name in representation['organization']
-                 ['organization_to_name'] if not name['is_primary']]
+                 ['name'] if not name['is_primary']]
         organization.name = name['name']
         if alias != []:
             organization.alias = [name['name'] for name in alias]

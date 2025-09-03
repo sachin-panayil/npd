@@ -537,6 +537,7 @@ class OrganizationToName(models.Model):
     pk = models.CompositePrimaryKey('organization_id', 'name')
     organization = models.ForeignKey(Organization, models.DO_NOTHING)
     name = models.CharField(max_length=1000)
+    is_primary = models.BooleanField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -638,11 +639,12 @@ class ProviderToLocation(models.Model):
     other_address = models.ForeignKey(Address, models.DO_NOTHING, blank=True, null=True)
     nucc_code = models.IntegerField(blank=True, null=True)
     specialty_id = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'provider_to_location'
 """
+
+
+class Meta:
+    managed = False
+    db_table = 'provider_to_location'
 
 
 class ProviderToOrganization(models.Model):
