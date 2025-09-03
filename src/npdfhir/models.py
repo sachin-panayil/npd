@@ -521,17 +521,6 @@ class Organization(models.Model):
         db_table = 'organization'
 
 
-class OrganizationToName(models.Model):
-    pk = models.CompositePrimaryKey('organization_id', 'name')
-    organization = models.ForeignKey(Organization, models.DO_NOTHING)
-    name = models.CharField(max_length=1000)
-    is_primary = models.BooleanField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'organization_to_name'
-
-
 class OrganizationToAddress(models.Model):
     pk = models.CompositePrimaryKey(
         'organization_id', 'address_id', 'address_use_id')
@@ -544,11 +533,25 @@ class OrganizationToAddress(models.Model):
         db_table = 'organization_to_address'
 
 
+class OrganizationToName(models.Model):
+    pk = models.CompositePrimaryKey('organization_id', 'name')
+    organization = models.ForeignKey(Organization, models.DO_NOTHING)
+    name = models.CharField(max_length=1000)
+
+    class Meta:
+        managed = False
+        db_table = 'organization_to_name'
+
+
 class OrganizationToOtherId(models.Model):
-    npi = models.OneToOneField(
-        ClinicalOrganization, models.DO_NOTHING, db_column='npi', primary_key=True)
+    pk = models.CompositePrimaryKey(
+        'npi', 'other_id', 'other_id_type_id', 'issuer', 'state_code')
+    npi = models.ForeignKey(ClinicalOrganization,
+                            models.DO_NOTHING, db_column='npi')
     other_id = models.CharField(max_length=100)
     other_id_type = models.ForeignKey('OtherIdType', models.DO_NOTHING)
+    state_code = models.CharField(max_length=2)
+    issuer = models.CharField(max_length=200)
 
     class Meta:
         managed = False

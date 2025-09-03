@@ -260,10 +260,11 @@ class ClinicalOrganizationSerializer(serializers.Serializer):
         organization.identifier = [npi_identifier]
         if 'identifier' in representation.keys():
             organization.identifier += representation['identifier']
-        name = [name for name in representation['organization']
-                ['name'] if name['is_primary']]
-        alias = [name for name in representation['organization']
-                 ['name'] if not name['is_primary']]
+        print(representation)
+        name = [name['name'] for name in representation['organization']
+                ['oganization_to_name'] if name['is_primary']]
+        alias = [name['name'] for name in representation['organization']
+                 ['organization_to_name'] if not name['is_primary']]
         organization.name = name['name']
         if alias != []:
             organization.alias = [name['name'] for name in alias]
