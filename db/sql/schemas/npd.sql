@@ -808,7 +808,8 @@ CREATE TABLE npd.organization_to_address (
 
 CREATE TABLE npd.organization_to_name (
     organization_id uuid NOT NULL,
-    name character varying(1000) NOT NULL
+    name character varying(1000) NOT NULL,
+    is_primary boolean DEFAULT false
 );
 
 
