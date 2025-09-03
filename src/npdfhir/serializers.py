@@ -84,7 +84,7 @@ class PhoneSerializer(serializers.Serializer):
     def to_representation(self, instance):
         phone_contact = ContactPoint(
             system='phone',
-            use=fhir_phone_use[str(instance.phone_use_id)],
+            use=fhir_phone_use[instance.phone_use_id],
             value=f"{instance.phone_number}"
         )
         if instance.extension is not None:
@@ -166,7 +166,7 @@ class NameSerializer(serializers.Serializer):
         name_parts = [part for part in [name.prefix, name.first_name,
                                         name.middle_name, name.last_name, name.suffix] if part != '' and part is not None]
         human_name = HumanName(
-            use=fhir_name_use[str(name.name_use_id)],
+            use=fhir_name_use[name.name_use_id],
             text=' '.join(name_parts),
             family=name.last_name,
             given=[name.first_name, name.middle_name],

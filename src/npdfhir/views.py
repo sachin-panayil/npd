@@ -67,7 +67,7 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
             if param == 'practitioner_type':
                 providers = providers.annotate(
                     search=SearchVector(
-                        'providertotaxonomy__nucc__display_name')
+                        'providertotaxonomy__nucc_code__display_name')
                 ).filter(search=value)
             # if param == 'address-state':
             #    providers = providers.filter(individual__individualtoaddress__address__addressus__fipsstate__abbreviation = value) #fipsstate__abbreviation
@@ -133,13 +133,14 @@ class FHIROrganizationViewSet(viewsets.ViewSet):
                 except:
                     page_size = page_size
             if param == 'name':
-                providers = providers.annotate(
-                    search=SearchVector('organization__organizationname__name')
+                organizations = organizations.annotate(
+                    search=SearchVector(
+                        'organization__organizationtoname__name')
                 ).filter(search=value)
             if param == 'organization_type':
-                providers = providers.annotate(
+                organizations = organizations.annotate(
                     search=SearchVector(
-                        'organizationtotaxonomy__nucc__display_name')
+                        'organizationtotaxonomy__nucc_code__display_name')
                 ).filter(search=value)
             # if param == 'address-state':
             #    providers = providers.filter(individual__individualtoaddress__address__addressus__fipsstate__abbreviation = value) #fipsstate__abbreviation
