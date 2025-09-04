@@ -51,7 +51,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for more details on the release process.
 
 ## Contributors
 
-Total number of contributors: <!--CONTRIBUTOR COUNT START--> 5 <!--CONTRIBUTOR COUNT END-->
+Total number of contributors: <!--CONTRIBUTOR COUNT START--> 7 <!--CONTRIBUTOR COUNT END-->
 
 <!-- readme: contributors -start -->
 <table>
@@ -92,15 +92,6 @@ Total number of contributors: <!--CONTRIBUTOR COUNT START--> 5 <!--CONTRIBUTOR C
                     <sub><b>acme-cms-challenge</b></sub>
                 </a>
             </td>
-            <td align="center">
-                <a href="https://github.com/wbprice">
-                    <img src="https://avatars.githubusercontent.com/u/2590422?v=4" width="100;" alt="wbprice"/>
-                    <br />
-                    <sub><b>Blaine Price</b></sub>
-                </a>
-            </td>
-		</tr>
-		<tr>
             <td align="center">
                 <a href="https://github.com/wbprice">
                     <img src="https://avatars.githubusercontent.com/u/2590422?v=4" width="100;" alt="wbprice"/>
