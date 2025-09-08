@@ -16,5 +16,5 @@ urlpatterns = [
     # path('metadata', views.fhir_metadata, name='fhir-metadata'),
 
     # Router URLs
-    path('', include(router.urls)),
+    path('', include(router.urls), name='index'),
 ] + debug_toolbar_urls()

@@ -53,7 +53,7 @@ INSTALLED_APPS = [
 ]
 
 if not TESTING:
-    INSTALLED_APPS += 'debug_toolbar'
+    INSTALLED_APPS.append('debug_toolbar')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -66,10 +66,9 @@ MIDDLEWARE = [
 ]
 
 if not TESTING:
-    MIDDLEWARE += 'debug_toolbar.middleware.DebugToolbarMiddleware'
+    MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
     # This must come at the end.
 
-ROOT_URLCONF = 'app.urls'
 ROOT_URLCONF = 'app.urls'
 
 TEMPLATES = [
@@ -107,7 +106,7 @@ DATABASES = {
     }
 }
 
-TEST_RUNNER = "ndhfhir.tests.SchemaTestRunner"
+TEST_RUNNER = "npdfhir.tests.SchemaTestRunner"
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

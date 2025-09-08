@@ -13,7 +13,7 @@ from fhir.resources.meta import Meta
 from fhir.resources.address import Address
 from fhir.resources.organization import Organization
 import sys
-if 'runserver' in sys.argv:
+if 'runserver' or 'test' in sys.argv:
     from .cache import other_identifier_type, fhir_name_use, nucc_taxonomy_codes, fhir_phone_use
 
 
@@ -84,7 +84,7 @@ class PhoneSerializer(serializers.Serializer):
     def to_representation(self, instance):
         phone_contact = ContactPoint(
             system='phone',
-            use=fhir_phone_use[instance.phone_use_id],
+            use=fhir_phone_use[str(instance.phone_use_id)],
             value=f"{instance.phone_number}"
         )
         if instance.extension is not None:
@@ -101,13 +101,11 @@ class TaxonomySerializer(serializers.Serializer):
         fields = ['id', 'display_name']
 
     def to_representation(self, instance):
-        if 'test' in sys.argv:
-            nucc_taxonomy_codes = createModelDict(NuccTaxonomyCode)
         code = CodeableConcept(
             coding=[Coding(
                 system="http://nucc.org/provider-taxonomy",
                 code=instance.nucc_code_id,
-                display=nucc_taxonomy_codes[instance.nucc_code_id]
+                display=nucc_taxonomy_codes[str(instance.nucc_code_id)]
             )]
         )
         qualification = PractitionerQualification(
@@ -131,8 +129,6 @@ class OtherIdentifierSerializer(serializers.Serializer):
                   'other_identifier_type_id', 'other_identifier_type_value']
 
     def to_representation(self, id):
-        if 'test' in sys.argv:
-            other_identifier_type = createModelDict(OtherIdentifierType)
 
         other_identifier_type_id = id.other_identifier_type_id
         license_identifier = Identifier(
@@ -142,7 +138,8 @@ class OtherIdentifierSerializer(serializers.Serializer):
                 coding=[Coding(
                     system="http://terminology.hl7.org/CodeSystem/v2-0203",
                     code=str(other_identifier_type_id),
-                    display=other_identifier_type[other_identifier_type_id]
+                    display=other_identifier_type[str(
+                        other_identifier_type_id)]
                 )]
             ),
             # use="" TODO: Add use for other identifier
@@ -168,13 +165,11 @@ class NameSerializer(serializers.Serializer):
                   'start_date', 'end_date', 'prefix', 'suffix']
 
     def to_representation(self, name):
-        if 'test' in sys.argv:
-            fhir_name_use = createModelDict(FhirNameUse)
 
         name_parts = [part for part in [name.prefix, name.first_name,
                                         name.middle_name, name.last_name, name.suffix] if part != '' and part is not None]
         human_name = HumanName(
-            use=fhir_name_use[name.name_use_id],
+            use=fhir_name_use[str(name.name_use_id)],
             text=' '.join(name_parts),
             family=name.last_name,
             given=[name.first_name, name.middle_name],

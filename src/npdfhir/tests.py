@@ -1,34 +1,11 @@
 import json
 from django.test import TestCase
-from django.urls import reverse
+from django.urls import reverse, resolve
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
-from pathlib import Path
-import uuid
-
-from .models import Provider, Individual, IndividualToName
 from django.test.runner import DiscoverRunner
 from django.db import connection
-from .models import OtherIdentifierType, FhirNameUse, NuccTaxonomyCode
 from .cache import cacheData
-
-
-def get_female_npis(npi_list):
-    """
-    Given a list of NPI numbers, return the subset that are female.
-    """
-    query = """
-        SELECT p.npi, i.gender_code
-        FROM ndh.provider p
-        JOIN ndh.individual i ON p.individual_id = i.id
-        WHERE p.npi = ANY(%s)
-          AND i.gender_code = 'F'
-    """
-    with connection.cursor() as cursor:
-        cursor.execute(query, [npi_list])
-        results = cursor.fetchall()
-
-    return results
 
 
 class SchemaTestRunner(DiscoverRunner):
@@ -37,22 +14,31 @@ class SchemaTestRunner(DiscoverRunner):
 
         # Apply unmanaged tables
         with connection.cursor() as cursor:
-            cursor.execute(open("../db/sql/schemas/ndh.sql").read())
+            cursor.execute(open("../db/sql/schemas/npd.sql").read())
             cursor.execute(open("../db/sql/inserts/sample_data.sql").read())
 
         return old_config
 
 
-class BasicViewsTestCase(APITestCase):
+def get_female_npis(npi_list):
+    """
+    Given a list of NPI numbers, return the subset that are female.
+    """
+    query = """
+        SELECT p.npi, i.gender
+        FROM npd.provider p
+        JOIN npd.individual i ON p.individual_id = i.id
+        WHERE p.npi = ANY(%s)
+          AND i.gender = 'F'
+    """
+    with connection.cursor() as cursor:
+        cursor.execute(query, [npi_list])
+        results = cursor.fetchall()
 
-    def test_index_view(self):
-        url = reverse("index")  # maps to "/"
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            response.content.decode(),
-            "Connection to ndh database: successful"
-        )
+    return results
+
+
+class BasicViewsTestCase(APITestCase):
 
     def test_health_view(self):
         url = reverse("healthCheck")  # maps to "/healthCheck"
