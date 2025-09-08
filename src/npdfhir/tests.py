@@ -1,11 +1,10 @@
-import json
-from django.test import TestCase
-from django.urls import reverse, resolve
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 from django.test.runner import DiscoverRunner
 from django.db import connection
 from .cache import cacheData
+# I can't explain why, but we need to import cacheData here. I think we can remove this once we move to the docker db setup
 
 
 class SchemaTestRunner(DiscoverRunner):
