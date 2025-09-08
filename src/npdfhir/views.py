@@ -62,7 +62,7 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
                                         'individual__individualtoname__first_name', 'individual__individualtoname__middle_name')
                 ).filter(search=value)
             if param == 'gender':
-                gender = genderMapping.toNDH(value)
+                gender = genderMapping.toNPD(value)
                 providers = providers.filter(individual__gender=gender)
             if param == 'practitioner_type':
                 providers = providers.annotate(
