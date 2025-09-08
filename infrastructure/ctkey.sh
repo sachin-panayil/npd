@@ -3,7 +3,8 @@
 ACCOUNT_ID=250902968334
 PROFILE_NAME=ecs-pg-app
 AWS_REGION=us-gov-west-1
-IAM_ROLE=ct-ado-dsac-application-admin
+IAM_ROLE=ct-ado-dsac-developer-admin
+CTKEY_USERNAME=PR0I
 
 if [ -z "$CTKEY_PASSWORD" ]; then
     read -s -p "Enter password for $CTKEY_USERNAME :" CTKEY_PASSWORD
