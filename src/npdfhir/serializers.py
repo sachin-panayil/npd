@@ -15,6 +15,9 @@ from fhir.resources.organization import Organization
 import sys
 if 'runserver' in sys.argv:
     from .cache import other_identifier_type, fhir_name_use, nucc_taxonomy_codes
+elif 'test' in sys.argv:
+    from .cache import createModelDict
+    from .models import FhirNameUse, OtherIdentifierType, NuccTaxonomyCode
 
 
 class AddressSerializer(serializers.Serializer):
@@ -104,6 +107,8 @@ class TaxonomySerializer(serializers.Serializer):
         fields = ['id', 'display_name']
 
     def to_representation(self, instance):
+        if 'test' in sys.argv:
+            nucc_taxonomy_codes = createModelDict(NuccTaxonomyCode)
         code = CodeableConcept(
             coding=[Coding(
                 system="http://nucc.org/provider-taxonomy",
@@ -132,6 +137,9 @@ class OtherIdentifierSerializer(serializers.Serializer):
                   'other_identifier_type_id', 'other_identifier_type_value']
 
     def to_representation(self, id):
+        if 'test' in sys.argv:
+            other_identifier_type = createModelDict(OtherIdentifierType)
+
         other_identifier_type_id = id.other_identifier_type_id
         license_identifier = Identifier(
             # system="", TODO: Figure out how to associate a system with each identifier
@@ -166,6 +174,9 @@ class NameSerializer(serializers.Serializer):
                   'start_date', 'end_date', 'prefix', 'suffix']
 
     def to_representation(self, name):
+        if 'test' in sys.argv:
+            fhir_name_use = createModelDict(FhirNameUse)
+
         name_parts = [part for part in [name.prefix, name.first_name,
                                         name.middle_name, name.last_name, name.suffix] if part != '' and part is not None]
         human_name = HumanName(
@@ -271,6 +282,7 @@ class BundleSerializer(serializers.Serializer):
         entries = []
 
         for resource in instance.data:
+            # print(resource)
             # Get the resource type (Patient, Practitioner, etc.)
             resource_type = resource['resourceType']
             id = resource['id']

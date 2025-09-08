@@ -1,6 +1,6 @@
 # COMMUNITY.md
 
-NDH (soon to be renamed) is supported by a dedicated team of individuals fulfilling various roles to ensure its success, security, and alignment with government standards and agency goals.
+NPD is supported by a dedicated team of individuals fulfilling various roles to ensure its success, security, and alignment with government standards and agency goals.
 
 ## Project Members
 
@@ -17,11 +17,11 @@ NDH (soon to be renamed) is supported by a dedicated team of individuals fulfill
 
 See [CODEOWNERS.md](.github/CODEOWNERS.md) for a list of those responsible for the code and documentation in this repository.
 
-See [Community Guidelines](#NDH-open-source-community-guidelines) on principles and guidelines for participating in this open source project.
+See [Community Guidelines](#NPD-open-source-community-guidelines) on principles and guidelines for participating in this open source project.
 
 ## Roles & Responsibilities
 
-The members of ndh community are responsible for guiding its development, ensuring quality standards, and fostering a collaborative environment. They play a vital role in making decisions about code contributions, handling releases, and ensuring the project meets its goals and objectives. Below is a list of the key members and their specific roles and responsibilities. We are eagerly seeking individuals who are interested in joining the community and helping shape and support these roles.
+The members of npd community are responsible for guiding its development, ensuring quality standards, and fostering a collaborative environment. They play a vital role in making decisions about code contributions, handling releases, and ensuring the project meets its goals and objectives. Below is a list of the key members and their specific roles and responsibilities. We are eagerly seeking individuals who are interested in joining the community and helping shape and support these roles.
 
 ### Maintainers:
 
@@ -51,7 +51,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for more details on the release process.
 
 ## Contributors
 
-Total number of contributors: <!--CONTRIBUTOR COUNT START--> <!--CONTRIBUTOR COUNT END-->
+Total number of contributors: <!--CONTRIBUTOR COUNT START--> 7 <!--CONTRIBUTOR COUNT END-->
 
 <!-- readme: contributors -start -->
 <table>
@@ -72,6 +72,13 @@ Total number of contributors: <!--CONTRIBUTOR COUNT START--> <!--CONTRIBUTOR COU
                 </a>
             </td>
             <td align="center">
+                <a href="https://github.com/IsaacMilarky">
+                    <img src="https://avatars.githubusercontent.com/u/24639268?v=4" width="100;" alt="IsaacMilarky"/>
+                    <br />
+                    <sub><b>Isaac Milarsky</b></sub>
+                </a>
+            </td>
+            <td align="center">
                 <a href="https://github.com/sachin-panayil">
                     <img src="https://avatars.githubusercontent.com/u/79382140?v=4" width="100;" alt="sachin-panayil"/>
                     <br />
@@ -86,12 +93,14 @@ Total number of contributors: <!--CONTRIBUTOR COUNT START--> <!--CONTRIBUTOR COU
                 </a>
             </td>
             <td align="center">
-                <a href="https://github.com/IsaacMilarky">
-                    <img src="https://avatars.githubusercontent.com/u/24639268?v=4" width="100;" alt="IsaacMilarky"/>
+                <a href="https://github.com/wbprice">
+                    <img src="https://avatars.githubusercontent.com/u/2590422?v=4" width="100;" alt="wbprice"/>
                     <br />
-                    <sub><b>Isaac Milarsky</b></sub>
+                    <sub><b>Blaine Price</b></sub>
                 </a>
             </td>
+		</tr>
+		<tr>
             <td align="center">
                 <a href="https://github.com/ftrotter">
                     <img src="https://avatars.githubusercontent.com/u/83133?v=4" width="100;" alt="ftrotter"/>
@@ -112,9 +121,9 @@ TODO: Who are the past maintainers or contributors who previously played signifi
 We'd like to acknowledge the following individuals for their past contributions of this project:
 -->
 
-## NDH Open Source Community Guidelines
+## npd Open Source Community Guidelines
 
-This document contains principles and guidelines for participating in the NDH open source community.
+This document contains principles and guidelines for participating in the npd open source community.
 
 ### Principles
 
@@ -134,11 +143,11 @@ All community members are expected to adhere to our [Code of Conduct](CODE_OF_CO
 
 Information on contributing to this repository is available in our [Contributing file](CONTRIBUTING.md).
 
-When participating in NDH open source community conversations and spaces, we ask individuals to follow the following guidelines:
+When participating in npd open source community conversations and spaces, we ask individuals to follow the following guidelines:
 
 - When joining a conversation for the first time, please introduce yourself by providing a brief intro that includes:
   - your related organization (if applicable)
-  - your superpower, and how you hope to use it for NDH
+  - your superpower, and how you hope to use it for NPD
 - Embrace a culture of learning
 - Take space and give space. 
 <!-- TODO: Add if your repo has a community chat - Be present when joining synchronous conversations such as our community chat. Why be here if you're not going to _be here_? -->

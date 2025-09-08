@@ -7,6 +7,13 @@ terraform {
       version = "~> 5.0"
     }
   }
+
+  backend "s3" {
+    bucket = "npd-terraform"
+    key = "terraform.tfstate"
+    region = "us-gov-west-1"
+    use_lockfile = true
+  }
 }
 
 provider "aws" {

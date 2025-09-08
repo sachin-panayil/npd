@@ -13,7 +13,7 @@
     "usageType": "openSource"
   },
   "organization": "Centers for Medicare & Medicaid Services",
-  "repositoryURL": "https://github.com/DSACMS/ndh",
+  "repositoryURL": "https://github.com/DSACMS/npd",
   "repositoryHost": "github.com/DSACMS",
   "repositoryVisibility": "public",
   "vcs": "git",
@@ -56,7 +56,7 @@
     "name": "CMS Open Source Program Office"
   },
   "feedbackMechanisms": [
-    "https://github.com/DSACMS/ndh/issues"
+    "https://github.com/DSACMS/npd/issues"
   ],
   "localisation": "false",
   "repositoryType": "Tools",
