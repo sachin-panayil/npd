@@ -367,9 +367,9 @@ resource "aws_s3_object" "glue_job_script" {
 
 resource "aws_s3_object" "glue_job_script_pyspark" {
   bucket = aws_s3_bucket.glue_scripts.bucket
-  key    = "scripts/loadNPPES.py"
-  source = abspath("${path.module}/../etls/loadNPPES/loadNPPES.py") # local path
-  etag   = filemd5(abspath("${path.module}/../etls/loadNPPES/loadNPPES.py"))
+  key    = "scripts/nppesToS3.py"
+  source = abspath("${path.module}/../etls/nppesToS3/nppesToS3.py") # local path
+  etag   = filemd5(abspath("${path.module}/../etls/nppesToS3/nppesToS3.py"))
 }
 
 resource "aws_glue_job" "python_shell_job" {
