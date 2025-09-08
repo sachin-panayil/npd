@@ -408,11 +408,11 @@ resource "aws_glue_job" "python_shell_job" {
 }
 
 resource "aws_glue_job" "pyspark_job" {
-  name = "load-nppes-pyspark-job"
+  name = "nppes-to-s3-pyspark-job"
   description = "A simple pyspark job that moves a single table from one location to another"
   glue_version = "5.0"
   role_arn     = aws_iam_role.glue_job_role.arn
-  max_capacity = 2
+  number_of_workers = 2
   max_retries  = 0
   timeout      = 2880
   connections  = []
@@ -420,7 +420,7 @@ resource "aws_glue_job" "pyspark_job" {
   command {
     script_location = "s3://${aws_s3_object.glue_job_script.bucket}/${aws_s3_object.glue_job_script_pyspark.key}"
     name            = "glueetl"
-    python_version  = "3.9"
+    python_version  = "3"
   }
 
   execution_property {
