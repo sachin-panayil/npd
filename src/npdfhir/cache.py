@@ -32,7 +32,7 @@ def cacheData(model):
     return data
 
 
-if 'runserver' in sys.argv:
+if 'runserver' or 'test' in sys.argv:
     other_identifier_type = cacheData(OtherIdType)
     fhir_name_use = cacheData(FhirNameUse)
     nucc_taxonomy_codes = cacheData(Nucc)

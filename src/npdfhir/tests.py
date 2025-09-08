@@ -5,30 +5,9 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 from pathlib import Path
 import uuid
-
-from .models import Provider, Individual, IndividualToName
 from django.test.runner import DiscoverRunner
 from django.db import connection
-from .models import OtherIdentifierType, FhirNameUse, NuccTaxonomyCode
 from .cache import cacheData
-
-
-def get_female_npis(npi_list):
-    """
-    Given a list of NPI numbers, return the subset that are female.
-    """
-    query = """
-        SELECT p.npi, i.gender_code
-        FROM npd.provider p
-        JOIN npd.individual i ON p.individual_id = i.id
-        WHERE p.npi = ANY(%s)
-          AND i.gender_code = 'F'
-    """
-    with connection.cursor() as cursor:
-        cursor.execute(query, [npi_list])
-        results = cursor.fetchall()
-
-    return results
 
 
 class SchemaTestRunner(DiscoverRunner):
@@ -41,6 +20,24 @@ class SchemaTestRunner(DiscoverRunner):
             cursor.execute(open("../db/sql/inserts/sample_data.sql").read())
 
         return old_config
+
+
+def get_female_npis(npi_list):
+    """
+    Given a list of NPI numbers, return the subset that are female.
+    """
+    query = """
+        SELECT p.npi, i.gender
+        FROM npd.provider p
+        JOIN npd.individual i ON p.individual_id = i.id
+        WHERE p.npi = ANY(%s)
+          AND i.gender = 'F'
+    """
+    with connection.cursor() as cursor:
+        cursor.execute(query, [npi_list])
+        results = cursor.fetchall()
+
+    return results
 
 
 class BasicViewsTestCase(APITestCase):

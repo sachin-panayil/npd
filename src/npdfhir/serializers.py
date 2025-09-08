@@ -13,7 +13,7 @@ from fhir.resources.meta import Meta
 from fhir.resources.address import Address
 from fhir.resources.organization import Organization
 import sys
-if 'runserver' in sys.argv:
+if 'runserver' or 'test' in sys.argv:
     from .cache import other_identifier_type, fhir_name_use, nucc_taxonomy_codes
 
 
