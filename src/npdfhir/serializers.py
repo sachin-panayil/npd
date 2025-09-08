@@ -101,6 +101,8 @@ class TaxonomySerializer(serializers.Serializer):
         fields = ['id', 'display_name']
 
     def to_representation(self, instance):
+        if 'test' in sys.argv:
+            nucc_taxonomy_codes = createModelDict(NuccTaxonomyCode)
         code = CodeableConcept(
             coding=[Coding(
                 system="http://nucc.org/provider-taxonomy",
@@ -129,6 +131,9 @@ class OtherIdentifierSerializer(serializers.Serializer):
                   'other_identifier_type_id', 'other_identifier_type_value']
 
     def to_representation(self, id):
+        if 'test' in sys.argv:
+            other_identifier_type = createModelDict(OtherIdentifierType)
+
         other_identifier_type_id = id.other_identifier_type_id
         license_identifier = Identifier(
             # system="", TODO: Figure out how to associate a system with each identifier
@@ -163,6 +168,9 @@ class NameSerializer(serializers.Serializer):
                   'start_date', 'end_date', 'prefix', 'suffix']
 
     def to_representation(self, name):
+        if 'test' in sys.argv:
+            fhir_name_use = createModelDict(FhirNameUse)
+
         name_parts = [part for part in [name.prefix, name.first_name,
                                         name.middle_name, name.last_name, name.suffix] if part != '' and part is not None]
         human_name = HumanName(

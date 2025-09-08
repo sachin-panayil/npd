@@ -76,6 +76,12 @@ Please note: We are taking an iterative approach to the development of this proj
 4. Navigate to `http://localhost:8000` to ensure that the setup worked (you should see a Docker landing page if DEBUG is set to true).
 5. Happy coding!
 
+### Running Tests
+1. Ensure that you have a running local postgres instance 
+2. Make sure that you have a working `.env` file as described above
+3. Make sure all python dependencies are installed in a venv or otherwise
+4. Navigate to the `src/` directory and run `./manage.py test`
+
 ## Coding Style and Linters
 
 Each sub-directory has its own linting and testing guidelines. Linting and code tests are run on each commit, so linters and tests should be run locally before committing.

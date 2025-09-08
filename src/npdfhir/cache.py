@@ -4,6 +4,17 @@ from .models import OtherIdType, FhirNameUse, Nucc, FhirPhoneUse
 import sys
 
 
+def createModelDict(model):
+    data = {}
+    for obj in model.objects.all():
+        if hasattr(obj, 'display_name'):
+            data[obj.id] = obj.display_name
+        else:
+            data[obj.id] = obj.value
+
+    return data
+
+
 def cacheData(model):
     name = model.__name__
     data = cache.get(name)
@@ -14,6 +25,7 @@ def cacheData(model):
                 data[obj.code] = obj.display_name
             else:
                 data[obj.id] = obj.value
+        data = createModelDict(model)
         json_data = json.dumps(data)
         cache.set(name, json_data, timeout=60 * 5)
     else:
