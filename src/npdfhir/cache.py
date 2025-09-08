@@ -24,7 +24,7 @@ def cacheData(model):
             if hasattr(obj, 'display_name'):
                 data[obj.code] = obj.display_name
             else:
-                data[obj.id] = obj.value
+                data[str(obj.id)] = obj.value
         json_data = json.dumps(data)
         cache.set(name, json_data, timeout=60 * 5)
     else:

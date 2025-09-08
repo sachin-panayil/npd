@@ -53,7 +53,7 @@ INSTALLED_APPS = [
 ]
 
 if not TESTING:
-    INSTALLED_APPS += 'debug_toolbar'
+    INSTALLED_APPS.append('debug_toolbar')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -65,7 +65,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'app.urls'
 ROOT_URLCONF = 'app.urls'
 
 TEMPLATES = [
