@@ -1,3 +1,8 @@
+/*
+This is exploratory AWS Glue infrastructure work that we can use if we commit to using AWS Glue. Unreferenced from
+main.tf for the time being.
+ */
+
 resource "aws_security_group" "glue_sg" {
   name = "glue-sg"
   description = "Common security group for Glue jobs"
