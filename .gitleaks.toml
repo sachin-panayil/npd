@@ -41,12 +41,6 @@ regex = '''(?i)aws(.{0,20})?(?-i)['"][0-9a-zA-Z/+]{40}['"]'''
 tags = ["AWS"]
 
 [[rules]]
-id = "generic-api-key"
-description = "Generic API Key"
-regex = '''(?i)(api[_-]?key|apikey|secret|token)(.{0,20})?['"][0-9a-zA-Z-_]{16,64}['"]'''
-tags = ["generic"]
-
-[[rules]]
 id = "private-key"
 description = "Private Key"
 regex = '''-----BEGIN( RSA| EC| DSA)? PRIVATE KEY-----'''
