@@ -18,7 +18,6 @@ terraform {
 
 provider "aws" {
   region = "us-gov-west-1"
-  
 }
 
 data "aws_region" "current" {}
