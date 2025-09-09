@@ -33,6 +33,10 @@ CREATE TABLE npd.address (
 );
 ```
 
+Flyway keeps track of what migrations have been performed by updating a migration metadata table in the database. 
+For local development, Flyway will check to see if any migrations need to be performed (updating the database accordingly) 
+on `docker compose up`.
+
 ## Reference
 
 - [Migrations](https://documentation.red-gate.com/fd/migrations-271585107.html)
