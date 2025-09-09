@@ -9,7 +9,8 @@ paths = [
   '''\src/.env'''
 ]
 commits = [
-  "841f5fc02cc5f3e5bc086b645e1fa8ac49fa1a8e" #Old violation of terraform secret upload
+  "841f5fc02cc5f3e5bc086b645e1fa8ac49fa1a8e", #Old violation of terraform secret upload
+  "67e511279680f31cbf8de98b3fc6701670068135"
 ]
 
 # --- Common Secrets ---
