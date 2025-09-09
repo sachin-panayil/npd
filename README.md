@@ -51,7 +51,7 @@ The `db/` directory contains sql code for the National Provider Directory databa
 The `etls/` directory contains pipelines that extract, transform, and load (ETL) ancillary data into the database for the FHIR API. Each sub-directory in the `etls/` directory represents a different input data source. Note: these are helper ETLs, specific to the FHIR API. The main ETLs are found in the [Puffin Repo](https://github.com/DSACMS/npd_Puffin). Eventually this folder will store code to map the data from the Core Data Product data model to the provider directory data model.
 
 ### src/
-The `src/` directory contains the backend python code for the National Provider Directory APIs (built on Django). The `src/ndhfhir/` subdirectory contains the code for the FHIR API. 
+The `src/` directory contains the backend python code for the National Provider Directory APIs (built on Django). The `src/npdfhir/` subdirectory contains the code for the FHIR API. 
 
 
 # Development and Software Delivery Lifecycle
@@ -64,14 +64,14 @@ Please note: We are taking an iterative approach to the development of this proj
 
 ### Database Setup
 1. Create a local postgres server
-2. Create a database called ndh
-3. Execute the sql in `db/sql/schemas/ndh.sql` to create the ndh schema and associated tables
+2. Create a database called npd
+3. Execute the sql in `db/sql/schemas/npd.sql` to create the npd schema and associated tables
 4. Execute the sql in `db/sql/inserts/sample_data.sql` to load sample data into the database.
 
 ### Django App Setup
 1. Ensure that either colima (if using macOS) or the docker service is running
 2. Create a `.env` file in this directory, following the template of the `.env_template` file
-    * n.b. ensure that NDH_DB_HOST is set to `host.docker.internal` if using a local postgres instance.
+    * n.b. ensure that NPD_DB_HOST is set to `host.docker.internal` if using a local postgres instance.
 3. Run `docker-compose up --build` initially and following any changes
 4. Navigate to `http://localhost:8000` to ensure that the setup worked (you should see a Docker landing page if DEBUG is set to true).
 5. Happy coding!
@@ -106,7 +106,7 @@ Thank you for considering contributing to an Open Source project of the US Gover
 
 ## Community
 
-The NDH team is taking a community-first and open source approach to the product development of this tool. We believe government software should be made in the open and be built and licensed such that anyone can download the code, run it themselves without paying money to third parties or using proprietary software, and use it as they will.
+The npd team is taking a community-first and open source approach to the product development of this tool. We believe government software should be made in the open and be built and licensed such that anyone can download the code, run it themselves without paying money to third parties or using proprietary software, and use it as they will.
 
 We know that we can learn from a wide variety of communities, including those who will use or will be impacted by the tool, who are experts in technology, or who have experience with similar technologies deployed in other spaces. We are dedicated to creating forums for continuous conversation and feedback to help shape the design and development of the tool.
 
@@ -118,7 +118,7 @@ Principles and guidelines for participating in our open source community are can
 
 
 ## Governance
-Information about how the NDH community is governed may be found in [GOVERNANCE.md](GOVERNANCE.md).
+Information about how the npd community is governed may be found in [GOVERNANCE.md](GOVERNANCE.md).
 
 
 ## Feedback
@@ -148,7 +148,7 @@ For more information about our Security, Vulnerability, and Responsible Disclosu
 
 A Software Bill of Materials (SBOM) is a formal record containing the details and supply chain relationships of various components used in building software.
 
-In the spirit of [Executive Order 14028 - Improving the Nation’s Cyber Security](https://www.gsa.gov/technology/it-contract-vehicles-and-purchasing-programs/information-technology-category/it-security/executive-order-14028), a SBOM for this repository is provided here: https://github.com/DSACMS/ndh/network/dependencies.
+In the spirit of [Executive Order 14028 - Improving the Nation’s Cyber Security](https://www.gsa.gov/technology/it-contract-vehicles-and-purchasing-programs/information-technology-category/it-security/executive-order-14028), a SBOM for this repository is provided here: https://github.com/DSACMS/npd/network/dependencies.
 
 For more information and resources about SBOMs, visit: https://www.cisa.gov/sbom.
 

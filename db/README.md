@@ -5,7 +5,7 @@ Please use the .sqlfluff file in your preferred development environment, and man
 
 ### Local Database Setup
 1. Create a local postgres server
-2. Create a database called ndh
-3. Execute the sql in `schemas/ndh.sql` to create the ndh schema and associated tables
+2. Create a database called npd
+3. Execute the sql in `schemas/npd.sql` to create the npd schema and associated tables
 4. Execute the sql in `inserts/sample_data.sql` to load sample data into the database.
 

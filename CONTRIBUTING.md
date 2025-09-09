@@ -30,14 +30,14 @@ To be filled in after 8/20 meeting with Alberto.<!-- TODO: This section helps co
 
 #### Database Setup
 1. Create a local postgres server
-2. Create a database called ndh
-3. Execute the sql in `db/sql/schemas/ndh.sql` to create the ndh schema and associated tables
+2. Create a database called npd
+3. Execute the sql in `db/sql/schemas/npd.sql` to create the npd schema and associated tables
 4. Execute the sql in `db/sql/inserts/sample_data.sql` to load sample data into the database.
 
 #### Django App Setup
 1. Ensure that either colima (if using macOS) or the docker service is running
 2. Create a `.env` file in this directory, following the template of the `.env_template` file
-    * n.b. ensure that NDH_DB_HOST is set to `host.docker.internal` if using a local postgres instance.
+    * n.b. ensure that NPD_DB_HOST is set to `host.docker.internal` if using a local postgres instance.
 3. Run `docker-compose up --build` initially and following any changes
 4. Navigate to `http://localhost:8000` to ensure that the setup worked (you should see a Docker landing page if DEBUG is set to true).
 5. Happy coding!
@@ -50,9 +50,9 @@ We follow the [GitHub Flow Workflow](https://guides.github.com/introduction/flow
 2.  Check out the `main` branch
 3.  Create a feature branch
 4.  Write code and tests for your change
-5.  From your branch, make a pull request against `DSACMS/ndh/main`
+5.  From your branch, make a pull request against `DSACMS/npd/main`
 6.  Work with repo maintainers to get your change reviewed
-7.  Wait for your change to be pulled into `DSACMS/ndh/main`
+7.  Wait for your change to be pulled into `DSACMS/npd/main`
 8.  Delete your feature branch
 
 
@@ -60,7 +60,7 @@ We follow the [GitHub Flow Workflow](https://guides.github.com/introduction/flow
 It is an expectation of this team that each feature will have associated unit tests written for it prior to opening a pull request, and that the tests should be passing.
 
 #### Django App Tests
-Django app tests can be found in the `tests.py` folder for the app (e.g. `src/ndhfhir/tests.py`) Django tests can be run by navigating to the `src` directory and running `python manage.py test`. You can run specific tests by specifying the class and/or method that you want to test. Please refer to the [Django documentation](https://docs.djangoproject.com/en/5.2/topics/testing/overview/) on testing for additional details.
+Django app tests can be found in the `tests.py` folder for the app (e.g. `src/npdfhir/tests.py`) Django tests can be run by navigating to the `src` directory and running `python manage.py test`. You can run specific tests by specifying the class and/or method that you want to test. Please refer to the [Django documentation](https://docs.djangoproject.com/en/5.2/topics/testing/overview/) on testing for additional details.
 
 ### Coding Style and Linters
 
@@ -166,7 +166,7 @@ authorship metadata will be preserved.
 
 <!-- TODO: What cadence does your project ship new releases? (e.g. one-time, ad-hoc, periodically, upon merge of new patches) Who does so? Below is a sample template you can use to provide this information.
 
-ndh will see regular updates and new releases. This section describes the general guidelines around how and when a new release is cut.
+npd will see regular updates and new releases. This section describes the general guidelines around how and when a new release is cut.
 
 -->
 
@@ -188,7 +188,7 @@ ndh will see regular updates and new releases. This section describes the genera
 
 <!-- ### Versioning
 
-ndh uses [Semantic Versioning](https://semver.org/). Each release is associated with a [`git tag`](github.com/DSACMS/ndh/tags) of the form `X.Y.Z`.
+npd uses [Semantic Versioning](https://semver.org/). Each release is associated with a [`git tag`](github.com/DSACMS/npd/tags) of the form `X.Y.Z`.
 
 Given a version number in the `MAJOR.MINOR.PATCH` (eg., `X.Y.Z`) format, here are the differences in these terms:
 
@@ -252,7 +252,7 @@ Once an item is moved out of beta, close its Issue and change the text to say 'B
 
 <!-- ### Preparing a Release Candidate
 
-The following steps outline the process to prepare a Release Candidate of ndh. This process makes public the intention and contents of an upcoming release, while allowing work on the next release to continue as usual in `dev`.
+The following steps outline the process to prepare a Release Candidate of npd. This process makes public the intention and contents of an upcoming release, while allowing work on the next release to continue as usual in `dev`.
 
 1. Create a _Release branch_ from the tip of `dev` named `release-x.y.z`, where `x.y.z` is the intended version of the release. This branch will be used to prepare the Release Candidate. For example, to prepare a Release Candidate for `0.5.0`:
 
@@ -306,7 +306,7 @@ Repeat as-needed for subsequent Release Candidates. Note the release branch will
 
 <!-- ### Making a Release
 
-The following steps describe how to make an approved [Release Candidate](#preparing-a-release-candidate) an official release of ndh:
+The following steps describe how to make an approved [Release Candidate](#preparing-a-release-candidate) an official release of npd:
 
 1. **Approved**. Ensure review has been completed and approval granted.
 
@@ -386,13 +386,13 @@ In rare cases, a hotfix for a prior release may be required out-of-phase with th
    This is a pre-release: DO NOT check
    ```
 
-[proj-releases-new]: https://github.com/DSACMS/ndh/releases/new
+[proj-releases-new]: https://github.com/DSACMS/npd/releases/new
 -->
 
 ## Documentation
 
 We also welcome improvements to the project documentation or to the existing
-docs. Please file an [issue](https://github.com/DSACMS/ndh/issues).
+docs. Please file an [issue](https://github.com/DSACMS/npd/issues).
 
 
 ## Policies

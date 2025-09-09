@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('NDH_DJANGO_SECRET')
+SECRET_KEY = config('NPD_DJANGO_SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(config('DEBUG'))
@@ -41,7 +41,7 @@ INTERNAL_APIS = config("DJANGO_ALLOWED_HOSTS").split(',')
 # Application definition
 
 INSTALLED_APPS = [
-    'ndhfhir',
+    'npdfhir.apps.NPDFHIRConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -53,7 +53,7 @@ INSTALLED_APPS = [
 ]
 
 if not TESTING:
-    INSTALLED_APPS += 'debug_toolbar'
+    INSTALLED_APPS.append('debug_toolbar')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -65,11 +65,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-if not TESTING:
-    MIDDLEWARE += 'debug_toolbar.middleware.DebugToolbarMiddleware'
-    #This must come at the end.
-
-ROOT_URLCONF = 'app.urls'
 ROOT_URLCONF = 'app.urls'
 
 TEMPLATES = [
@@ -95,19 +90,19 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': config('NDH_DB_ENGINE'),
-        'USER': config('NDH_DB_USER'),
-        'PASSWORD': config('NDH_DB_PASSWORD'),
-        'HOST': config('NDH_DB_HOST'),
-        'NAME': config('NDH_DB_NAME'),
-        'PORT': config('NDH_DB_PORT'),
+        'ENGINE': config('NPD_DB_ENGINE'),
+        'USER': config('NPD_DB_USER'),
+        'PASSWORD': config('NPD_DB_PASSWORD'),
+        'HOST': config('NPD_DB_HOST'),
+        'NAME': config('NPD_DB_NAME'),
+        'PORT': config('NPD_DB_PORT'),
         'OPTIONS': {
-            'options': '-c search_path=ndh,public'
+            'options': '-c search_path=npd,public'
         }
     }
 }
 
-TEST_RUNNER = "ndhfhir.tests.SchemaTestRunner"
+TEST_RUNNER = "npdfhir.tests.SchemaTestRunner"
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
