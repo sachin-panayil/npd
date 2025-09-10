@@ -16,10 +16,14 @@ services:
   db-migrations:
     image: 'flyway/flyway:10'
     command: >-
-      -url=jdbc:postgresql://db:5432/${NPD_DB_NAME} -user=${NPD_DB_USER}
-      -password=${NPD_DB_PASSWORD} -connectRetries=60 migrate
+      -url=jdbc:postgresql://db:${NPD_DB_PORT}/${NPD_DB_NAME}
+      -user=${NPD_DB_USER}
+      -password=${NPD_DB_PASSWORD}
+      -connectRetries=60
+      migrate
     volumes:
-      - '../db/sql/migrations:/flyway/sql'
+      - '../db/sql/migrations:/flyway/sql/migrations'
+      - '../db/sql/fixtures:/flyway/sql/fixtures'
     networks:
       - npd
     depends_on:
