@@ -50,6 +50,6 @@ services:
     env_file:
       - .env
 volumes:
-  postgres_data: null
+  postgres_data:
 networks:
-  npd: null
+  npd:
