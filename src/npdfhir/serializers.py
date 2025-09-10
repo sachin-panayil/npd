@@ -3,6 +3,7 @@ from fhir.resources.practitioner import Practitioner
 from fhir.resources.bundle import Bundle
 from .models import Npi
 from fhir.resources.practitioner import Practitioner, PractitionerQualification
+from fhir.resources.endpoint import Endpoint
 from fhir.resources.humanname import HumanName
 from fhir.resources.identifier import Identifier
 from fhir.resources.contactpoint import ContactPoint
@@ -261,6 +262,16 @@ class PractitionerSerializer(serializers.Serializer):
         if 'taxonomy' in representation.keys():
             practitioner.qualification = representation['taxonomy']
         return practitioner.model_dump()
+
+
+class EndpointSerializer(serializers.Serializer):
+    """
+    Serializer for FHIR Endpoint resources
+    """
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        endpoint = Endpoint()
 
 
 class BundleSerializer(serializers.Serializer):

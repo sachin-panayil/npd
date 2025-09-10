@@ -7,6 +7,9 @@ router = DefaultRouter()
 router.register(r'Practitioner', views.FHIRPractitionerViewSet,
                 basename='fhir-practitioner')
 
+router.register(r'Endpoint', views.EndpointViewSet,
+                basename='fhir-endpoint')
+
 urlpatterns = [
     path("", views.index, name="index"),
     path("healthCheck", views.health, name="healthCheck"),

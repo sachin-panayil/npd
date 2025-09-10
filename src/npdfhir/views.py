@@ -6,8 +6,8 @@ from rest_framework import viewsets, generics
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django.core.cache import cache
-from .models import Provider
-from .serializers import PractitionerSerializer, BundleSerializer
+from .models import Provider, Endpoint
+from .serializers import PractitionerSerializer, BundleSerializer, EndpointSerializer
 from .mappings import genderMapping
 
 
@@ -17,6 +17,69 @@ def index(request):
 
 def health(request):
     return HttpResponse("healthy")
+
+
+class EndpointViewSet(viewsets.ViewSet):
+    """
+    ViewSet for FHIR Endpoint Resources
+    """
+
+    def list(self, request):
+        """
+        Returns a list of all endpoints as FHIR Endpoint resources
+
+        Parameters:
+            - Name: organziation
+            - Name: connection_type
+            - Name: payload_type
+            - Name: status
+        """
+
+        page_size = 10
+        all_params = request.query_params
+
+        endpoints = Endpoint.objects.all().prefetch_related(
+            '')
+
+        for param, value in all_params.items():
+            if param == 'page_size':
+                try:
+                    value = int(value)
+                    if value <= 1000:
+                        page_size = value
+                except:
+                    page_size = page_size
+            if param == 'organization':
+                print("test")
+                # searchVector for organizations ID
+            if param == 'connection_type':
+                print("test")
+                # something here
+            if param == 'payload_type':
+                print("test")
+                # something here 
+            if param == 'status':   
+                print("test")
+                #soemthing here 
+
+        paginator = PageNumberPagination()
+        paginator.page_size = page_size
+        queryset = paginator.paginate_queryset(endpoints, request)
+
+        # Serialize the bundle
+        serializer = EndpointSerializer(queryset, many=True)
+        bundle = BundleSerializer(serializer)
+
+        # Set appropriate content type for FHIR responses
+        response = paginator.get_paginated_response(bundle.data)
+        response["Content-Type"] = "application/fhir+json"
+
+        return response
+    
+    def retrieve(self, request, pk=None):
+        """
+        Return a single endpoint as a FHIR Endpoint resource 
+        """
 
 
 class FHIRPractitionerViewSet(viewsets.ViewSet):
