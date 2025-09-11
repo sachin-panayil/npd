@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from fhir.resources.practitioner import Practitioner
 from fhir.resources.bundle import Bundle
-from .models import Npi
+from .models import Npi, OrganizationToName, IndividualToPhone
 from fhir.resources.practitioner import Practitioner, PractitionerQualification
 from fhir.resources.humanname import HumanName
 from fhir.resources.identifier import Identifier
@@ -14,7 +14,7 @@ from fhir.resources.address import Address
 from fhir.resources.organization import Organization
 import sys
 if 'runserver' or 'test' in sys.argv:
-    from .cache import other_identifier_type, fhir_name_use, nucc_taxonomy_codes
+    from .cache import other_identifier_type, fhir_name_use, nucc_taxonomy_codes, fhir_phone_use
 
 
 class AddressSerializer(serializers.Serializer):
@@ -76,22 +76,19 @@ class EmailSerializer(serializers.Serializer):
 
 
 class PhoneSerializer(serializers.Serializer):
-    phone_number = serializers.CharField(
-        source='phonenumber__value', read_only=True)
-    system = serializers.CharField(
-        source='fhirphonesystem__value', read_only=True)
-    use = serializers.CharField(source='fhirphoneuse__value', read_only=True)
-    extension = serializers.CharField(read_only=True)
 
     class Meta:
-        fields = ['phone_number', 'system', 'use', 'extension']
+        model = IndividualToPhone
+        fields = ['phone_number', 'phone_use_id', 'extension']
 
     def to_representation(self, instance):
         phone_contact = ContactPoint(
-            system=instance.system,
-            use=instance.use,
-            value=f"{instance.phone_number} ext. {instance.extension}"
+            system='phone',
+            use=fhir_phone_use[str(instance.phone_use_id)],
+            value=f"{instance.phone_number}"
         )
+        if instance.extension is not None:
+            phone_contact.value += f'ext. {instance.extension}'
         return phone_contact.model_dump()
 
 
@@ -108,7 +105,7 @@ class TaxonomySerializer(serializers.Serializer):
             coding=[Coding(
                 system="http://nucc.org/provider-taxonomy",
                 code=instance.nucc_code_id,
-                display=nucc_taxonomy_codes[instance.nucc_code_id]
+                display=nucc_taxonomy_codes[str(instance.nucc_code_id)]
             )]
         )
         qualification = PractitionerQualification(
@@ -217,6 +214,79 @@ class IndividualSerializer(serializers.Serializer):
         return individual
 
 
+class OrganizationNameSerializer(serializers.Serializer):
+    name = serializers.CharField(read_only=True)
+    is_primary = serializers.BooleanField(read_only=True)
+
+    class Meta:
+        model = OrganizationToName
+        fields = ['name', 'is_primary']
+
+
+class OrganizationSerializer(serializers.Serializer):
+    name = OrganizationNameSerializer(
+        source='organizationtoname_set', many=True, read_only=True)
+    authorized_official = IndividualSerializer(read_only=True)
+
+    class Meta:
+        model = Organization
+        fields = '__all__'
+
+
+class ClinicalOrganizationSerializer(serializers.Serializer):
+    npi = NPISerializer()
+    organization = OrganizationSerializer()
+    identifier = OtherIdentifierSerializer(
+        source='organizationtootheridentifier_set', many=True, read_only=True
+    )
+    taxonomy = TaxonomySerializer(
+        source='organizationtotaxonomy_set', many=True, read_only=True
+    )
+
+    class Meta:
+        fields = ['npi', 'name', 'identifier', 'taxonomy']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        organization = Organization()
+        organization.id = str(instance.npi.npi)
+        organization.meta = Meta(
+            profile=[
+                "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"]
+        )
+        npi_identifier = Identifier(
+            system="http://terminology.hl7.org/NamingSystem/npi",
+            value=str(instance.npi.npi),
+            type=CodeableConcept(
+                coding=[Coding(
+                    system="http://terminology.hl7.org/CodeSystem/v2-0203",
+                    code="PRN",
+                    display="Provider number"
+                )]
+            ),
+            use='official',
+            period=Period(
+                start=instance.npi.enumeration_date,
+                end=instance.npi.deactivation_date
+            )
+        )
+        organization.identifier = [npi_identifier]
+        if 'identifier' in representation.keys():
+            organization.identifier += representation['identifier']
+        name = [name['name'] for name in representation['organization']
+                ['name'] if name['is_primary']]
+        alias = [name['name'] for name in representation['organization']
+                 ['name'] if not name['is_primary']]
+        organization.name = name[0]
+        if alias != []:
+            organization.alias = [name['name'] for name in alias]
+        organization.contact = [
+            representation['organization']['authorized_official']]
+        if 'taxonomy' in representation.keys():
+            organization.qualification = representation['taxonomy']
+        return organization.model_dump()
+
+
 class PractitionerSerializer(serializers.Serializer):
     npi = NPISerializer()
     individual = IndividualSerializer(read_only=True)
@@ -274,7 +344,6 @@ class BundleSerializer(serializers.Serializer):
         entries = []
 
         for resource in instance.data:
-            # print(resource)
             # Get the resource type (Patient, Practitioner, etc.)
             resource_type = resource['resourceType']
             id = resource['id']

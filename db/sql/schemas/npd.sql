@@ -792,17 +792,6 @@ CREATE TABLE npd.organization (
 
 
 --
--- Name: organization_to_name; Type: TABLE; Schema: npd; Owner: -
---
-
-CREATE TABLE npd.organization_to_name (
-    organization_id uuid NOT NULL,
-    name character varying(1000) NOT NULL,
-    is_primary boolean DEFAULT false
-);
-
-
---
 -- Name: organization_to_address; Type: TABLE; Schema: npd; Owner: -
 --
 
@@ -810,6 +799,17 @@ CREATE TABLE npd.organization_to_address (
     organization_id uuid NOT NULL,
     address_id uuid NOT NULL,
     address_use_id integer NOT NULL
+);
+
+
+--
+-- Name: organization_to_name; Type: TABLE; Schema: npd; Owner: -
+--
+
+CREATE TABLE npd.organization_to_name (
+    organization_id uuid NOT NULL,
+    name character varying(1000) NOT NULL,
+    is_primary boolean DEFAULT false
 );
 
 
@@ -1397,11 +1397,11 @@ ALTER TABLE ONLY npd.organization
 
 
 --
--- Name: organization_to_name pk_organization_to_name; Type: CONSTRAINT; Schema: npd; Owner: -
+-- Name: organization_to_name pk_organization_name; Type: CONSTRAINT; Schema: npd; Owner: -
 --
 
 ALTER TABLE ONLY npd.organization_to_name
-    ADD CONSTRAINT pk_organization_to_name PRIMARY KEY (organization_id, name);
+    ADD CONSTRAINT pk_organization_name PRIMARY KEY (organization_id, name);
 
 
 --
@@ -1418,7 +1418,6 @@ ALTER TABLE ONLY npd.organization_to_address
 
 ALTER TABLE ONLY npd.organization_to_other_id
     ADD CONSTRAINT pk_organization_to_other_id PRIMARY KEY (npi, other_id, other_id_type_id, issuer, state_code);
-
 
 
 --
@@ -1926,11 +1925,11 @@ ALTER TABLE ONLY npd.organization
 
 
 --
--- Name: organization_to_name fk_organization_to_name_organization_id; Type: FK CONSTRAINT; Schema: npd; Owner: -
+-- Name: organization_to_name fk_organization_name_organization_id; Type: FK CONSTRAINT; Schema: npd; Owner: -
 --
 
 ALTER TABLE ONLY npd.organization_to_name
-    ADD CONSTRAINT fk_organization_to_name_organization_id FOREIGN KEY (organization_id) REFERENCES npd.organization(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_organization_name_organization_id FOREIGN KEY (organization_id) REFERENCES npd.organization(id) ON DELETE CASCADE;
 
 
 --
