@@ -1,18 +1,7 @@
 from django.core.cache import cache
 import json
-from .models import OtherIdType, FhirNameUse, Nucc
+from .models import OtherIdType, FhirNameUse, Nucc, FhirPhoneUse
 import sys
-
-
-def createModelDict(model):
-    data = {}
-    for obj in model.objects.all():
-        if hasattr(obj, 'display_name'):
-            data[obj.id] = obj.display_name
-        else:
-            data[obj.id] = obj.value
-
-    return data
 
 
 def cacheData(model):
@@ -22,7 +11,7 @@ def cacheData(model):
         data = {}
         for obj in model.objects.all():
             if hasattr(obj, 'display_name'):
-                data[obj.code] = obj.display_name
+                data[str(obj.code)] = obj.display_name
             else:
                 data[str(obj.id)] = obj.value
         json_data = json.dumps(data)
@@ -36,3 +25,4 @@ if 'runserver' or 'test' in sys.argv:
     other_identifier_type = cacheData(OtherIdType)
     fhir_name_use = cacheData(FhirNameUse)
     nucc_taxonomy_codes = cacheData(Nucc)
+    fhir_phone_use = cacheData(FhirPhoneUse)
