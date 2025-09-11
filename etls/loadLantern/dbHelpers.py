@@ -11,8 +11,6 @@ def createEngine():
     instance = os.getenv('NPD_DB_HOST')
     db = os.getenv('NPD_DB_NAME')
     port = os.getenv('NPD_DB_PORT')
-    print(
-        f"postgresql+psycopg2://{username}:{password}@{instance}:{port}/{db}")
     engine = create_engine(
         f"postgresql+psycopg2://{username}:{password}@{instance}:{port}/{db}")
     return engine
