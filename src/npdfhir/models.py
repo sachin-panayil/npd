@@ -247,21 +247,10 @@ class EndpointInstance(models.Model):
         db_table = 'endpoint_instance'
 
 
-class EndpointInstanceId(models.Model):
-    endpoint_id = models.TextField(blank=True, null=True)
-    other_id = models.TextField(blank=True, null=True)
-    system = models.TextField(blank=True, null=True)
-    issuer_id = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'endpoint_instance_id'
-
-
 class EndpointInstanceToOtherId(models.Model):
     pk = models.CompositePrimaryKey(
         'endpoint_instance_id', 'other_id', 'issuer_id')
-    endpoint_instance = models.ForeignKey(Endpoint, models.DO_NOTHING)
+    endpoint_instance = models.ForeignKey(EndpointInstance, models.DO_NOTHING)
     other_id = models.CharField(max_length=100)
     system = models.CharField(max_length=200)
     issuer_id = models.UUIDField()
@@ -732,6 +721,7 @@ class ProviderToCredential(models.Model):
     class Meta:
         managed = False
         db_table = 'provider_to_credential'
+
 
 class ProviderToLocation(models.Model):
     pk = models.CompositePrimaryKey('individual_id', 'location_id')
