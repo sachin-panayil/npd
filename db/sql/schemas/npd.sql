@@ -820,7 +820,9 @@ CREATE TABLE npd.organization_to_address (
 CREATE TABLE npd.organization_to_other_id (
     npi bigint NOT NULL,
     other_id character varying(100) NOT NULL,
-    other_id_type_id integer NOT NULL
+    other_id_type_id integer NOT NULL,
+    state_code character varying(2) NOT NULL,
+    issuer character varying(200) NOT NULL
 );
 
 
@@ -1415,7 +1417,8 @@ ALTER TABLE ONLY npd.organization_to_address
 --
 
 ALTER TABLE ONLY npd.organization_to_other_id
-    ADD CONSTRAINT pk_organization_to_other_id PRIMARY KEY (npi);
+    ADD CONSTRAINT pk_organization_to_other_id PRIMARY KEY (npi, other_id, other_id_type_id, issuer, state_code);
+
 
 
 --
@@ -1976,6 +1979,14 @@ ALTER TABLE ONLY npd.organization_to_other_id
 
 ALTER TABLE ONLY npd.organization_to_other_id
     ADD CONSTRAINT fk_organization_to_other_id_other_id_type_id FOREIGN KEY (other_id_type_id) REFERENCES npd.other_id_type(id);
+
+
+--
+-- Name: provider_to_other_id fk_organization_to_other_id_state_code; Type: FK CONSTRAINT; Schema: npd; Owner: -
+--
+
+ALTER TABLE ONLY npd.provider_to_other_id
+    ADD CONSTRAINT fk_organization_to_other_id_state_code FOREIGN KEY (state_code) REFERENCES npd.fips_state(id);
 
 
 --

@@ -2,7 +2,7 @@ import pandas as pd
 import requests
 import uuid
 import json
-from etls.dbHelpers import createEngine
+from dbHelpers import createEngine
 
 org_to_endpoint_url = 'https://lantern.healthit.gov/api/organizations/v1'
 endpoint_url = 'https://lantern.healthit.gov/api/daily/download'
@@ -20,14 +20,10 @@ def loadSampleEndpointInfo(url):
     i = 0
     for item in org_lists:
         if item not in done_lists:
-            if i == 42 or i == 82 or i == 212:
-                errors.append(
-                    {'source': item, 'error': 'ConnectionResetError'})
-            elif i == 127:
-                errors.append({'source': item, 'error': 'CMS Blocked Site'})
-            else:
+            if 1 == 1:
                 try:
-                    resp = requests.get(item, verify=False).json()
+                    resp = requests.get(
+                        item, verify='/Users/Shared/ca-certificates/ca-bundle.pem', timeout=60).json()
                     resp_entry = resp['entry']
                     if type(resp['entry']) != list:
                         resp_entry = list(resp_entry)
@@ -37,6 +33,7 @@ def loadSampleEndpointInfo(url):
                                   for entry in resp_entry if entry['resource']['resourceType'] == 'Endpoint']
                 except Exception as e:
                     errors.append({'source': item, 'error': e})
+                    print(e)
             done_lists.append(item)
         i += 1
         print(i)
@@ -46,7 +43,8 @@ def loadSampleEndpointInfo(url):
     endpoint_df['id'] = [str(uuid.uuid4()) for i in endpoint_df.index]
 
     sampled_endpoints = endpoint_df.sample(n=1000, axis=0)
-    sampled_endpoints['endpoint_connection_type_id'] = sampled_endpoints['connectionType']
+    sampled_endpoints['endpoint_connection_type_id'] = sampled_endpoints['connectionType'].apply(
+        lambda x: x['code'] if type(x) == dict else np.nan)
 
     payloads = []
     for i, row in sampled_endpoints.iterrows():
@@ -83,11 +81,11 @@ def loadSampleEndpointInfo(url):
     sampled_endpoints[['id', 'ehr_vendor_id', 'address', 'endpoint_connection_type_id', 'name']].to_sql(
         'endpoint_instance', if_exists='append', index=False, schema='npd', con=engine)
 
-    payload_df.loc[payload_df['payload_type_id'] != 'NA'].to_sql(
+    payload_df.loc[payload_df['payload_type_id'].apply(lambda x: x not in ['NA', 'hl7-fhir-rest', 'Endpoint', 'CapabilityStatement'])].to_sql(
         'endpoint_instance_to_payload', if_exists='append', index=False, schema='npd', con=engine)
 
-    payload_df.loc[payload_df['payload_type_id'] != 'NA'].to_sql(
-        'endpoint_instance_to_payload', if_exists='append', index=False, schema='npd', con=engine)
+    identifiers_df.to_sql(
+        'endpoint_instance_to_other_id', if_exists='append', index=False, schema='npd', con=engine)
 
 
 loadSampleEndpointInfo(endpoint_url)

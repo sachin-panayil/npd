@@ -36,7 +36,7 @@ value varchar(200)
 create table npd.payload_type (
 id varchar(100) primary key,
 value varchar(200),
-description (1000)
+description varchar(1000)
 );
 
 create table npd.endpoint_to_payload (
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS npd.endpoint_instance_to_other_id
     issuer_id uuid NOT NULL,
     CONSTRAINT pk_endpoint_instance_to_other_id PRIMARY KEY (endpoint_instance_id, other_id, issuer_id),
     CONSTRAINT fk_endpoint_instance_to_other_id_endpoint_instance_id FOREIGN KEY (endpoint_instance_id)
-        REFERENCES npd.endpoint (id) MATCH SIMPLE
+        REFERENCES npd.endpoint_instance (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE CASCADE
 );
