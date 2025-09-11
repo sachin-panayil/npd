@@ -50,17 +50,13 @@ class EndpointViewSet(viewsets.ViewSet):
                 except:
                     page_size = page_size
             if param == 'organization':
-                print("test")
-                # searchVector for organizations ID
+                pass
             if param == 'connection_type':
-                print("test")
-                # something here
+                pass
             if param == 'payload_type':
-                print("test")
-                # something here 
+                pass
             if param == 'status':   
-                print("test")
-                #soemthing here 
+                pass
 
         paginator = PageNumberPagination()
         paginator.page_size = page_size
@@ -80,6 +76,24 @@ class EndpointViewSet(viewsets.ViewSet):
         """
         Return a single endpoint as a FHIR Endpoint resource 
         """
+
+        try:
+            endpoint = get_object_or_404(Endpoint, pk=int(pk))
+        except:
+            return {
+                "Error": "Endpoint not found",
+                "status": 404,
+                "Content-Type": "application/fhir+json"
+            }
+
+        serializer = EndpointSerializer(endpoint)
+
+        # Set appropriate content type for FHIR responses
+        response = Response(serializer.data)
+        response["Content-Type"] = "application/fhir+json"
+
+        print()
+        return response
 
 
 class FHIRPractitionerViewSet(viewsets.ViewSet):
