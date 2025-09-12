@@ -6,8 +6,8 @@ from rest_framework import viewsets, generics
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django.core.cache import cache
-from .models import Provider, Endpoint
-from .serializers import PractitionerSerializer, BundleSerializer, EndpointSerializer
+from .models import Provider, Endpoint, ClinicalOrganization
+from .serializers import PractitionerSerializer, ClinicalOrganizationSerializer, BundleSerializer, EndpointSerializer
 from .mappings import genderMapping
 
 
@@ -144,7 +144,7 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
             if param == 'practitioner_type':
                 providers = providers.annotate(
                     search=SearchVector(
-                        'providertotaxonomy__nucc__display_name')
+                        'providertotaxonomy__nucc_code__display_name')
                 ).filter(search=value)
             # if param == 'address-state':
             #    providers = providers.filter(individual__individualtoaddress__address__addressus__fipsstate__abbreviation = value) #fipsstate__abbreviation
@@ -173,6 +173,79 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
 
         # Set appropriate content type for FHIR responses
         response = Response(practitioner.data)
+        response["Content-Type"] = "application/fhir+json"
+
+        return response
+
+
+class FHIROrganizationViewSet(viewsets.ViewSet):
+    """
+    ViewSet for FHIR Practitioner resources
+    """
+    # permission_classes = [permissions.IsAuthenticated]
+
+    def list(self, request):
+        """
+        Return a list of all providers as FHIR Practitioner resources
+        parameters:
+            - name: name
+              description: Practitioner name
+              required: false
+              type: string
+              paramType: query
+        """
+        page_size = 10
+
+        all_params = request.query_params
+
+        organizations = ClinicalOrganization.objects.all().prefetch_related(
+            'npi', 'organization', 'organization__organizationtoname_set', 'organizationtootherid_set', 'organizationtotaxonomy_set', 'organization__authorized_official__individualtophone_set', 'organization__authorized_official__individualtoname_set', 'organization__authorized_official__individualtoemail_set')
+
+        for param, value in all_params.items():
+            if param == 'page_size':
+                try:
+                    value = int(value)
+                    if value <= 1000:
+                        page_size = value
+                except:
+                    page_size = page_size
+            if param == 'name':
+                organizations = organizations.annotate(
+                    search=SearchVector(
+                        'organization__organizationtoname__name')
+                ).filter(search=value)
+            if param == 'organization_type':
+                organizations = organizations.annotate(
+                    search=SearchVector(
+                        'organizationtotaxonomy__nucc_code__display_name')
+                ).filter(search=value)
+            # if param == 'address-state':
+            #    providers = providers.filter(individual__individualtoaddress__address__addressus__fipsstate__abbreviation = value) #fipsstate__abbreviation
+
+        paginator = PageNumberPagination()
+        paginator.page_size = page_size
+        queryset = paginator.paginate_queryset(organizations, request)
+
+        # Serialize the bundle
+        serializer = ClinicalOrganizationSerializer(queryset, many=True)
+        bundle = BundleSerializer(serializer)
+
+        # Set appropriate content type for FHIR responses
+        response = paginator.get_paginated_response(bundle.data)
+        response["Content-Type"] = "application/fhir+json"
+
+        return response
+
+    def retrieve(self, request, pk=None):
+        """
+        Return a single provider as a FHIR Practitioner resource
+        """
+        clinicalorg = get_object_or_404(ClinicalOrganization, pk=int(pk))
+
+        organization = ClinicalOrganizationSerializer(clinicalorg)
+
+        # Set appropriate content type for FHIR responses
+        response = Response(organization.data)
         response["Content-Type"] = "application/fhir+json"
 
         return response

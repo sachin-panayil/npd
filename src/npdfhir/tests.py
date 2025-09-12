@@ -1,13 +1,10 @@
-import json
-from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
-from pathlib import Path
-import uuid
 from django.test.runner import DiscoverRunner
 from django.db import connection
 from .cache import cacheData
+# I can't explain why, but we need to import cacheData here. I think we can remove this once we move to the docker db setup
 
 
 class SchemaTestRunner(DiscoverRunner):
@@ -16,7 +13,7 @@ class SchemaTestRunner(DiscoverRunner):
 
         # Apply unmanaged tables
         with connection.cursor() as cursor:
-            cursor.execute(open("../db/sql/schemas/npd.sql").read())
+            cursor.execute(open("../db/sql/schemas/V1__initial_npd_schema.sql").read())
             cursor.execute(open("../db/sql/inserts/sample_data.sql").read())
 
         return old_config
@@ -42,20 +39,52 @@ def get_female_npis(npi_list):
 
 class BasicViewsTestCase(APITestCase):
 
-    def test_index_view(self):
-        url = reverse("index")  # maps to "/"
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            response.content.decode(),
-            "Connection to npd database: successful"
-        )
-
     def test_health_view(self):
         url = reverse("healthCheck")  # maps to "/healthCheck"
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.content.decode(), "healthy")
+
+
+class OrganizationViewSetTestCase(APITestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_list_default(self):
+        url = reverse("fhir-organization-list")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response["Content-Type"], "application/fhir+json")
+        self.assertIn("results", response.data)
+
+    def test_list_with_custom_page_size(self):
+        url = reverse("fhir-organization-list")
+        response = self.client.get(url, {"page_size": 2})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertLessEqual(len(response.data["results"]["entry"]), 2)
+
+    def test_list_with_greater_than_max_page_size(self):
+        url = reverse("fhir-organization-list")
+        response = self.client.get(url, {"page_size": 1001})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertLessEqual(len(response.data["results"]["entry"]), 1000)
+
+    def test_list_filter_by_name(self):
+        url = reverse("fhir-organization-list")
+        response = self.client.get(url, {"name": "Cumberland"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("results", response.data)
+
+    def test_list_filter_by_organization_type(self):
+        url = reverse("fhir-organization-list")
+        response = self.client.get(url, {"organization_type": "Hospital"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("results", response.data)
+
+    def test_retrieve_nonexistent(self):
+        url = reverse("fhir-organization-detail", args=[999999])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
 class PractitionerViewSetTestCase(APITestCase):

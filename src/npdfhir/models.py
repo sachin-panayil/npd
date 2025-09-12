@@ -214,22 +214,62 @@ class Endpoint(models.Model):
     endpoint_type = models.ForeignKey('EndpointType', models.DO_NOTHING)
     endpoint_instance = models.ForeignKey(
         'EndpointInstance', models.DO_NOTHING)
+    name = models.CharField(max_length=200, blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'endpoint'
 
 
+class EndpointConnectionType(models.Model):
+    id = models.CharField(primary_key=True, max_length=20)
+    display = models.CharField(max_length=20)
+    definition = models.CharField(max_length=200, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'endpoint_connection_type'
+
+
 class EndpointInstance(models.Model):
     id = models.UUIDField(primary_key=True)
     ehr_vendor = models.ForeignKey(EhrVendor, models.DO_NOTHING)
-    endpoint_instance_type = models.ForeignKey(
-        'EndpointInstanceType', models.DO_NOTHING)
     address = models.CharField(max_length=200)
+    endpoint_connection_type = models.ForeignKey(
+        EndpointConnectionType, models.DO_NOTHING, blank=True, null=True)
+    name = models.CharField(max_length=200, blank=True, null=True)
+    description = models.CharField(max_length=1000, blank=True, null=True)
+    environment_type = models.ForeignKey(
+        'EnvironmentType', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'endpoint_instance'
+
+
+class EndpointInstanceToOtherId(models.Model):
+    pk = models.CompositePrimaryKey(
+        'endpoint_instance_id', 'other_id', 'issuer_id')
+    endpoint_instance = models.ForeignKey(EndpointInstance, models.DO_NOTHING)
+    other_id = models.CharField(max_length=100)
+    system = models.CharField(max_length=200)
+    issuer_id = models.UUIDField()
+
+    class Meta:
+        managed = False
+        db_table = 'endpoint_instance_to_other_id'
+
+
+class EndpointInstanceToPayload(models.Model):
+    pk = models.CompositePrimaryKey('endpoint_instance_id', 'payload_type_id')
+    endpoint_instance = models.ForeignKey(EndpointInstance, models.DO_NOTHING)
+    mime_type = models.ForeignKey(
+        'MimeType', models.DO_NOTHING, blank=True, null=True)
+    payload_type = models.ForeignKey('PayloadType', models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'endpoint_instance_to_payload'
 
 
 class EndpointInstanceType(models.Model):
@@ -240,12 +280,46 @@ class EndpointInstanceType(models.Model):
         db_table = 'endpoint_instance_type'
 
 
+class EndpointToOtherId(models.Model):
+    pk = models.CompositePrimaryKey('endpoint_id', 'other_id', 'issuer_id')
+    endpoint = models.ForeignKey(Endpoint, models.DO_NOTHING)
+    other_id = models.CharField(max_length=100)
+    system = models.CharField(max_length=200)
+    issuer_id = models.UUIDField()
+
+    class Meta:
+        managed = False
+        db_table = 'endpoint_to_other_id'
+
+
+class EndpointToPayload(models.Model):
+    pk = models.CompositePrimaryKey('endpoint_id', 'payload_type_id')
+    endpoint = models.ForeignKey(Endpoint, models.DO_NOTHING)
+    mime_type = models.ForeignKey(
+        'MimeType', models.DO_NOTHING, blank=True, null=True)
+    payload_type = models.ForeignKey('PayloadType', models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'endpoint_to_payload'
+
+
 class EndpointType(models.Model):
     value = models.CharField(unique=True, max_length=50, blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'endpoint_type'
+
+
+class EnvironmentType(models.Model):
+    id = models.CharField(primary_key=True, max_length=10)
+    display = models.CharField(max_length=20)
+    definition = models.CharField(max_length=200, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'environment_type'
 
 
 class FhirAddressUse(models.Model):
@@ -432,6 +506,14 @@ class MedicareProviderType(models.Model):
         db_table = 'medicare_provider_type'
 
 
+class MimeType(models.Model):
+    value = models.CharField(max_length=200, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'mime_type'
+
+
 class Npi(models.Model):
     npi = models.BigIntegerField(primary_key=True)
     entity_type_code = models.SmallIntegerField()
@@ -521,17 +603,6 @@ class Organization(models.Model):
         db_table = 'organization'
 
 
-class OrganizationToName(models.Model):
-    pk = models.CompositePrimaryKey('organization_id', 'name')
-    organization = models.ForeignKey(Organization, models.DO_NOTHING)
-    name = models.CharField(max_length=1000)
-    is_primary = models.BooleanField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'organization_to_name'
-
-
 class OrganizationToAddress(models.Model):
     pk = models.CompositePrimaryKey(
         'organization_id', 'address_id', 'address_use_id')
@@ -544,11 +615,26 @@ class OrganizationToAddress(models.Model):
         db_table = 'organization_to_address'
 
 
+class OrganizationToName(models.Model):
+    pk = models.CompositePrimaryKey('organization_id', 'name')
+    organization = models.ForeignKey(Organization, models.DO_NOTHING)
+    name = models.CharField(max_length=1000)
+    is_primary = models.BooleanField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'organization_to_name'
+
+
 class OrganizationToOtherId(models.Model):
-    npi = models.OneToOneField(
-        ClinicalOrganization, models.DO_NOTHING, db_column='npi', primary_key=True)
+    pk = models.CompositePrimaryKey(
+        'npi', 'other_id', 'other_id_type_id', 'issuer', 'state_code')
+    npi = models.ForeignKey(ClinicalOrganization,
+                            models.DO_NOTHING, db_column='npi')
     other_id = models.CharField(max_length=100)
     other_id_type = models.ForeignKey('OtherIdType', models.DO_NOTHING)
+    state_code = models.CharField(max_length=2)
+    issuer = models.CharField(max_length=200)
 
     class Meta:
         managed = False
@@ -587,6 +673,16 @@ class OtherIdType(models.Model):
     class Meta:
         managed = False
         db_table = 'other_id_type'
+
+
+class PayloadType(models.Model):
+    id = models.CharField(primary_key=True, max_length=100)
+    value = models.CharField(max_length=200, blank=True, null=True)
+    description = models.CharField(max_length=1000, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'payload_type'
 
 
 class Provider(models.Model):
@@ -635,11 +731,12 @@ class ProviderToLocation(models.Model):
     other_address = models.ForeignKey(Address, models.DO_NOTHING, blank=True, null=True)
     nucc_code = models.IntegerField(blank=True, null=True)
     specialty_id = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'provider_to_location'
 """
+
+
+class Meta:
+    managed = False
+    db_table = 'provider_to_location'
 
 
 class ProviderToOrganization(models.Model):
