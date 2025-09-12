@@ -17,7 +17,7 @@ services:
     image: 'flyway/flyway:10'
     command: migrate
     volumes:
-      - '../db/sql/migrations:/flyway/sql'
+      - '../db/sql:/flyway/sql'
     environment:
       FLYWAY_URL: jdbc:postgresql://${NPD_DB_HOST}:${NPD_DB_PORT}/${NPD_DB_NAME}
       FLYWAY_USER: ${NPD_DB_USER}
