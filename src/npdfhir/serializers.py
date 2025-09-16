@@ -340,58 +340,57 @@ class EndpointSerializer(serializers.Serializer):
     """
 
     class Meta:
-        fields = ['id', 'address', 'endpoint_type', 'endpoint_instance']
+        fields = ['id', 'ehr_vendor', 'address', 'endpoint_connection_type', 'name', 'description' 'endpoint_instance']
 
     def to_representation(self, instance):
-        endpoint = Endpoint()
+        connection_type = [CodeableConcept(
+            coding=[Coding(
+                system="http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+                code=instance.endpoint_connection_type.id,
+                display=instance.endpoint_connection_type.display
+            )]
+        )]
 
-        endpoint.id = str(instance.id)
-        endpoint.identifier = Identifier(
-            system="http://terminology.hl7.org/NamingSystem/npi",
-            value=str(instance.id),
-            type=CodeableConcept(
-                coding=[Coding(
-                    system="http://terminology.hl7.org/CodeSystem/v2-0203",
-                    code="ER",
-                    display="Endpoint Resource"
-                )]
-            ),
-            use='official',
-            period=Period(
-                start="random date",
-                end="random date"
-            )
-        )
-        endpoint.connectionType=CodeableConcept(
+        environment_type = [CodeableConcept(
             coding=[Coding(
-                system="",
-                code="",
-                display=""
+                system="http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+                code=instance.endpoint_connection_type.id,
+                display=instance.endpoint_connection_type.display
             )]
+        )]
+
+        managing_organization = None # /Org/npi or whatever we use as the Org identifier
+
+        # contact=ContactPoint(
+        #     system="unsure what to put here",
+        #     value="unsure what to put here",
+        #     # use="work" TODO: add email use
+        # )
+        # contact point serializer? that could be applied to both
+
+        # period=Period(
+        #     start=id.issue_date,
+        #     end=id.expiry_date
+        # )
+        
+        # build out endpoint identifer which is a one to many? we have an otherIdentifier serialzer
+        # environtmentType
+        # payload
+
+        endpoint = Endpoint(
+            id=str(instance.id),
+            status="active",
+            connectionType=connection_type,
+            name=instance.name,
+            description=instance.description,
+            environmentType=environment_type,
+            managingOrganization=managing_organization,
+            # contact=contact,
+            # period=period,
+            # payload=, // one to many join, payload seriazlier? 
+            address=instance.address
+            # header=
         )
-        endpoint.name = ""
-        endpoint.description = ""
-        endpoint.environmentType=CodeableConcept(
-            coding=[Coding(
-                system="",
-                code="",
-                display=""
-            )]
-        )
-        endpoint.status = "active"
-        endpoint.managingOrganization = None
-        endpoint.contact = ContactPoint(
-            system="",
-            value="",
-            # use="work" TODO: add email use
-        )
-        endpoint.period = Period(
-            start="",
-            end=""
-        )
-        endpoint.payload = ""
-        endpoint.address = ""
-        endpoint.header = ""
 
         return endpoint.model_dump()
 

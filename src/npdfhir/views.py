@@ -6,7 +6,7 @@ from rest_framework import viewsets, generics
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django.core.cache import cache
-from .models import Provider, Endpoint, ClinicalOrganization
+from .models import Provider, EndpointInstance, ClinicalOrganization
 from .serializers import PractitionerSerializer, ClinicalOrganizationSerializer, BundleSerializer, EndpointSerializer
 from .mappings import genderMapping
 
@@ -19,7 +19,7 @@ def health(request):
     return HttpResponse("healthy")
 
 
-class EndpointViewSet(viewsets.ViewSet):
+class FHIREndpointViewSet(viewsets.ViewSet):
     """
     ViewSet for FHIR Endpoint Resources
     """
@@ -38,8 +38,10 @@ class EndpointViewSet(viewsets.ViewSet):
         page_size = 10
         all_params = request.query_params
 
-        endpoints = Endpoint.objects.all().prefetch_related(
-            '')
+        endpoints = EndpointInstance.objects.all().prefetch_related(
+            'endpoint_connection_type',
+            'environment_type'
+        )
 
         for param, value in all_params.items():
             if param == 'page_size':
@@ -77,14 +79,7 @@ class EndpointViewSet(viewsets.ViewSet):
         Return a single endpoint as a FHIR Endpoint resource 
         """
 
-        try:
-            endpoint = get_object_or_404(Endpoint, pk=int(pk))
-        except:
-            return {
-                "Error": "Endpoint not found",
-                "status": 404,
-                "Content-Type": "application/fhir+json"
-            }
+        endpoint = get_object_or_404(EndpointInstance, pk=pk)
 
         serializer = EndpointSerializer(endpoint)
 

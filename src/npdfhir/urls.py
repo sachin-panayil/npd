@@ -10,8 +10,7 @@ router.register(r'Practitioner', views.FHIRPractitionerViewSet,
                 basename='fhir-practitioner')
 router.register(r'Organization', views.FHIROrganizationViewSet,
                 basename='fhir-organization')
-
-router.register(r'Endpoint', views.EndpointViewSet,
+router.register(r'Endpoint', views.FHIREndpointViewSet,
                 basename='fhir-endpoint')
 
 urlpatterns = [
