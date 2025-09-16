@@ -51,6 +51,10 @@ services:
       NPD_DB_PORT: ${NPD_DB_PORT}
     env_file:
       - .env
+    volumes:
+      - '.:/app'
+      - '/app/node_modules'
+      - '/app/__pycache__'
 volumes:
   postgres_data:
 networks:
