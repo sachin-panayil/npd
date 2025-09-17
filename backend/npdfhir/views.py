@@ -13,6 +13,29 @@ from drf_yasg import openapi
 
 default_page_size = 10
 max_page_size = 1000
+page_size_param = openapi.Parameter(
+    'page_size',
+    openapi.IN_QUERY,
+    description="Limit the number of results returned per page",
+    type=openapi.TYPE_STRING,
+    minimum=1,
+    maximum=max_page_size,
+    default=default_page_size
+)
+
+
+def createFilterParam(field: str, display: str = None, enum: list = None):
+    if display is None:
+        display = field.replace('_', ' ')
+    param = openapi.Parameter(
+        field,
+        openapi.IN_QUERY,
+        description=f"Filter by {display}",
+        type=openapi.TYPE_STRING,
+    )
+    if enum is not None:
+        param.enum = enum
+    return param
 
 
 def index(request):
@@ -30,34 +53,10 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
     # permission_classes = [permissions.IsAuthenticated]
     @swagger_auto_schema(
         manual_parameters=[
-            openapi.Parameter(
-                'page_size',
-                openapi.IN_QUERY,
-                description="Limit the number of results returned per page",
-                type=openapi.TYPE_STRING,
-                minimum=1,
-                maximum=max_page_size,
-                default=default_page_size
-            ),
-            openapi.Parameter(
-                'name',
-                openapi.IN_QUERY,
-                description="Filter by Practitioner name",
-                type=openapi.TYPE_STRING
-            ),
-            openapi.Parameter(
-                'gender',
-                openapi.IN_QUERY,
-                description="Filter by Practitioner gender",
-                type=openapi.TYPE_STRING,
-                enum=['Female', 'Male', 'Other']
-            ),
-            openapi.Parameter(
-                'practitioner_type',
-                openapi.IN_QUERY,
-                description="Filter by Practitioner type",
-                type=openapi.TYPE_STRING,
-            ),
+            page_size_param,
+            createFilterParam('name'),
+            createFilterParam('gender', enum=['Female', 'Male', 'Other']),
+            createFilterParam('practitioner_type')
         ],
         responses={200: "Successful response",
                    404: "Error: The requested Practitioner resource cannot be found."}
@@ -134,27 +133,9 @@ class FHIROrganizationViewSet(viewsets.ViewSet):
     # permission_classes = [permissions.IsAuthenticated]
     @swagger_auto_schema(
         manual_parameters=[
-            openapi.Parameter(
-                'page_size',
-                openapi.IN_QUERY,
-                description="Limit the number of results returned per page",
-                type=openapi.TYPE_STRING,
-                minimum=1,
-                maximum=max_page_size,
-                default=default_page_size
-            ),
-            openapi.Parameter(
-                'name',
-                openapi.IN_QUERY,
-                description="Filter by Organization name",
-                type=openapi.TYPE_STRING
-            ),
-            openapi.Parameter(
-                'organization_type',
-                openapi.IN_QUERY,
-                description="Filter by Organization type",
-                type=openapi.TYPE_STRING,
-            ),
+            page_size_param,
+            createFilterParam('name'),
+            createFilterParam('organization_type')
         ],
         responses={200: "Successful response",
                    404: "Error: The requested Organization resource cannot be found."}
@@ -162,12 +143,6 @@ class FHIROrganizationViewSet(viewsets.ViewSet):
     def list(self, request):
         """
         Return a list of all providers as FHIR Practitioner resources
-        parameters:
-            - name: name
-              description: Practitioner name
-              required: false
-              type: string
-              paramType: query
         """
         page_size = default_page_size
 
