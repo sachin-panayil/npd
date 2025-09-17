@@ -166,6 +166,12 @@ resource "aws_ecs_task_definition" "app" {
   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
 
   container_definitions = jsonencode([
+    # In the past, I've put the migration container in a separate task and invoked it manually to avoid the case
+    # where we have (for example) 4 API containers and 4 flyway containers and the 4 flyway containers all try to update
+    # the database at once. Flyway looks like it uses a Postgres advisory lock to solve this
+    # (https://documentation.red-gate.com/fd/flyway-postgresql-transactional-lock-setting-277579114.html).
+    # If we have problems, we can pull this container definition into it's own task and schedule it to run before new
+    # API containers are deployed
     {
       name      = "${var.name}-migrations"
       image     = var.migration_image
