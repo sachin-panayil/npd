@@ -8,6 +8,11 @@ from django.core.cache import cache
 from .models import Provider, ClinicalOrganization
 from .serializers import PractitionerSerializer, ClinicalOrganizationSerializer, BundleSerializer
 from .mappings import genderMapping
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
+default_page_size = 10
+max_page_size = 1000
 
 
 def index(request):
@@ -23,23 +28,45 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
     ViewSet for FHIR Practitioner resources
     """
     # permission_classes = [permissions.IsAuthenticated]
-
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                'page_size',
+                openapi.IN_QUERY,
+                description="Limit the number of results returned per page",
+                type=openapi.TYPE_STRING,
+                minimum=1,
+                maximum=max_page_size,
+                default=default_page_size
+            ),
+            openapi.Parameter(
+                'name',
+                openapi.IN_QUERY,
+                description="Filter by Practitioner name",
+                type=openapi.TYPE_STRING
+            ),
+            openapi.Parameter(
+                'gender',
+                openapi.IN_QUERY,
+                description="Filter by Practitioner gender",
+                type=openapi.TYPE_STRING,
+                enum=['Female', 'Male', 'Other']
+            ),
+            openapi.Parameter(
+                'practitioner_type',
+                openapi.IN_QUERY,
+                description="Filter by Practitioner type",
+                type=openapi.TYPE_STRING,
+            ),
+        ],
+        responses={200: "Successful response",
+                   404: "Error: The requested Practitioner resource cannot be found."}
+    )
     def list(self, request):
         """
         Return a list of all providers as FHIR Practitioner resources
-        parameters:
-            - name: name
-              description: Practitioner name
-              required: false
-              type: string
-              paramType: query
-            - name: gender
-              description: Practitioner gender; Options: (Female, Male, Other)
-              required: false
-              type: string
-              paramType: query
         """
-        page_size = 10
+        page_size = default_page_size
 
         all_params = request.query_params
 
@@ -51,7 +78,7 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
             if param == 'page_size':
                 try:
                     value = int(value)
-                    if value <= 1000:
+                    if value <= max_page_size:
                         page_size = value
                 except:
                     page_size = page_size
@@ -105,7 +132,33 @@ class FHIROrganizationViewSet(viewsets.ViewSet):
     ViewSet for FHIR Practitioner resources
     """
     # permission_classes = [permissions.IsAuthenticated]
-
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                'page_size',
+                openapi.IN_QUERY,
+                description="Limit the number of results returned per page",
+                type=openapi.TYPE_STRING,
+                minimum=1,
+                maximum=max_page_size,
+                default=default_page_size
+            ),
+            openapi.Parameter(
+                'name',
+                openapi.IN_QUERY,
+                description="Filter by Organization name",
+                type=openapi.TYPE_STRING
+            ),
+            openapi.Parameter(
+                'organization_type',
+                openapi.IN_QUERY,
+                description="Filter by Organization type",
+                type=openapi.TYPE_STRING,
+            ),
+        ],
+        responses={200: "Successful response",
+                   404: "Error: The requested Organization resource cannot be found."}
+    )
     def list(self, request):
         """
         Return a list of all providers as FHIR Practitioner resources
@@ -116,7 +169,7 @@ class FHIROrganizationViewSet(viewsets.ViewSet):
               type: string
               paramType: query
         """
-        page_size = 10
+        page_size = default_page_size
 
         all_params = request.query_params
 
@@ -127,7 +180,7 @@ class FHIROrganizationViewSet(viewsets.ViewSet):
             if param == 'page_size':
                 try:
                     value = int(value)
-                    if value <= 1000:
+                    if value <= max_page_size:
                         page_size = value
                 except:
                     page_size = page_size
