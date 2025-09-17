@@ -116,7 +116,8 @@ resource "aws_iam_policy" "ecs_task_can_access_database_secret" {
         Action = "secretsmanager:GetSecretValue",
         Effect = "Allow"
         Resource = [
-          module.rds.db_instance_master_user_secret_arn
+          module.rds.db_instance_master_user_secret_arn,
+          aws_secretsmanager_secret.django_secret.arn
         ]
       }
     ]
@@ -155,6 +156,21 @@ resource "aws_iam_role_policy_attachment" "ecs_task_logs" {
 
 resource "aws_cloudwatch_log_group" "logs" {
   name = "/ecs/${var.name}"
+}
+
+data "aws_secretsmanager_random_password" "django_secret_value" {
+  password_length = 20
+}
+
+resource "aws_secretsmanager_secret" "django_secret" {
+  name_prefix = "${var.name}-django-secret"
+  description = "Secret value to use with the Django application"
+}
+
+resource "aws_secretsmanager_secret_version" "django_secret_version" {
+  secret_id = aws_secretsmanager_secret.django_secret.id
+  secret_string_wo = data.aws_secretsmanager_random_password.django_secret_value.random_password
+  secret_string_wo_version = 1
 }
 
 resource "aws_ecs_task_definition" "app" {
@@ -208,10 +224,6 @@ resource "aws_ecs_task_definition" "app" {
       essential = true
       environment  = [
         {
-          name  = "NPD_DJANGO_SECRET"
-          value = "TODO"
-        },
-        {
           name  = "NPD_DB_NAME"
           value = var.app_db_name
         },
@@ -249,6 +261,10 @@ resource "aws_ecs_task_definition" "app" {
         }
       ]
       secrets = [
+        {
+          name      = "NPD_DJANGO_SECRET"
+          valuefrom = aws_secretsmanager_secret_version.django_secret_version.arn
+        },
         {
           name      = "NPD_DB_USER"
           valueFrom = "${module.rds.db_instance_master_user_secret_arn}:username::"
