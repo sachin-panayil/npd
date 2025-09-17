@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - wbprice/push-api-image-to-ecr-repo
 
 permissions:
   id-token: write
