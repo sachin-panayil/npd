@@ -398,24 +398,6 @@ resource "aws_lb_target_group" "api" {
   }
 }
 
-resource "aws_lb_target_group" "app" {
-  name        = "${var.name}-tg"
-  port        = 3000
-  protocol    = "HTTP"
-  vpc_id      = data.aws_vpc.default.id
-  target_type = "ip"
-
-  health_check {
-    path                = "/fhir/"
-    port                = 3000
-    interval            = 30
-    timeout             = 5
-    healthy_threshold   = 2
-    unhealthy_threshold = 10
-    matcher             = "200"
-  }
-}
-
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.alb.arn
   port              = 80
