@@ -179,3 +179,6 @@ CACHES = {
         "LOCATION": "/var/tmp/django_cache",
     }
 }
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False
+}
