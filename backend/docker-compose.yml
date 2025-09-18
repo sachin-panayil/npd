@@ -53,8 +53,6 @@ services:
       - .env
     volumes:
       - '.:/app'
-      - '/app/node_modules'
-      - '/app/__pycache__'
 volumes:
   postgres_data:
 networks:

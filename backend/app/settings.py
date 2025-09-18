@@ -175,6 +175,6 @@ DEBUG_TOOLBAR_CONFIG = {
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
-        "LOCATION": config('CACHE_LOCATION'),
+        "LOCATION": "./djcache",
     }
 }
