@@ -38,9 +38,14 @@ class FHIREndpointViewSet(viewsets.ViewSet):
         page_size = 10
         all_params = request.query_params
 
-        endpoints = EndpointInstance.objects.all().prefetch_related(
+        endpoints = EndpointInstance.objects.all().select_related(
             'endpoint_connection_type',
             'environment_type'
+        ).prefetch_related(
+            'endpointinstancetopayload_set',
+            'endpointinstancetopayload_set__payload_type',
+            'endpointinstancetopayload_set__mime_type',
+            'endpointinstancetootherid_set'
         )
 
         for param, value in all_params.items():
