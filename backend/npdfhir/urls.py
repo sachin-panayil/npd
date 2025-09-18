@@ -11,7 +11,7 @@ schema_view = get_schema_view(
     openapi.Info(
         title="NPD FHIR API",
         default_version='v1',
-        description="The National Provider Direcotry FHIR API exposes public information on all Providers and Organizations that have registered through the National Provider and Payer Enumeration System NPPES. This is a limited beta release; coverage and data quality will increase iteratively.",
+        description="The National Provider Directory FHIR API exposes public information on all Providers and Organizations that have registered through the National Provider and Payer Enumeration System NPPES. This is a limited beta release; coverage and data quality will increase iteratively.",
         terms_of_service="TBD",
         contact=openapi.Contact(email="opensource@cms.hhs.gov"),
         license=openapi.License(name="CC0-1.0 License"),
