@@ -108,13 +108,17 @@ DATABASES = {
         'HOST': config('NPD_DB_HOST'),
         'NAME': config('NPD_DB_NAME'),
         'PORT': config('NPD_DB_PORT'),
+        "TEST": {
+            # Django will create a new test DB with this name prefix
+            "NAME": f"test_{os.getenv('NPD_DB_NAME', 'npd')}",
+        },
         'OPTIONS': {
             'options': '-c search_path=npd,public'
         }
     }
 }
 
-TEST_RUNNER = "npdfhir.tests.SchemaTestRunner"
+#TEST_RUNNER = "npdfhir.tests.SchemaTestRunner"
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

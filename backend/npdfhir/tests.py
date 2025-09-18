@@ -6,7 +6,7 @@ from django.db import connection
 from .cache import cacheData
 # I can't explain why, but we need to import cacheData here. I think we can remove this once we move to the docker db setup
 
-
+"""
 class SchemaTestRunner(DiscoverRunner):
     def setup_databases(self, **kwargs):
         old_config = super().setup_databases(**kwargs)
@@ -17,7 +17,7 @@ class SchemaTestRunner(DiscoverRunner):
             cursor.execute(open("../flyway/sql/inserts/sample_data.sql").read())
 
         return old_config
-
+"""
 
 def get_female_npis(npi_list):
     """
