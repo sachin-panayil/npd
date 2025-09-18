@@ -15,9 +15,9 @@ services:
       - .env
   db-migrations:
     image: 'flyway/flyway:10'
-    command: migrate
+    command: -connectRetries=10 migrate
     volumes:
-      - '../db/sql:/flyway/sql'
+      - '../flyway/sql:/flyway/sql'
     environment:
       FLYWAY_URL: jdbc:postgresql://${NPD_DB_HOST}:${NPD_DB_PORT}/${NPD_DB_NAME}
       FLYWAY_USER: ${NPD_DB_USER}
@@ -51,6 +51,8 @@ services:
       NPD_DB_PORT: ${NPD_DB_PORT}
     env_file:
       - .env
+    volumes:
+      - '.:/app'
 volumes:
   postgres_data:
 networks:

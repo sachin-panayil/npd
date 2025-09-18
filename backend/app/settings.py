@@ -48,14 +48,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
-    'django_filters'
+    'django_filters',
+    'drf_yasg',
 ]
 
 if not TESTING:
     INSTALLED_APPS.append('debug_toolbar')
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -68,6 +71,11 @@ MIDDLEWARE = [
 if not TESTING:
     MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
     # This must come at the end.
+
+# We want the fhir urls to be entirely open
+CORS_URLS_REGEX = r'^/fhir/.*$'
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_METHODS = ['GET']
 
 ROOT_URLCONF = 'app.urls'
 
@@ -158,7 +166,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
 
 DEBUG_TOOLBAR_CONFIG = {
@@ -168,6 +176,9 @@ DEBUG_TOOLBAR_CONFIG = {
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
-        "LOCATION": config('CACHE_LOCATION'),
+        "LOCATION": "/var/tmp/django_cache",
     }
+}
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False
 }
