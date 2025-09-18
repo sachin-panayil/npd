@@ -226,8 +226,6 @@ class OrganizationNameSerializer(serializers.Serializer):
 
 
 class EndpointPayloadSeriazlier(serializers.Serializer):
-    mime_type = serializers.CharField(read_only=True)
-
     class Meta:
         fields = ['payload_type', 'mime_type']
 
@@ -242,7 +240,7 @@ class EndpointPayloadSeriazlier(serializers.Serializer):
 
         payload = {
             "type": payload_type,
-            "mimeType": instance.mime_type.value
+            "mimeType": ["default"] # instance.mime_type.value
         }
 
         return payload
@@ -405,18 +403,6 @@ class EndpointSerializer(serializers.Serializer):
                 display=instance.environment_type.display
             )]
         )]
-
-        # contact=ContactPoint(
-        #     system="unsure what to put here",
-        #     value="unsure what to put here",
-        #     # use="work" TODO: add email use
-        # )
-        # contact point serializer? that could be applied to both
-
-        # period=Period(
-        #     start=id.issue_date,
-        #     end=id.expiry_date
-        # )
         
         endpoint = Endpoint(
             id=str(instance.id),
@@ -426,9 +412,9 @@ class EndpointSerializer(serializers.Serializer):
             name=instance.name,
             description=instance.description,
             environmentType=environment_type,
-            # managingOrganization=managing_organization, ~~ Org/npi or whatever we use as the Org identifier
-            # contact=contact,
-            # period=period,
+            # managingOrganization=Reference(managing_organization), ~ organization/npi or whatever we use as the organization identifier
+            # contact=ContactPoint(contact), ~ still gotta figure this out
+            # period=Period(period), ~ still gotta figure this out
             payload=representation['payload'],  
             address=instance.address,
             header=["application/fhir"] # hardcoded for now 
