@@ -1,0 +1,53 @@
+name: Django Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: Build and run tests
+        run: |
+          docker compose -f docker-compose.test.yml up --build --abort-on-container-exit || true
+
+      - name: Capture Django test logs
+        id: capture_logs
+        run: |
+          docker logs npd-test > django-tests.log || true
+          echo "log_file=django-tests.log" >> $GITHUB_OUTPUT
+
+      - name: Upload logs as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: django-test-logs
+          path: ${{ steps.capture_logs.outputs.log_file }}
+
+      - name: Show test output in GitHub Checks
+        run: |
+          echo "### Django Test Output" > summary.md
+          tail -n 1000 django-tests.log >> summary.md
+          gh run update --summary summary.md || echo "gh CLI not installed, skipping check summary"
+
+      - name: Fail if Django tests failed
+        run: |
+          exit_code=$(docker inspect npd-test --format='{{.State.ExitCode}}')
+          echo "Django test exit code: $exit_code"
+          if [ "$exit_code" -ne 0 ]; then
+            echo "❌ Django tests failed"
+            exit 1
+          else
+            echo "✅ Django tests passed"
+          fi
