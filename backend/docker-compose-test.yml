@@ -31,18 +31,30 @@ services:
         condition: service_healthy
     networks:
       - npd
-  sample-data-test:
-    image: postgres:17
+  django-test:
+    build: .
+    container_name: npd-test
     depends_on:
+      db-test:
+        condition: service_healthy
       db-migrations:
         condition: service_completed_successfully
-    command: >
-      bash -c "psql -h db-test -U ${NPD_DB_USER} -d test_${NPD_DB_NAME} -f /flyway/sql/inserts/R__sample_data.sql"
-    environment:
-      PGPASSWORD: ${NPD_DB_PASSWORD}
-    volumes:
-      - ../flyway/sql:/flyway/sql
     networks:
       - npd
+    environment:
+      NPD_DJANGO_SECRET: ${NPD_DJANGO_SECRET}
+      DEBUG: ${DEBUG}
+      DJANGO_LOGLEVEL: ${DJANGO_LOGLEVEL}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
+      DATABASE_ENGINE: ${NPD_DB_ENGINE}
+      NPD_DB_NAME: test_${NPD_DB_NAME}
+      NPD_DB_USER: ${NPD_DB_USER}
+      NPD_DB_PASSWORD: ${NPD_DB_PASSWORD}
+      NPD_DB_HOST: db-test
+      NPD_DB_PORT: "5432"
+    env_file:
+      - .env
+    command: >
+      sh -c "python manage.py test"
 networks:
   npd:
