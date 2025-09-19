@@ -456,10 +456,6 @@ module "rds" {
 
 resource "aws_s3_bucket" "frontend_bucket" {
   bucket = "${var.name}-frontend-bucket"
-
-  tags = {
-    Name = var.name
-  }
 }
 
 resource "aws_s3_bucket_public_access_block" "frontend_public_access_block" {
