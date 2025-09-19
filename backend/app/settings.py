@@ -111,7 +111,8 @@ DATABASES = {
         'PORT': config('NPD_DB_PORT'),
         "TEST": {
             # Django will create a new test DB with this name prefix
-            "NAME": f"test_{os.getenv('NPD_DB_NAME', 'npd')}",
+            "NAME": f"{os.getenv('NPD_DB_NAME', 'npd')}",
+            "MIRROR": "default",                 # optional: avoids creating a test DB
         },
         'OPTIONS': {
             'options': '-c search_path=npd,public'
