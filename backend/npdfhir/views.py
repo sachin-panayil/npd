@@ -67,13 +67,6 @@ class FHIREndpointViewSet(viewsets.ViewSet):
     def list(self, request):
         """
         Returns a list of all endpoints as FHIR Endpoint resources
-
-        Parameters:
-            - name: Filter by endpoint name
-            - connection_type: Filter by connection type
-            - payload_type: Filter by payload type
-            - status: Filter by endpoint status
-            - organization: Filter by organization name
         """
 
         page_size = default_page_size

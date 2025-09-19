@@ -227,7 +227,7 @@ class OrganizationNameSerializer(serializers.Serializer):
 
 class EndpointPayloadSeriazlier(serializers.Serializer):
     class Meta:
-        fields = ['payload_type', 'mime_type']
+        fields = ['type', 'mime_type']
 
     def to_representation(self, instance):
         payload_type = [CodeableConcept(
@@ -247,6 +247,9 @@ class EndpointPayloadSeriazlier(serializers.Serializer):
 
 
 class EndpointIdentifierSerialzier(serializers.Serializer):
+    class Meta:
+        fields = ['identifier', 'system', 'value', 'assigner']
+
     def to_representation(self, instance):
         endpoint_identifier = Identifier(
             use="official",
