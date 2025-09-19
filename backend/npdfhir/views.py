@@ -50,19 +50,33 @@ class FHIREndpointViewSet(viewsets.ViewSet):
     """
     ViewSet for FHIR Endpoint Resources
     """
-
+    
+    @swagger_auto_schema(
+        manual_parameters=[
+            page_size_param,
+            createFilterParam('name'),
+            createFilterParam('connection_type'),
+            createFilterParam('payload_type'),
+            createFilterParam('status'),
+            createFilterParam('organization')
+        ],
+        responses={200: "Successful response",
+                   404: "Error: The requested Endpoint resource cannot be found."}
+    )
+    
     def list(self, request):
         """
         Returns a list of all endpoints as FHIR Endpoint resources
 
         Parameters:
-            - Name: organziation
-            - Name: connection_type
-            - Name: payload_type
-            - Name: status
+            - name: Filter by endpoint name
+            - connection_type: Filter by connection type
+            - payload_type: Filter by payload type
+            - status: Filter by endpoint status
+            - organization: Filter by organization name
         """
 
-        page_size = 10
+        page_size = default_page_size
         all_params = request.query_params
 
         endpoints = EndpointInstance.objects.all().select_related(
@@ -79,17 +93,21 @@ class FHIREndpointViewSet(viewsets.ViewSet):
             if param == 'page_size':
                 try:
                     value = int(value)
-                    if value <= 1000:
+                    if value <= max_page_size:
                         page_size = value
                 except:
                     page_size = page_size
-            if param == 'organization':
+            elif param == 'name':
+                endpoints = endpoints.filter(name__icontains=value)
+            elif param == 'connection_type':
+                endpoints = endpoints.filter(endpoint_connection_type__id__icontains=value)
+            elif param == 'payload_type':
+                endpoints = endpoints.filter(
+                    endpointinstancetopayload__payload_type__id__icontains=value
+                ).distinct()
+            elif param == 'status':
                 pass
-            if param == 'connection_type':
-                pass
-            if param == 'payload_type':
-                pass
-            if param == 'status':   
+            elif param == 'organization':
                 pass
 
         paginator = PageNumberPagination()
@@ -119,7 +137,6 @@ class FHIREndpointViewSet(viewsets.ViewSet):
         response = Response(serializer.data)
         response["Content-Type"] = "application/fhir+json"
 
-        print()
         return response
 
 
