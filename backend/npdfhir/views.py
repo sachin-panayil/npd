@@ -7,7 +7,7 @@ from rest_framework.pagination import PageNumberPagination
 from django.core.cache import cache
 from .models import Provider, ClinicalOrganization
 from .serializers import PractitionerSerializer, ClinicalOrganizationSerializer, BundleSerializer
-from .mappings import genderMapping
+from .mappings import genderMapping, addressUseMapping
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
@@ -55,10 +55,15 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
         manual_parameters=[
             page_size_param,
             createFilterParam('name'),
-            createFilterParam('gender', enum=['Female', 'Male', 'Other']),
+            createFilterParam('gender', enum=genderMapping.keys()),
             createFilterParam('practitioner_type'),
+            createFilterParam('address'),
+            createFilterParam('address-city', 'city'),
+            createFilterParam('address-postalcode', "zip code"),
             createFilterParam(
-                'address-state', '2 letter US State abbreviation')
+                'address-state', '2 letter US State abbreviation'),
+            createFilterParam('address-use', 'address use',
+                              enum=addressUseMapping.keys())
         ],
         responses={200: "Successful response",
                    404: "Error: The requested Practitioner resource cannot be found."}
@@ -88,18 +93,43 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
                                         'individual__individualtoname__first_name', 'individual__individualtoname__middle_name')
                 ).filter(search=value)
             if param == 'gender':
-                gender = genderMapping.toNPD(value)
-                providers = providers.filter(individual__gender=gender)
+                if value in genderMapping.keys():
+                    gender = genderMapping.toNPD(value)
+                    providers = providers.filter(individual__gender=gender)
             if param == 'practitioner_type':
                 providers = providers.annotate(
                     search=SearchVector(
                         'providertotaxonomy__nucc_code__display_name')
+                ).filter(search=value)
+            if param == 'address':
+                providers = providers.annotate(
+                    search=SearchVector(
+                        'individual__individualtoaddress__address__address_us__delivery_line_1',
+                        'individual__individualtoaddress__address__address_us__delivery_line_2',
+                        'individual__individualtoaddress__address__address_us__city_name',
+                        'individual__individualtoaddress__address__address_us__state_code__abbreviation',
+                        'individual__individualtoaddress__address__address_us__zipcode',)
+                ).filter(search=value)
+            if param == 'address-city':
+                providers = providers.annotate(
+                    search=SearchVector(
+                        'individual__individualtoaddress__address__address_us__city_name')
                 ).filter(search=value)
             if param == 'address-state':
                 providers = providers.annotate(
                     search=SearchVector(
                         'individual__individualtoaddress__address__address_us__state_code__abbreviation')
                 ).filter(search=value)
+            if param == 'address-postalcode':
+                providers = providers.annotate(
+                    search=SearchVector(
+                        'individual__individualtoaddress__address__address_us__zipcode')
+                ).filter(search=value)
+            if param == 'address-use':
+                if value in addressUseMapping.keys():
+                    addressUse = addressUseMapping.toNPD(value)
+                    providers = providers.filter(
+                        individual__individualtoaddress__address_use_id=addressUse)
 
         paginator = PageNumberPagination()
         paginator.page_size = page_size
@@ -139,7 +169,14 @@ class FHIROrganizationViewSet(viewsets.ViewSet):
         manual_parameters=[
             page_size_param,
             createFilterParam('name'),
-            createFilterParam('organization_type')
+            createFilterParam('organization_type'),
+            createFilterParam('address'),
+            createFilterParam('address-city', 'city'),
+            createFilterParam('address-postalcode', "zip code"),
+            createFilterParam(
+                'address-state', '2 letter US State abbreviation'),
+            createFilterParam('address-use', 'address use',
+                              enum=addressUseMapping.keys())
         ],
         responses={200: "Successful response",
                    404: "Error: The requested Organization resource cannot be found."}
@@ -173,11 +210,35 @@ class FHIROrganizationViewSet(viewsets.ViewSet):
                     search=SearchVector(
                         'organizationtotaxonomy__nucc_code__display_name')
                 ).filter(search=value)
+            if param == 'address':
+                organizations = organizations.annotate(
+                    search=SearchVector(
+                        'organization__organizationtoaddress__address__address_us__delivery_line_1',
+                        'organization__organizationtoaddress__address__address_us__delivery_line_2',
+                        'organization__organizationtoaddress__address__address_us__city_name',
+                        'organization__organizationtoaddress__address__address_us__state_code__abbreviation',
+                        'organization__organizationtoaddress__address__address_us__zipcode',)
+                ).filter(search=value)
+            if param == 'address-city':
+                organizations = organizations.annotate(
+                    search=SearchVector(
+                        'organization__organizationtoaddress__address__address_us__city_name')
+                ).filter(search=value)
             if param == 'address-state':
                 organizations = organizations.annotate(
                     search=SearchVector(
                         'organization__organizationtoaddress__address__address_us__state_code__abbreviation')
                 ).filter(search=value)
+            if param == 'address-postalcode':
+                organizations = organizations.annotate(
+                    search=SearchVector(
+                        'organization__organizationtoaddress__address__address_us__zipcode')
+                ).filter(search=value)
+            if param == 'address-use':
+                if value in addressUseMapping.keys():
+                    addressUse = addressUseMapping.toNPD(value)
+                    organizations = organizations.filter(
+                        organization__organizationtoaddress__address_use_id=addressUse)
 
         paginator = PageNumberPagination()
         paginator.page_size = page_size
