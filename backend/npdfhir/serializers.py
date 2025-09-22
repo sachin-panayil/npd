@@ -18,24 +18,10 @@ if 'runserver' or 'test' in sys.argv:
 
 
 class AddressSerializer(serializers.Serializer):
-    primary_number = serializers.CharField(
-        source='addressus__primary_number', read_only=True)
-    street_predirection = serializers.CharField(
-        source='addressus__street_predirection', read_only=True)
-    street_name = serializers.CharField(
-        source='addressus_street_name', read_only=True)
-    postdirection = serializers.CharField(
-        source='addressus__postdirection', read_only=True)
-    street_suffix = serializers.CharField(
-        source='addressus__street_suffix', read_only=True)
-    secondary_designator = serializers.CharField(
-        source='addressus__secondary_designator', read_only=True)
-    secondary_number = serializers.CharField(
-        source='addressus__secondary_number', read_only=True)
-    extra_secondary_designator = serializers.CharField(
-        source='addressus__extra_secondary_designator', read_only=True)
-    extra_secondary_number = serializers.CharField(
-        source='addressus__extra_secondary_number', read_only=True)
+    delivery_line_1 = serializers.CharField(
+        source='addressus__delivery_line_1', read_only=True)
+    delivery_line_2 = serializers.CharField(
+        source='addressus__delivery_line_2', read_only=True)
     city_name = serializers.CharField(
         source='addressus__city_name', read_only=True)
     state_abbreviation = serializers.CharField(
@@ -44,18 +30,21 @@ class AddressSerializer(serializers.Serializer):
         source='addressus__zipcode', read_only=True)
 
     class Meta:
-        fields = ['primary_number', 'street_predirection', 'street_name', 'postdirection', 'street_suffix',
-                  'secondary_designator', 'secondary_number', 'extra_secondary_designator', 'extra_secondary_number',
+        fields = ['delivery_line_1', 'delivery_line_2',
                   'city_name', 'state_abbreviation', 'zipcode']
 
     def to_representation(self, instance):
-        addressLine1 = f"{instance.primary_number} {instance.street_predirection} {instance.street_name} {instance.postdirection} {instance.street_suffix}"
-        addressLine2 = f"{instance.secondary_designator} {instance.secondary_number}"
-        addressLine3 = f"{instance.extra_secondary_designator} {instance.extra_secondary_number}"
-        cityStateZip = f"f{instance.city_name}, {instance.state_abbreviation} {instance.zipcode}"
+        address = instance.address.address_us
+        address_list = [address.delivery_line_1]
+        if address.delivery_line_2 is not None:
+            address_list.append(address.delivery_line_2)
         address = Address(
-            line=[addressLine1, addressLine2, addressLine3, cityStateZip],
-            use=address.address_type.value
+            line=address_list,
+            city=address.city_name,
+            state=address.state_code.abbreviation,
+            postalCode=address.zipcode,
+            use=instance.address_use.value,
+            country='US'
         )
         return address.model_dump()
 
@@ -196,6 +185,8 @@ class IndividualSerializer(serializers.Serializer):
         source='individualtoemail_set', read_only=True, many=True)
     phone = PhoneSerializer(
         source='individualtophone_set', many=True, read_only=True)
+    address = AddressSerializer(
+        source='individualtoaddress_set', many=True, read_only=True)
 
     class Meta:
         fields = ['name', 'email', 'phone']
@@ -211,6 +202,8 @@ class IndividualSerializer(serializers.Serializer):
         if 'email' in representation.keys():
             telecom += representation['email']
         individual['telecom'] = telecom
+        if representation['address'] != []:
+            individual['address'] = representation['address']
         return individual
 
 
@@ -227,6 +220,8 @@ class OrganizationSerializer(serializers.Serializer):
     name = OrganizationNameSerializer(
         source='organizationtoname_set', many=True, read_only=True)
     authorized_official = IndividualSerializer(read_only=True)
+    address = address = AddressSerializer(
+        source='organizationtoaddress_set', many=True, read_only=True)
 
     class Meta:
         model = Organization
@@ -280,8 +275,12 @@ class ClinicalOrganizationSerializer(serializers.Serializer):
         organization.name = name[0]
         if alias != []:
             organization.alias = [name['name'] for name in alias]
-        organization.contact = [
-            representation['organization']['authorized_official']]
+        authorized_official = representation['organization']['authorized_official']
+        if representation['organization']['address'] != []:
+            authorized_official['address'] = representation['organization']['address'][0]
+        else:
+            del authorized_official['address']
+        organization.contact = [authorized_official]
         if 'taxonomy' in representation.keys():
             organization.qualification = representation['taxonomy']
         return organization.model_dump()
@@ -324,6 +323,8 @@ class PractitionerSerializer(serializers.Serializer):
         )
         if representation['individual']['telecom'] != []:
             practitioner.telecom = representation['individual']['telecom']
+        if representation['individual']['address'] != []:
+            practitioner.address = representation['individual']['address']
         practitioner.identifier = [npi_identifier]
         if 'identifier' in representation.keys():
             practitioner.identifier += representation['identifier']

@@ -56,7 +56,9 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
             page_size_param,
             createFilterParam('name'),
             createFilterParam('gender', enum=['Female', 'Male', 'Other']),
-            createFilterParam('practitioner_type')
+            createFilterParam('practitioner_type'),
+            createFilterParam(
+                'address-state', '2 letter US State abbreviation')
         ],
         responses={200: "Successful response",
                    404: "Error: The requested Practitioner resource cannot be found."}
@@ -69,9 +71,8 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
 
         all_params = request.query_params
 
-        # .prefetch_related('individual', 'providertonucctaxonomycode_set', 'providertootheridentifier_set').all() #, 'providertootheridentifier__otheridentifiertype_set'
         providers = Provider.objects.all().prefetch_related(
-            'npi', 'individual', 'individual__individualtoname_set', 'providertootherid_set', 'providertotaxonomy_set')
+            'npi', 'individual', 'individual__individualtoname_set', 'individual__individualtoaddress_set', 'individual__individualtoaddress_set__address__address_us', 'individual__individualtoaddress_set__address__address_us__state_code', 'individual__individualtoaddress_set__address_use', 'individual__individualtophone_set', 'individual__individualtoemail_set', 'providertootherid_set', 'providertotaxonomy_set')
 
         for param, value in all_params.items():
             if param == 'page_size':
@@ -94,8 +95,11 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
                     search=SearchVector(
                         'providertotaxonomy__nucc_code__display_name')
                 ).filter(search=value)
-            # if param == 'address-state':
-            #    providers = providers.filter(individual__individualtoaddress__address__addressus__fipsstate__abbreviation = value) #fipsstate__abbreviation
+            if param == 'address-state':
+                providers = providers.annotate(
+                    search=SearchVector(
+                        'individual__individualtoaddress__address__address_us__state_code__abbreviation')
+                ).filter(search=value)
 
         paginator = PageNumberPagination()
         paginator.page_size = page_size
@@ -149,7 +153,7 @@ class FHIROrganizationViewSet(viewsets.ViewSet):
         all_params = request.query_params
 
         organizations = ClinicalOrganization.objects.all().prefetch_related(
-            'npi', 'organization', 'organization__organizationtoname_set', 'organizationtootherid_set', 'organizationtotaxonomy_set', 'organization__authorized_official__individualtophone_set', 'organization__authorized_official__individualtoname_set', 'organization__authorized_official__individualtoemail_set')
+            'npi', 'organization', 'organization__organizationtoname_set', 'organization__organizationtoaddress_set', 'organization__organizationtoaddress_set__address', 'organization__organizationtoaddress_set__address__address_us', 'organization__organizationtoaddress_set__address__address_us__state_code', 'organization__organizationtoaddress_set__address_use', 'organizationtootherid_set', 'organizationtotaxonomy_set', 'organization__authorized_official__individualtophone_set', 'organization__authorized_official__individualtoname_set', 'organization__authorized_official__individualtoemail_set', 'organization__authorized_official__individualtoaddress_set')
 
         for param, value in all_params.items():
             if param == 'page_size':
@@ -169,8 +173,11 @@ class FHIROrganizationViewSet(viewsets.ViewSet):
                     search=SearchVector(
                         'organizationtotaxonomy__nucc_code__display_name')
                 ).filter(search=value)
-            # if param == 'address-state':
-            #    providers = providers.filter(individual__individualtoaddress__address__addressus__fipsstate__abbreviation = value) #fipsstate__abbreviation
+            if param == 'address-state':
+                organizations = organizations.annotate(
+                    search=SearchVector(
+                        'organization__organizationtoaddress__address__address_us__state_code__abbreviation')
+                ).filter(search=value)
 
         paginator = PageNumberPagination()
         paginator.page_size = page_size
