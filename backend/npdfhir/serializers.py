@@ -256,13 +256,13 @@ class EndpointIdentifierSerialzier(serializers.Serializer):
             type=CodeableConcept(
                 coding=[Coding(
                     system="http://terminology.hl7.org/CodeSystem/v2-0203",
-                    code="EPD",
-                    display="Endpoint Dispay"
+                    code="", # value omitted for now
+                    display="" # value omitted for now
                 )]
             ),
             system=instance.system,
             value=instance.other_id,
-            assigner=Reference(display=str(instance.issuer_id))
+            assigner=Reference(display=str(instance.issuer_id)) # TODO: Replace with Organization reference
         )
 
         return endpoint_identifier.model_dump()
