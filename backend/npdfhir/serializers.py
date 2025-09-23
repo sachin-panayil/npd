@@ -256,8 +256,8 @@ class EndpointIdentifierSerialzier(serializers.Serializer):
             type=CodeableConcept(
                 coding=[Coding(
                     system="http://terminology.hl7.org/CodeSystem/v2-0203",
-                    code="", # value omitted for now
-                    display="" # value omitted for now
+                    code="ANON", # value left as this for now ~ not correct
+                    display="Anopnymous Idenfitifer" # value left as this for now ~ not correct
                 )]
             ),
             system=instance.system,
