@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'drf_yasg',
+    'xmlrunner',
 ]
 
 if not TESTING:
@@ -120,7 +121,9 @@ DATABASES = {
     }
 }
 
-#TEST_RUNNER = "npdfhir.tests.SchemaTestRunner"
+TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'
+# Directory where XML reports will be written
+TEST_OUTPUT_DIR = '/tmp/test-reports'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
