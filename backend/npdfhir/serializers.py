@@ -279,7 +279,8 @@ class ClinicalOrganizationSerializer(serializers.Serializer):
         if representation['organization']['address'] != []:
             authorized_official['address'] = representation['organization']['address'][0]
         else:
-            del authorized_official['address']
+            if 'address' in authorized_official.keys():
+                del authorized_official['address']
         organization.contact = [authorized_official]
         if 'taxonomy' in representation.keys():
             organization.qualification = representation['taxonomy']
