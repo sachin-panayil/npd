@@ -253,13 +253,6 @@ class EndpointIdentifierSerialzier(serializers.Serializer):
     def to_representation(self, instance):
         endpoint_identifier = Identifier(
             use="official",
-            type=CodeableConcept(
-                coding=[Coding(
-                    system="http://terminology.hl7.org/CodeSystem/v2-0203",
-                    code="ANON", # value left as this for now ~ not correct
-                    display="Anopnymous Idenfitifer" # value left as this for now ~ not correct
-                )]
-            ),
             system=instance.system,
             value=instance.other_id,
             assigner=Reference(display=str(instance.issuer_id)) # TODO: Replace with Organization reference

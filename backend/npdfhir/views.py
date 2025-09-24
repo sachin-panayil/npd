@@ -63,7 +63,6 @@ class FHIREndpointViewSet(viewsets.ViewSet):
         responses={200: "Successful response",
                    404: "Error: The requested Endpoint resource cannot be found."}
     )
-    
     def list(self, request):
         """
         Returns a list of all endpoints as FHIR Endpoint resources
