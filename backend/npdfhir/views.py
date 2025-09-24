@@ -4,6 +4,7 @@ from django.contrib.postgres.search import SearchVector
 from rest_framework import viewsets, generics
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.renderers import BrowsableAPIRenderer
 from django.core.cache import cache
 from .models import Provider, EndpointInstance, ClinicalOrganization
 from .serializers import PractitionerSerializer, ClinicalOrganizationSerializer, BundleSerializer, EndpointSerializer
@@ -51,7 +52,7 @@ class FHIREndpointViewSet(viewsets.ViewSet):
     """
     ViewSet for FHIR Endpoint Resources
     """
-    renderer_classes = [FHIRRenderer]
+    renderer_classes = [FHIRRenderer, BrowsableAPIRenderer]
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -138,7 +139,7 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
     """
     ViewSet for FHIR Practitioner resources
     """
-    renderer_classes = [FHIRRenderer]
+    renderer_classes = [FHIRRenderer, BrowsableAPIRenderer]
 
     # permission_classes = [permissions.IsAuthenticated]
     @swagger_auto_schema(
@@ -257,7 +258,7 @@ class FHIROrganizationViewSet(viewsets.ViewSet):
     """
     ViewSet for FHIR Practitioner resources
     """
-    renderer_classes = [FHIRRenderer]
+    renderer_classes = [FHIRRenderer, BrowsableAPIRenderer]
 
     # permission_classes = [permissions.IsAuthenticated]
     @swagger_auto_schema(
