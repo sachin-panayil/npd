@@ -82,26 +82,27 @@ class FHIREndpointViewSet(viewsets.ViewSet):
         )
 
         for param, value in all_params.items():
-            if param == 'page_size':
-                try:
-                    value = int(value)
-                    if value <= max_page_size:
-                        page_size = value
-                except:
-                    page_size = page_size
-            elif param == 'name':
-                endpoints = endpoints.filter(name__icontains=value)
-            elif param == 'connection_type':
-                endpoints = endpoints.filter(
-                    endpoint_connection_type__id__icontains=value)
-            elif param == 'payload_type':
-                endpoints = endpoints.filter(
-                    endpointinstancetopayload__payload_type__id__icontains=value
-                ).distinct()
-            elif param == 'status':
-                pass
-            elif param == 'organization':
-                pass
+            match param:
+                case 'page_size':
+                    try:
+                        value = int(value)
+                        if value <= max_page_size:
+                            page_size = value
+                    except:
+                        page_size = page_size
+                case 'name':
+                    endpoints = endpoints.filter(name__icontains=value)
+                case 'connection_type':
+                    endpoints = endpoints.filter(
+                        endpoint_connection_type__id__icontains=value)
+                case 'payload_type':
+                    endpoints = endpoints.filter(
+                        endpointinstancetopayload__payload_type__id__icontains=value
+                    ).distinct()
+                case 'status':
+                    pass
+                case 'organization':
+                    pass
 
         paginator = PageNumberPagination()
         paginator.page_size = page_size

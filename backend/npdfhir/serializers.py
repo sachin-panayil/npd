@@ -233,7 +233,7 @@ class EndpointPayloadSeriazlier(serializers.Serializer):
 
         payload = {
             "type": payload_type,
-            "mimeType": ["default"] # instance.mime_type.value
+            "mimeType": ["default"]  # instance.mime_type.value
         }
 
         return payload
@@ -249,13 +249,14 @@ class EndpointIdentifierSerialzier(serializers.Serializer):
             type=CodeableConcept(
                 coding=[Coding(
                     system="http://terminology.hl7.org/CodeSystem/v2-0203",
-                    code="", # value omitted for now
-                    display="" # value omitted for now
+                    code="",  # value omitted for now
+                    display=""  # value omitted for now
                 )]
             ),
             system=instance.system,
             value=instance.other_id,
-            assigner=Reference(display=str(instance.issuer_id)) # TODO: Replace with Organization reference
+            # TODO: Replace with Organization reference
+            assigner=Reference(display=str(instance.issuer_id))
         )
 
         return endpoint_identifier.model_dump()
@@ -369,7 +370,7 @@ class PractitionerSerializer(serializers.Serializer):
         )
         if representation['individual']['telecom'] != []:
             practitioner.telecom = representation['individual']['telecom']
-        if representation['individual']['address'] != []:
+        if 'address' in representation['individual'].keys() and representation['individual']['address'] != []:
             practitioner.address = representation['individual']['address']
         practitioner.identifier = [npi_identifier]
         if 'identifier' in representation.keys():
@@ -388,7 +389,8 @@ class EndpointSerializer(serializers.Serializer):
     )
 
     class Meta:
-        fields = ['id', 'ehr_vendor', 'address', 'endpoint_connection_type', 'name', 'description' 'endpoint_instance']
+        fields = ['id', 'ehr_vendor', 'address', 'endpoint_connection_type',
+                  'name', 'description' 'endpoint_instance']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -408,11 +410,11 @@ class EndpointSerializer(serializers.Serializer):
                 display=instance.environment_type.display
             )]
         )]
-        
+
         endpoint = Endpoint(
             id=str(instance.id),
             identifier=representation['identifier'],
-            status="active", # hardcoded for now
+            status="active",  # hardcoded for now
             connectionType=connection_type,
             name=instance.name,
             description=instance.description,
@@ -420,9 +422,9 @@ class EndpointSerializer(serializers.Serializer):
             # managingOrganization=Reference(managing_organization), ~ organization/npi or whatever we use as the organization identifier
             # contact=ContactPoint(contact), ~ still gotta figure this out
             # period=Period(period), ~ still gotta figure this out
-            payload=representation['payload'],  
+            payload=representation['payload'],
             address=instance.address,
-            header=["application/fhir"] # hardcoded for now 
+            header=["application/fhir"]  # hardcoded for now
         )
 
         return endpoint.model_dump()
