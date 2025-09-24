@@ -13,5 +13,4 @@ clean:
 	@echo "Cleaning up cache files..."
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
 	@rm -rf artifacts/
-	@rm test_output.log
 	@echo "Cleanup done."
