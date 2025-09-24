@@ -235,7 +235,6 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
 
         # Set appropriate content type for FHIR responses
         response = paginator.get_paginated_response(bundle.data)
-        response["Content-Type"] = "application/fhir+json"
 
         return response
 
@@ -249,7 +248,6 @@ class FHIRPractitionerViewSet(viewsets.ViewSet):
 
         # Set appropriate content type for FHIR responses
         response = Response(practitioner.data)
-        response["Content-Type"] = "application/fhir+json"
 
         return response
 
@@ -349,7 +347,6 @@ class FHIROrganizationViewSet(viewsets.ViewSet):
 
         # Set appropriate content type for FHIR responses
         response = paginator.get_paginated_response(bundle.data)
-        response["Content-Type"] = "application/fhir+json"
 
         return response
 
@@ -363,6 +360,5 @@ class FHIROrganizationViewSet(viewsets.ViewSet):
 
         # Set appropriate content type for FHIR responses
         response = Response(organization.data)
-        response["Content-Type"] = "application/fhir+json"
 
         return response
