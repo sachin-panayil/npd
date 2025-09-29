@@ -5,8 +5,8 @@
 
 test:
 	@echo "Running tests..."
-	@sudo docker-compose -f docker-compose-test.yml up -d db-test db-migrations
-	@sudo docker-compose -f docker-compose-test.yml up --build django-test
+	@docker-compose -f docker-compose-test.yml up -d db-test db-migrations
+	@docker-compose -f docker-compose-test.yml up --build django-test
 	@echo "Tests completed!"
 
 clean:
