@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from decouple import config
+from socket import gethostbyname, gethostname
 import os
 import sys
 import logging
@@ -31,11 +32,15 @@ SECRET_KEY = config('NPD_DJANGO_SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(config('DEBUG'))
+ALLOWED_HOSTS = []
 
 if DEBUG:
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+    ALLOWED_HOSTS = ['localhost','127.0.0.1','0.0.0.0']
 else:
     ALLOWED_HOSTS = config("DJANGO_ALLOWED_HOSTS").split(',')
+
+HOSTNAME = str(gethostbyname(gethostname()))
+ALLOWED_HOSTS.append(HOSTNAME)
 
 INTERNAL_APIS = config("DJANGO_ALLOWED_HOSTS").split(',')
 
