@@ -33,6 +33,8 @@ SECRET_KEY = config('NPD_DJANGO_SECRET')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(config('DEBUG'))
 ALLOWED_HOSTS = []
+TESTING = sys.argv[1:2] == ['test']
+
 
 if DEBUG:
     ALLOWED_HOSTS = ['localhost','127.0.0.1','0.0.0.0']
@@ -89,7 +91,12 @@ ROOT_URLCONF = 'app.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            # NOTE: (@abachman-dsac) this setup allows frontend/ to build directly
+            # into provider_directory/static/ and provider_directory.views.landing to
+            # reference the resulting index.html
+            os.path.join(BASE_DIR, 'provider_directory', 'static'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -166,9 +173,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-# STATICFILES_DIRS = [
-#        os.path.join(BASE_DIR, "static"),
-#    ]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'provider_directory', 'static'),
+]
 
 # STATICFILES_DIRS = [
 #        os.path.join(BASE_DIR, "static"),
