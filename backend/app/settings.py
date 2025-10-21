@@ -15,6 +15,7 @@ from decouple import config
 import os
 import sys
 import logging
+from npdfhir.middleware import HealthCheckMiddleware
 
 # Detect if tests are being run
 TESTING = 'test' in sys.argv
@@ -62,6 +63,7 @@ if not TESTING:
     INSTALLED_APPS.append('debug_toolbar')
 
 MIDDLEWARE = [
+    'npdfhir.middleware.HealthCheckMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

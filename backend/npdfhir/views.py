@@ -11,9 +11,6 @@ from .mappings import genderMapping, addressUseMapping
 from .renderers import FHIRRenderer
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
-from django.views import View
 
 default_page_size = 10
 max_page_size = 1000
@@ -46,15 +43,8 @@ def index(request):
     return HttpResponse("Connection to npd database: successful")
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class HealthCheckView(View):
-    def get(self, request):
-        # Simple health check logic
-        return HttpResponse("healthy", status=200)
-
-    def dispatch(self, request, *args, **kwargs):
-        # Bypass ALLOWED_HOSTS for health checks
-        return super().dispatch(request, *args, **kwargs)
+def health(request):
+    return HttpResponse("healthy")
 
 
 class FHIREndpointViewSet(viewsets.ViewSet):
