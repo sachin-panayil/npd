@@ -79,17 +79,17 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for more details on the release process.
                 </a>
             </td>
             <td align="center">
-                <a href="https://github.com/IsaacMilarky">
-                    <img src="https://avatars.githubusercontent.com/u/24639268?v=4" width="100;" alt="IsaacMilarky"/>
-                    <br />
-                    <sub><b>Isaac Milarsky</b></sub>
-                </a>
-            </td>
-            <td align="center">
                 <a href="https://github.com/sachin-panayil">
                     <img src="https://avatars.githubusercontent.com/u/79382140?v=4" width="100;" alt="sachin-panayil"/>
                     <br />
                     <sub><b>Sachin Panayil</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/IsaacMilarky">
+                    <img src="https://avatars.githubusercontent.com/u/24639268?v=4" width="100;" alt="IsaacMilarky"/>
+                    <br />
+                    <sub><b>Isaac Milarsky</b></sub>
                 </a>
             </td>
             <td align="center">
@@ -107,6 +107,35 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for more details on the release process.
                     <br />
                     <sub><b>Blaine Price</b></sub>
                 </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/tspecht-cms">
+                    <img src="https://avatars.githubusercontent.com/u/237267425?v=4" width="100;" alt="tspecht-cms"/>
+                    <br />
+                    <sub><b>tspecht-cms</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/decause-gov">
+                    <img src="https://avatars.githubusercontent.com/u/107957201?v=4" width="100;" alt="decause-gov"/>
+                    <br />
+                    <sub><b>decause-gov</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/dturner5234">
+                    <img src="https://avatars.githubusercontent.com/u/232453748?v=4" width="100;" alt="dturner5234"/>
+                    <br />
+                    <sub><b>dturner5234</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/ftrotter">
+                    <img src="https://avatars.githubusercontent.com/u/83133?v=4" width="100;" alt="ftrotter"/>
+                    <br />
+                    <sub><b>Fred Trotter</b></sub>
+                </a>
+            </td>
 		</tr>
 	<tbody>
 </table>
